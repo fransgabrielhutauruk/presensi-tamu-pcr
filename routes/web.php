@@ -32,31 +32,7 @@ Route::prefix('app')
 
         generalRoute(App\Http\Controllers\Admin\MediaController::class, 'media', 'app', false);
         generalRoute(App\Http\Controllers\Admin\MasterController::class, 'master', 'app');
-
-        // Presensi Tamu - Admin Routes
-        Route::prefix('presensi')->name('admin.presensi.')->group(function () {
-            Route::get('/', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'index'])->name('dashboard');
-            Route::get('/kunjungan', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'kunjungan'])->name('kunjungan');
-            Route::get('/kunjungan/{id}/detail', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'detailKunjungan'])->name('kunjungan.detail');
-            Route::post('/kunjungan/{id}/validate', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'validateKunjungan'])->name('kunjungan.validate');
-            Route::post('/kunjungan/{id}/checkout', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'checkoutKunjungan'])->name('kunjungan.checkout');
-            Route::get('/report/daily', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'reportDaily'])->name('report.daily');
-            Route::get('/export/daily', [App\Http\Controllers\Admin\PresensiDashboardController::class, 'exportDaily'])->name('export.daily');
-        });
     });
-
-// Presensi Tamu - Public Routes
-Route::prefix('tamu')->name('tamu.')->group(function () {
-    Route::get('/', [App\Http\Controllers\Tamu\PresensiController::class, 'index'])->name('index');
-    Route::get('/pilih-tujuan', [App\Http\Controllers\Tamu\PresensiController::class, 'pilihTujuan'])->name('pilih-tujuan');
-    Route::post('/simpan-tujuan', [App\Http\Controllers\Tamu\PresensiController::class, 'simpanTujuan'])->name('simpan-tujuan');
-    Route::get('/form', [App\Http\Controllers\Tamu\PresensiController::class, 'form'])->name('form');
-    Route::post('/simpan-form', [App\Http\Controllers\Tamu\PresensiController::class, 'simpanForm'])->name('simpan-form');
-    Route::get('/sukses', [App\Http\Controllers\Tamu\PresensiController::class, 'sukses'])->name('sukses');
-    Route::post('/checkout', [App\Http\Controllers\Tamu\PresensiController::class, 'checkout'])->name('checkout');
-    Route::get('/feedback', [App\Http\Controllers\Tamu\PresensiController::class, 'feedback'])->name('feedback');
-    Route::post('/simpan-feedback', [App\Http\Controllers\Tamu\PresensiController::class, 'simpanFeedback'])->name('simpan-feedback');
-});
 
 // //temporary
 // Route::get('/media/{id}', function ($id) {
