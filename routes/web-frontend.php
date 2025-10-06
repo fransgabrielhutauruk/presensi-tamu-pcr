@@ -14,7 +14,27 @@ use App\Http\Controllers\Frontend\PCRSquadController;
 use App\Http\Controllers\Frontend\ProfileController;
 use App\Http\Controllers\Frontend\ResearchController;
 use App\Http\Controllers\Frontend\ServiceController;
+use App\Http\Controllers\Tamu\PresensiController;
 use Illuminate\Support\Facades\Route;
+
+Route::name('tamu.')->group(function () {
+    Route::controller(PresensiController::class)->group(function () {
+        Route::get('/', 'index')->name('home');
+        Route::get('/tujuan', 'tujuan')->name('tujuan');
+
+        Route::prefix('/nonevent')->name('nonevent.')->group(function () {
+            Route::get('/tujuan', 'noneventTujuan')->name('tujuan');
+            Route::get('/form', 'noneventForm')->name('form');
+            Route::post('/store', 'store')->name('store');
+        });
+
+        Route::get('/sukses/{kode}', 'sukses')->name('sukses');
+
+        Route::prefix('/event')->name('event.')->group(function () {
+            Route::get('/event', 'event')->name('form');
+        });
+    });
+});
 
 Route::get(
     '/read/{numeric}/{slug}',
@@ -26,7 +46,7 @@ Route::get(
 // Frontend Routes
 Route::name('frontend.')->group(function () {
     Route::controller(MainController::class)->group(function () {
-        Route::get('/', 'index')->name('home');
+        Route::get('/pcr', 'index')->name('home');
     });
 
     Route::prefix('/profil')->name('profile.')->controller(ProfileController::class)->group(function () {
