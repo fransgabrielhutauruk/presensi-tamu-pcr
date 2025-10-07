@@ -10,6 +10,7 @@ use App\Models\KunjunganDetail;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Twilio\Rest\Client;
 
 class PresensiController extends Controller
 {
@@ -35,6 +36,7 @@ class PresensiController extends Controller
 
     public function store(StorePresensiRequest $request): JsonResponse
     {
+
         $data = [
             'name' => $request->name,
             'gender' => $request->gender,
@@ -78,12 +80,12 @@ class PresensiController extends Controller
                 'message' => 'Presensi berhasil disimpan.',
                 'data' => [
                     'kode_kunjungan' => $kunjungan->kunjungan_id,
-                    'redirect_url' => route('tamu.sukses', ['kode' => $kunjungan->kunjungan_id])
+                    'redirect_url' => route('tamu.sukses')
                 ]
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()
@@ -146,20 +148,8 @@ class PresensiController extends Controller
         return $detailData;
     }
 
-    public function sukses($kode)
+    public function sukses()
     {
-        $kunjungan = Kunjungan::with(['tamu', 'details'])->findOrFail($kode);
-        
-        session()->put('presensi_data', [
-            'nama_lengkap' => $kunjungan->tamu->name,
-            'gender' => $kunjungan->tamu->gender,
-            'email' => $kunjungan->tamu->email,
-            'no_telepon' => $kunjungan->tamu->phone_number,
-            'tujuan_kunjungan' => $kunjungan->kategori_tujuan,
-            'tanggal_kunjungan' => $kunjungan->created_at->format('Y-m-d'),
-            'waktu_kunjungan' => $kunjungan->created_at->format('H:i:s'),
-        ]);
-        
         return view('contents.tamu.pages.success');
     }
 
@@ -168,5 +158,22 @@ class PresensiController extends Controller
         // Untuk sementara redirect ke halaman tujuan yang sama
         // Nanti bisa dibuat halaman khusus untuk tamu event
         return view('contents.tamu.pages.tujuan');
+    }
+
+    public function reminderCheckout()
+    {
+        $sid    = "ACb01d83636bbc05b4c8dadece07f83576";
+        $token  = "a31fd634c31bacfd55ad99860e1aa2b3";
+        $twilio = new Client($sid, $token);
+
+        $message = $twilio->messages
+            ->create(
+                "whatsapp:+6289621530018",
+                array(
+                    "from" => "whatsapp:+14155238886",
+                    "contentSid" => "HXb5b62575e6e4ff6129ad7c8efe1f983e",
+                    "body" => "Your Message"
+                )
+            );
     }
 }

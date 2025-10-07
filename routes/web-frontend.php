@@ -28,7 +28,7 @@ Route::name('tamu.')->group(function () {
             Route::post('/store', 'store')->name('store');
         });
 
-        Route::get('/sukses/{kode}', 'sukses')->name('sukses');
+        Route::get('/sukses', 'sukses')->name('sukses');
 
         Route::prefix('/event')->name('event.')->group(function () {
             Route::get('/event', 'event')->name('form');

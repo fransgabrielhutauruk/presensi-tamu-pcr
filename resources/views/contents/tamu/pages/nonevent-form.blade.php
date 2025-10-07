@@ -31,11 +31,11 @@
                 <form id="tamu-form" class="text-start" action="{{ route('tamu.nonevent.store') }}" method="POST">
                     @csrf
                     <input type="hidden" name="kategori_tujuan" id="hidden-tujuan" value="">
-                    
+
                     <div id="error-messages" class="alert alert-danger" style="display: none;">
                         <ul id="error-list" class="mb-0"></ul>
                     </div>
-                    
+
                     @if(app()->environment('local'))
                     <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
                         <small><i class="fas fa-info-circle"></i> Mode Development - Auto Fill untuk Testing</small>
@@ -44,7 +44,7 @@
                         </button>
                     </div>
                     @endif
-                    
+
                     <div class="form-section wow fadeInUp" data-wow-delay="0.9s">
                         <div class="mb-3">
                             <h3 class="d-flex align-items-center gap-2 mb-3" style="font-size: 1.125rem; font-weight: 600;">
@@ -177,67 +177,76 @@
             btnLoading.style.display = 'inline';
 
             const formData = new FormData(form);
-            
+
             fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            })
-            .then(response => {
-                if (response.status === 422) {
-                    return response.json().then(data => {
-                        throw { isValidation: true, errors: data.errors || data.message };
-                    });
-                } else if (!response.ok) {
-                    return response.json().then(data => {
-                        throw { isValidation: false, message: data.message || 'Terjadi kesalahan' };
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.status) {
-                    window.location.href = data.data.redirect_url;
-                } else {
-                    showError(data.message);
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    }
+                })
+                .then(response => {
+                    if (response.status === 422) {
+                        return response.json().then(data => {
+                            throw {
+                                isValidation: true,
+                                errors: data.errors || data.message
+                            };
+                        });
+                    } else if (!response.ok) {
+                        return response.json().then(data => {
+                            throw {
+                                isValidation: false,
+                                message: data.message || 'Terjadi kesalahan'
+                            };
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.status) {
+                        window.location.href = data.data.redirect_url;
+                    } else {
+                        showError(data.message);
+                        btnText.style.display = 'inline';
+                        btnLoading.style.display = 'none';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+
+                    if (error.isValidation) {
+                        if (typeof error.errors === 'object') {
+                            showValidationErrors(error.errors);
+                        } else {
+                            showError(error.errors);
+                        }
+                    } else {
+                        showError(error.message || 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
+                    }
+
                     btnText.style.display = 'inline';
                     btnLoading.style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                
-                if (error.isValidation) {
-                    if (typeof error.errors === 'object') {
-                        showValidationErrors(error.errors);
-                    } else {
-                        showError(error.errors);
-                    }
-                } else {
-                    showError(error.message || 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
-                }
-                
-                btnText.style.display = 'inline';
-                btnLoading.style.display = 'none';
-            });
+                });
         });
 
         function showError(message) {
             const errorDiv = document.getElementById('error-messages');
             const errorList = document.getElementById('error-list');
-            
+
             errorList.innerHTML = `<li>${message}</li>`;
             errorDiv.style.display = 'block';
-            
-            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            errorDiv.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
         }
 
         function showValidationErrors(errors) {
             const errorDiv = document.getElementById('error-messages');
             const errorList = document.getElementById('error-list');
-            
+
             let errorHtml = '';
             Object.values(errors).forEach(errorArray => {
                 if (Array.isArray(errorArray)) {
@@ -248,11 +257,14 @@
                     errorHtml += `<li>${errorArray}</li>`;
                 }
             });
-            
+
             errorList.innerHTML = errorHtml;
             errorDiv.style.display = 'block';
-            
-            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+            errorDiv.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
         }
 
         function hideErrors() {
@@ -326,6 +338,7 @@
                     <textarea class="form-control" name="tujuan_spesifik" rows="3" placeholder="Jelaskan tujuan spesifik kunjungan Anda" required></textarea>
                 </div>
             `;
+        } else if (tujuan === 'bisnis') {
             kunjunganContainer.innerHTML = `
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Pihak yang Dituju <span class="text-danger">*</span></label>
@@ -407,6 +420,7 @@
                     <input type="text" class="form-control" name="jabatan" placeholder="Jabatan/Posisi" required>
                 </div>
             `;
+        } else if (tujuan === 'bisnis') {
             fieldsHTML = `
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Nama Perusahaan <span class="text-danger">*</span></label>
@@ -502,18 +516,18 @@
     function autoFillForm() {
         const urlParams = new URLSearchParams(window.location.search);
         const tujuan = urlParams.get('tujuan') || 'instansi';
-        
+
         document.querySelector('input[name="name"]').value = 'John Doe Test';
         document.querySelector('input[name="gender"][value="Laki-laki"]').checked = true;
         document.querySelector('input[name="phone_number"]').value = '081234567890';
         document.querySelector('input[name="email"]').value = 'test@example.com';
-        
+
         const transportasiField = document.querySelector('select[name="transportasi"]');
         if (transportasiField) transportasiField.value = 'Mobil';
-        
+
         const waktuKeluarField = document.querySelector('input[name="waktu_keluar"]');
         if (waktuKeluarField) waktuKeluarField.value = '16:00';
-        
+
         setTimeout(() => {
             if (tujuan === 'ortu') {
                 const hubunganField = document.querySelector('select[name="hubungan_dengan_mahasiswa"]');
@@ -522,32 +536,32 @@
                 const asalField = document.querySelector('input[name="asal"]');
                 if (asalField) asalField.value = 'Universitas Test';
             }
-            
+
             if (tujuan === 'ortu') {
                 const pihakDitujuOrtuField = document.querySelector('select[name="pihak_dituju_ortu"]');
                 const keperluanField = document.querySelector('textarea[name="keperluan"]');
-                
+
                 if (pihakDitujuOrtuField) pihakDitujuOrtuField.value = 'BAAK';
                 if (keperluanField) keperluanField.value = 'Konsultasi mengenai akademik dan administrasi mahasiswa';
             } else if (tujuan === 'instansi') {
                 const pihakDitujuField = document.querySelector('select[name="pihak_dituju"]');
                 const tujuanSpesifikField = document.querySelector('textarea[name="tujuan_spesifik"]');
-                
+
                 if (pihakDitujuField) pihakDitujuField.value = 'Direktur';
                 if (tujuanSpesifikField) tujuanSpesifikField.value = 'Membahas kerjasama penelitian dan pengembangan teknologi antara instansi kami dengan Politeknik Caltex Riau';
             } else if (tujuan === 'bisnis') {
                 const pihakDitujuField = document.querySelector('select[name="pihak_dituju"]');
                 const jenisKerjasamaField = document.querySelector('textarea[name="jenis_kerjasama"]');
-                
+
                 if (pihakDitujuField) pihakDitujuField.value = 'BP3M';
                 if (jenisKerjasamaField) jenisKerjasamaField.value = 'Kerjasama dalam program Kerja Praktik (KP) untuk mahasiswa dan kemungkinan rekrutmen lulusan terbaik';
             }
-            
+
             if (tujuan === 'instansi') {
                 const instansiField = document.querySelector('input[name="instansi"]');
                 const jenisInstansiField = document.querySelector('select[name="jenis_instansi"]');
                 const jabatanField = document.querySelector('input[name="jabatan"]');
-                
+
                 if (instansiField) instansiField.value = 'Kementerian Teknologi';
                 if (jenisInstansiField) jenisInstansiField.value = 'Pemerintah Pusat';
                 if (jabatanField) jabatanField.value = 'Staff IT';
@@ -556,7 +570,7 @@
                 const bidangUsahaField = document.querySelector('select[name="bidang_usaha"]');
                 const skalaPerusahaanField = document.querySelector('select[name="skala_perusahaan"]');
                 const jabatanField = document.querySelector('input[name="jabatan"]');
-                
+
                 if (instansiField) instansiField.value = 'PT. Teknologi Maju';
                 if (bidangUsahaField) bidangUsahaField.value = 'Teknologi Informasi';
                 if (skalaPerusahaanField) skalaPerusahaanField.value = 'Perusahaan Menengah (50-250 karyawan)';
@@ -564,34 +578,34 @@
             } else if (tujuan === 'ortu') {
                 const namaMahasiswaField = document.querySelector('input[name="nama_mahasiswa"]');
                 const nimMahasiswaField = document.querySelector('input[name="nim_mahasiswa"]');
-                
+
                 if (namaMahasiswaField) namaMahasiswaField.value = 'Jane Doe';
                 if (nimMahasiswaField) nimMahasiswaField.value = '12345678';
             } else if (tujuan === 'calon_ortu') {
                 const asalSekolahField = document.querySelector('input[name="asal_sekolah"]');
                 const prodiDiminatiField = document.querySelector('select[name="prodi_diminati"]');
-                
+
                 if (asalSekolahField) asalSekolahField.value = 'SMA Negeri 1 Jakarta';
                 if (prodiDiminatiField) prodiDiminatiField.value = 'Teknik Informatika';
             } else if (tujuan === 'lainnya') {
                 const keperluanDetailField = document.querySelector('textarea[name="keperluan_detail"]');
                 const pihakDitujuLainnyaField = document.querySelector('input[name="pihak_dituju_lainnya"]');
-                
+
                 if (keperluanDetailField) keperluanDetailField.value = 'Konsultasi proyek akhir mahasiswa';
                 if (pihakDitujuLainnyaField) pihakDitujuLainnyaField.value = 'Dosen Pembimbing';
             }
         }, 200);
-        
+
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-success alert-dismissible fade show';
         alertDiv.innerHTML = `
             <i class="fas fa-check-circle"></i> Form berhasil diisi otomatis untuk testing!
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-        
+
         const formSection = document.querySelector('.form-section');
         formSection.insertBefore(alertDiv, formSection.firstChild);
-        
+
         setTimeout(() => {
             alertDiv.remove();
         }, 3000);
