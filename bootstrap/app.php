@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'ajax' => AjaxRequest::class
+            'ajax' => AjaxRequest::class,
+            'active-role' => \App\Http\Middleware\CheckActiveRole::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

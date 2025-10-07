@@ -9,16 +9,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    Route::post('/switch-role', [App\Http\Controllers\Auth\AuthController::class, 'switchRole'])->name('switch.role');
 });
 
 require __DIR__ . '/auth.php';
 
 Route::prefix('app')
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'active-role:Mahasiswa,Staf,Admin,Eksekutif'])
     ->group(function () {
         generalRoute(App\Http\Controllers\Admin\DashboardController::class, 'dashboard', 'app');
+        
+        // User management hanya untuk Admin dan Eksekutif - menggunakan active role
+        Route::middleware('active-role:Mahasiswa,Admin,Eksekutif')->group(function () {
+            generalRoute(App\Http\Controllers\Admin\UserController::class, 'user', 'app');
+        });
 
-        // generalRoute(App\Http\Controllers\Admin\Konten\MainController::class, 'konten-main', 'konten');
         generalRoute(App\Http\Controllers\Admin\Konten\KontenController::class, 'konten', 'app');
         generalRoute(App\Http\Controllers\Admin\Konten\KontenMainController::class, 'konten-main', 'app');
         generalRoute(App\Http\Controllers\Admin\Konten\KontenSlideController::class, 'konten-slide', 'app');

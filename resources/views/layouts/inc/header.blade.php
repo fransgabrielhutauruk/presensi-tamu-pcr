@@ -41,7 +41,7 @@
                 <img src="{{ asset('theme') }}/media/svg/avatars/001-boy.svg" alt="user" />
             </div>
             <!--begin::User account menu-->
-            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-275px" data-kt-menu="true">
+            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg menu-state-color fw-semibold py-4 fs-6 w-325px" data-kt-menu="true">
                 <!--begin::Menu item-->
                 <div class="menu-item px-3">
                     <div class="menu-content d-flex align-items-center px-3">
@@ -51,11 +51,15 @@
                         </div>
                         <!--end::Avatar-->
                         <!--begin::Username-->
-                        <div class="d-flex flex-column">
-                            <div class="fw-bold d-flex align-items-center fs-5">
-                                {{ Auth::user()->name }}
+                        <div class="d-flex flex-column flex-grow-1 min-w-0">
+                            <div class="fw-bold d-flex align-items-center fs-5 flex-wrap">
+                                <span class="text-truncate me-2">{{ Auth::user()->name }}</span>
+                                @php
+                                    $activeRole = session('active_role', Auth::user()->roles->first()?->name ?? 'Guest');
+                                @endphp
+                                <span class="badge badge-light-primary fs-7 flex-shrink-0">{{ $activeRole }}</span>
                             </div>
-                            <span class="fw-semibold text-muted fs-7">{{ Auth::user()->email }}</span>
+                            <span class="fw-semibold text-muted fs-7 text-truncate">{{ Auth::user()->email }}</span>
                         </div>
                         <!--end::Username-->
                     </div>
@@ -64,6 +68,33 @@
                 <!--begin::Menu separator-->
                 <div class="separator my-2"></div>
                 <!--end::Menu separator-->
+                
+                <!--begin::Switch Role Section-->
+                @php
+                    $userRoles = Auth::user()->roles->pluck('name')->toArray();
+                    $currentRole = session('active_role', $userRoles[0] ?? 'Guest');
+                    $availableRoles = array_diff($userRoles, [$currentRole]);
+                @endphp
+                
+                @if(count($availableRoles) > 0)
+                <div class="menu-item px-5">
+                    <div class="menu-content px-5">
+                        <div class="text-muted fs-7 fw-bold text-uppercase">Ganti Role</div>
+                    </div>
+                </div>
+                @foreach($availableRoles as $role)
+                <div class="menu-item px-5 mb-2">
+                    <a href="#" class="menu-link px-5 btn btn-light-primary text-primary text-hover-white switch-role-btn w-100 text-start" data-role="{{ $role }}">
+                        <i class="ki-outline ki-profile-user fs-4 me-2"></i>
+                        Login sebagai {{ $role }}
+                    </a>
+                </div>
+                @endforeach
+                
+                <div class="separator my-2"></div>
+                @endif
+                <!--end::Switch Role Section-->
+
                 <!--begin::Menu item-->
                 <div class="menu-item px-5" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="left-start" data-kt-menu-offset="-15px, 0">
                     <a href="#" class="menu-link px-5">
@@ -149,3 +180,54 @@
 <!--begin::Separator-->
 <div class="app-header-separator border-0"></div>
 <!--end::Separator-->
+
+<!--begin::Switch Role Script-->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle switch role buttons
+    document.querySelectorAll('.switch-role-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const role = this.getAttribute('data-role');
+            const button = this;
+            
+            // Show loading state
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="ki-outline ki-loading fs-4 me-2"></i>Switching...';
+            button.style.pointerEvents = 'none';
+            
+            // Send request to switch role
+            fetch('{{ route("switch.role") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    role: role
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    // Success - reload page to update UI
+                    window.location.reload();
+                } else {
+                    // Error
+                    alert(data.message || 'Error switching role');
+                    button.innerHTML = originalText;
+                    button.style.pointerEvents = 'auto';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error switching role');
+                button.innerHTML = originalText;
+                button.style.pointerEvents = 'auto';
+            });
+        });
+    });
+});
+</script>
+<!--end::Switch Role Script-->

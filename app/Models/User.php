@@ -6,10 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -43,5 +45,18 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public static function getDataDetail($where = [], $whereBinding = [], $get = true)
+    {
+        $self = new self;
+        $table = $self->getTable();
+
+        $query = DB::table('')
+            ->selectRaw('*')
+            ->from($table)
+            ->where(notRaw($where))
+            ->whereRaw(withRaw($where), $whereBinding);
+        return $get ? $query->get() : $query;
     }
 }

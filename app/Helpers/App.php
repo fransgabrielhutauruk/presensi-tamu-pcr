@@ -1,6 +1,35 @@
 <?php
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
+function getActiveRole()
+{
+    if (!Auth::check()) {
+        return null;
+    }
+    
+    $user = Auth::user();
+    $userRoles = $user->roles->pluck('name')->toArray();
+    
+    if (empty($userRoles)) {
+        return null;
+    }
+    
+    $sessionRole = session('active_role');
+    
+    if ($sessionRole && in_array($sessionRole, $userRoles)) {
+        return $sessionRole;
+    }
+    
+    return $userRoles[0];
+}
+
+function hasAnyActiveRole($roles)
+{
+    $activeRole = getActiveRole();
+    return in_array($activeRole, $roles);
+}
 
 function thumbnail($fileName = '')
 {
