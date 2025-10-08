@@ -10,7 +10,6 @@ use App\Models\KunjunganDetail;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
-use Twilio\Rest\Client;
 
 class PresensiController extends Controller
 {
@@ -36,7 +35,6 @@ class PresensiController extends Controller
 
     public function store(StorePresensiRequest $request): JsonResponse
     {
-
         $data = [
             'name' => $request->name,
             'gender' => $request->gender,
@@ -52,9 +50,10 @@ class PresensiController extends Controller
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => $request->kategori_tujuan,
-                'waktu_keluar' => now()->addHours(2)->format('H:i:s'),
+                'waktu_keluar' => $request->waktu_keluar,
                 'transportasi' => $request->transportasi ?? 'Tidak Diketahui',
                 'status_validasi' => false,
+                'is_checkout' => false,
             ];
 
             $kunjungan = Kunjungan::create($kunjunganData);
@@ -85,7 +84,6 @@ class PresensiController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-
             return response()->json([
                 'status' => false,
                 'message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()
@@ -155,25 +153,26 @@ class PresensiController extends Controller
 
     public function event()
     {
-        // Untuk sementara redirect ke halaman tujuan yang sama
-        // Nanti bisa dibuat halaman khusus untuk tamu event
         return view('contents.tamu.pages.tujuan');
     }
 
-    public function reminderCheckout()
+    public function Checkout($kunjunganId)
     {
-        $sid    = "ACb01d83636bbc05b4c8dadece07f83576";
-        $token  = "a31fd634c31bacfd55ad99860e1aa2b3";
-        $twilio = new Client($sid, $token);
+        try {
+            $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
 
-        $message = $twilio->messages
-            ->create(
-                "whatsapp:+6289621530018",
-                array(
-                    "from" => "whatsapp:+14155238886",
-                    "contentSid" => "HXb5b62575e6e4ff6129ad7c8efe1f983e",
-                    "body" => "Your Message"
-                )
-            );
+            if ($kunjungan->is_checkout) {
+                return view('contents.tamu.pages.checkout-already', compact('kunjungan'));
+            }
+
+            $kunjungan->update([
+                'is_checkout' => true,
+                'checkout_time' => now()
+            ]);
+
+            return view('contents.tamu.pages.checkout-confirm', compact('kunjungan'));
+        } catch (\Exception $e) {
+            return redirect()->route('tamu.home')->with('error', 'Maaf, terjadi kesalahan saat memproses checkout');
+        }
     }
 }

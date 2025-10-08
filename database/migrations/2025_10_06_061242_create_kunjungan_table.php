@@ -20,6 +20,8 @@ return new class extends Migration
             $table->boolean('is_checkout')->default(false);
             $table->string('transportasi');
             $table->boolean('status_validasi')->default(false);
+            $table->timestamp('checkout_time')->nullable();
+            $table->timestamp('reminder_sent_at')->nullable();
             $table->string('created_by', 10)->nullable();
             $table->string('updated_by', 10)->nullable();
             $table->string('deleted_by', 10)->nullable();

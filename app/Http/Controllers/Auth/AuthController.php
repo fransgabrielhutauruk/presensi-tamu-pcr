@@ -7,6 +7,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
@@ -55,29 +56,29 @@ class AuthController extends Controller
 
             return redirect()->intended('/app/dashboard');
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Google login failed!'. $e);
+            return redirect()->route('login')->with('error', 'Google login failed!');
         }
     }
 
-    public function switchRole(\Illuminate\Http\Request $request)
+    public function switchRole(Request $request)
     {
         $role = $request->input('role');
         $user = Auth::user();
-        
+
         $userRoles = $user->roles->pluck('name')->toArray();
         $allowedRoles = ['Mahasiswa', 'Staf', 'Admin', 'Eksekutif'];
-        
+
         if (!in_array($role, $userRoles) || !in_array($role, $allowedRoles)) {
             return response()->json([
-                'status' => false, 
+                'status' => false,
                 'message' => 'Role tidak valid atau tidak dimiliki'
             ]);
         }
-        
+
         session(['active_role' => $role]);
-        
+
         return response()->json([
-            'status' => true, 
+            'status' => true,
             'message' => 'Role berhasil diubah ke ' . $role
         ]);
     }

@@ -29,6 +29,7 @@ Route::name('tamu.')->group(function () {
         });
 
         Route::get('/sukses', 'sukses')->name('sukses');
+        Route::get('/checkout/{kunjunganId}', 'checkout')->name('checkout');
 
         Route::prefix('/event')->name('event.')->group(function () {
             Route::get('/event', 'event')->name('form');

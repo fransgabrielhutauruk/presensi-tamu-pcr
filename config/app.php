@@ -65,7 +65,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'Asia/Jakarta',
 
     /*
     |--------------------------------------------------------------------------
@@ -152,13 +152,12 @@ return [
         Yajra\DataTables\HtmlServiceProvider::class,
 
         /*
-     * Package Service Providers...
-     */
-        Laravel\Socialite\SocialiteServiceProvider::class, 
+         * Package Service Providers...
+         */
 
         /*
-     * Application Service Providers...
-     */
+         * Application Service Providers...
+         */
         // App\Providers\AppServiceProvider::class,
         // App\Providers\AuthServiceProvider::class,
         // // App\Providers\BroadcastServiceProvider::class,

@@ -6,7 +6,7 @@
 
 @section('content')
 <div class="container">
-    <div class="row">
+    <div class="row min-vh-100">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="text-center">
                 <img

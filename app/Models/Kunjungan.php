@@ -20,11 +20,17 @@ class Kunjungan extends Model
         'transportasi',
         'status_validasi',
         'waktu_presensi',
+        'is_checkout',
+        'checkout_time',
+        'reminder_sent_at',
     ];
 
     protected $casts = [
         'status_validasi' => 'boolean',
+        'is_checkout' => 'boolean',
         'waktu_presensi' => 'datetime',
+        'checkout_time' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     public function tamu()
