@@ -11,7 +11,7 @@
             <div class="text-center">
 
                 <div class="mb-4 mt-5">
-                    <h1 id="page-title" class="fw-bold wow fadeInOut fs-2" data-wow-delay="0.5s" style="font-size: 1.75rem; letter-spacing: 0.025em;">
+                    <h1 id="page-title" class="fw-bold wow fadeInOut fs-2" data-wow-delay="0.1s" style="font-size: 1.75rem; letter-spacing: 0.025em;">
                         <span id="title-text">Kunjungan Resmi Instansi</span>
                     </h1>
                     <p class="text-muted mb-2" style="font-size: 0.875rem; font-weight: 500; letter-spacing: 0.15em;">
@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="text-start">
-                    <button type="button" class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none wow fadeInUp" data-wow-delay="0.7s"
+                    <button type="button" class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
                         onclick="window.location.href='{{ route('tamu.nonevent.tujuan') }}'" style="color: var(--dark-color);">
                         <i class="fas fa-arrow-left"></i>
                         <span>Kembali</span>
@@ -45,7 +45,7 @@
                     </div>
                     @endif
 
-                    <div class="form-section wow fadeInUp" data-wow-delay="0.9s">
+                    <div class="form-section wow fadeInUp" data-wow-delay="0.3s">
                         <div class="mb-3">
                             <h3 class="d-flex align-items-center gap-2 mb-3" style="font-size: 1.125rem; font-weight: 600;">
                                 <span>🧑‍💼</span>
@@ -89,7 +89,7 @@
                         <div id="conditional-fields-pengunjung"></div>
                     </div>
 
-                    <div id="dynamic-section" class="form-section wow fadeInUp mt-5" data-wow-delay="1.1s" style="display: none;">
+                    <div id="dynamic-section" class="form-section wow fadeInUp mt-5" data-wow-delay="0.4s" style="display: none;">
                         <div class="mb-3">
                             <h3 id="dynamic-title" class="d-flex align-items-center gap-2 mb-3" style="font-size: 1.125rem; font-weight: 600;">
                                 <span id="dynamic-emoji">📋</span>
@@ -100,7 +100,7 @@
                         <div id="dynamic-fields"></div>
                     </div>
 
-                    <div class="form-section wow fadeInUp mt-5" data-wow-delay="1.3s">
+                    <div class="form-section wow fadeInUp mt-5" data-wow-delay="0.5s">
                         <div class="mb-3">
                             <h3 class="d-flex align-items-center gap-2 mb-3" style="font-size: 1.125rem; font-weight: 600;">
                                 <span>🗓️</span>

@@ -23,7 +23,7 @@
                         </header>
 
                         <div style="margin-top: 2.5rem;">
-                            <h2 class="fw-semibold d-flex align-items-center justify-content-center gap-2 wow fadeInUp" data-wow-delay="1s" style="font-size: 1rem;">
+                            <h2 class="fw-semibold d-flex align-items-center justify-content-center gap-2 wow fadeInUp" data-wow-delay="0.1s" style="font-size: 1rem;">
                                 <span style="font-size: 1.25rem; line-height: 1;">👋</span>
                                 <span class="fw-bold" style="font-size: 1.125rem;">Apa tujuan kunjungan Anda hari ini?</span>
                             </h2>
@@ -31,7 +31,7 @@
 
                         <form id="tujuan-form" class="d-flex flex-column flex-fill mt-4 mx-auto">
                             <fieldset class="d-flex flex-column" style="gap: 1rem;">
-                                <label for="opt-instansi" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="1.2s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
+                                <label for="opt-instansi" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="0.2s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
                                     <span class="position-relative d-flex align-items-center justify-content-center" style="height: 1.25rem; width: 1.25rem;">
                                         <input class="radio-input" style="appearance: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 1px solid #94a3b8; transition: all 0.3s ease; margin: 0;" type="radio" name="tujuan" id="opt-instansi" value="instansi" required>
                                         <span class="radio-dot position-absolute rounded-circle" style="inset: 0; pointer-events: none; background-color: white; width: 0.5rem; height: 0.5rem; transform: scale(0); transition: transform 0.3s ease; top: 50%; left: 50%; translate: -50% -50%;"></span>
@@ -40,7 +40,7 @@
                                     <span class="fw-medium user-select-none text-dark" style="font-size: 0.875rem;">Kunjungan Resmi Instansi</span>
                                 </label>
 
-                                <label for="opt-bisnis" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="1.4s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
+                                <label for="opt-bisnis" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="0.3s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
                                     <span class="position-relative d-flex align-items-center justify-content-center" style="height: 1.25rem; width: 1.25rem;">
                                         <input class="radio-input" style="appearance: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 1px solid #94a3b8; transition: all 0.3s ease; margin: 0;" type="radio" name="tujuan" id="opt-bisnis" value="bisnis" required>
                                         <span class="radio-dot position-absolute rounded-circle" style="inset: 0; pointer-events: none; background-color: white; width: 0.5rem; height: 0.5rem; transform: scale(0); transition: transform 0.3s ease; top: 50%; left: 50%; translate: -50% -50%;"></span>
@@ -49,7 +49,7 @@
                                     <span class="fw-medium user-select-none text-dark" style="font-size: 0.875rem;">Keperluan Bisnis/Kemitraan</span>
                                 </label>
 
-                                <label for="opt-ortu" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="1.6s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
+                                <label for="opt-ortu" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="0.4s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
                                     <span class="position-relative d-flex align-items-center justify-content-center" style="height: 1.25rem; width: 1.25rem;">
                                         <input class="radio-input" style="appearance: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 1px solid #94a3b8; transition: all 0.3s ease; margin: 0;" type="radio" name="tujuan" id="opt-ortu" value="ortu" required>
                                         <span class="radio-dot position-absolute rounded-circle" style="inset: 0; pointer-events: none; background-color: white; width: 0.5rem; height: 0.5rem; transform: scale(0); transition: transform 0.3s ease; top: 50%; left: 50%; translate: -50% -50%;"></span>
@@ -58,7 +58,7 @@
                                     <span class="fw-medium user-select-none text-dark" style="font-size: 0.875rem;">Orang Tua/Wali Mahasiswa</span>
                                 </label>
 
-                                <label for="opt-calon-ortu" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="1.8s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
+                                <label for="opt-calon-ortu" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="0.5s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
                                     <span class="position-relative d-flex align-items-center justify-content-center" style="height: 1.25rem; width: 1.25rem;">
                                         <input class="radio-input" style="appearance: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 1px solid #94a3b8; transition: all 0.3s ease; margin: 0;" type="radio" name="tujuan" id="opt-calon-ortu" value="calon_ortu" required>
                                         <span class="radio-dot position-absolute rounded-circle" style="inset: 0; pointer-events: none; background-color: white; width: 0.5rem; height: 0.5rem; transform: scale(0); transition: transform 0.3s ease; top: 50%; left: 50%; translate: -50% -50%;"></span>
@@ -67,7 +67,7 @@
                                     <span class="fw-medium user-select-none text-dark" style="font-size: 0.875rem;">Calon Orang Tua/Wali Mahasiswa</span>
                                 </label>
 
-                                <label for="opt-lainnya" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="2.0s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
+                                <label for="opt-lainnya" class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp" data-wow-delay="0.6s" style="cursor: pointer; transition: all 0.3s ease; border-color: #e2e8f0;">
                                     <span class="position-relative d-flex align-items-center justify-content-center" style="height: 1.25rem; width: 1.25rem;">
                                         <input class="radio-input" style="appearance: none; width: 1.25rem; height: 1.25rem; border-radius: 50%; border: 1px solid #94a3b8; transition: all 0.3s ease; margin: 0;" type="radio" name="tujuan" id="opt-lainnya" value="lainnya" required>
                                         <span class="radio-dot position-absolute rounded-circle" style="inset: 0; pointer-events: none; background-color: white; width: 0.5rem; height: 0.5rem; transform: scale(0); transition: transform 0.3s ease; top: 50%; left: 50%; translate: -50% -50%;"></span>
@@ -79,7 +79,7 @@
 
                             <div id="error-message" class="alert alert-danger mt-3" role="alert" style="display: none;"></div>
 
-                            <button type="submit" id="submit-btn" class="btn-default w-100 mt-4 wow fadeInUp" data-wow-delay="2.2s">
+                            <button type="submit" id="submit-btn" class="btn-default w-100 mt-4 wow fadeInUp" data-wow-delay="0.7s">
                                 <span id="btn-text">Lanjutkan</span>
                                 <span id="btn-loading" style="display: none;">Loading...</span>
                             </button>

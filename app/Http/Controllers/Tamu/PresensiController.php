@@ -164,13 +164,21 @@ class PresensiController extends Controller
             if ($kunjungan->is_checkout) {
                 return view('contents.tamu.pages.checkout-already', compact('kunjungan'));
             }
+            return view('contents.tamu.pages.checkout-confirm', compact('kunjungan'));
+        } catch (\Exception $e) {
+            return redirect()->route('tamu.home')->with('error', 'Maaf, terjadi kesalahan saat memproses checkout');
+        }
+    }
 
+    public function storeCheckout($kunjunganId)
+    {
+        try {
+            $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
             $kunjungan->update([
                 'is_checkout' => true,
                 'checkout_time' => now()
             ]);
-
-            return view('contents.tamu.pages.checkout-confirm', compact('kunjungan'));
+            return view('contents.tamu.pages.success', compact('kunjungan'));
         } catch (\Exception $e) {
             return redirect()->route('tamu.home')->with('error', 'Maaf, terjadi kesalahan saat memproses checkout');
         }

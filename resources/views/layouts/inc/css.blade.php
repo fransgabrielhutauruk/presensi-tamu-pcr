@@ -5,7 +5,6 @@
     <!--begin::Vendor Stylesheets(used for this page only)-->
     <link href="{{ asset('theme/plugins/custom/datatables/datatables.bundle.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('theme/plugins/custom/scroll-cue/scrollCue.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('theme/plugins/custom/dual-listbox/dual-listbox.css') }}" rel="stylesheet" type="text/css" />
     <!--end::Vendor Stylesheets-->
     <!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
     <link href="{{ asset('theme/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
