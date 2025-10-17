@@ -21,21 +21,27 @@ Route::name('tamu.')->group(function () {
     Route::controller(PresensiController::class)->group(function () {
         Route::get('/', 'index')->name('home');
         Route::get('/tujuan', 'tujuan')->name('tujuan');
-
+        
         Route::prefix('/nonevent')->name('nonevent.')->group(function () {
             Route::get('/tujuan', 'noneventTujuan')->name('tujuan');
             Route::get('/form', 'noneventForm')->name('form');
             Route::post('/store', 'store')->name('store');
         });
 
-        Route::get('/sukses', 'sukses')->name('sukses');
+        Route::get('/sukses/{kunjunganId}', 'sukses')->name('sukses');
         Route::get('/checkout/{kunjunganId}', 'checkout')->name('checkout');
         Route::post('/checkout/{kunjunganId}', 'storeCheckout')->name('storeCheckout');
+
+        Route::get('/feedback/{kunjunganId}', 'feedback')->name('feedback');
 
         Route::prefix('/event')->name('event.')->group(function () {
             Route::get('/event', 'event')->name('form');
         });
     });
+});
+
+Route::get('/testForm', function() {
+        return view('contents.tamu.pages.test-form');
 });
 
 Route::get(

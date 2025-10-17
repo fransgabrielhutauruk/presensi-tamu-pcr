@@ -1,9 +1,5 @@
 @extends('layouts.tamu.main')
 
-@section('header')
-<div></div>
-@endsection
-
 @section('content')
 <div class="container">
     <div class="row min-vh-100 align-items-center">

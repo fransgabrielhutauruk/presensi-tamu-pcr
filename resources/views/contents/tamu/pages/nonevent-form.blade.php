@@ -1,15 +1,10 @@
 @extends('layouts.tamu.main')
 
-@section('header')
-<div></div>
-@endsection
-
 @section('content')
 <div class="container">
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="text-center">
-
                 <div class="mb-4 mt-5">
                     <h1 id="page-title" class="fw-bold wow fadeInOut fs-2" data-wow-delay="0.1s" style="font-size: 1.75rem; letter-spacing: 0.025em;">
                         <span id="title-text">Kunjungan Resmi Instansi</span>
@@ -28,10 +23,9 @@
                     </button>
                 </div>
 
-                <form id="tamu-form" class="text-start" action="{{ route('tamu.nonevent.store') }}" method="POST">
+                <form id="tamu-form" class="text-start" action="{{ route('tamu.nonevent.store') }}" method="POST" data-toggle="validator">
                     @csrf
                     <input type="hidden" name="kategori_tujuan" id="hidden-tujuan" value="">
-
                     <div id="error-messages" class="alert alert-danger" style="display: none;">
                         <ul id="error-list" class="mb-0"></ul>
                     </div>
@@ -53,13 +47,14 @@
                             </h3>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Nama Lengkap <span class="text-danger">*</span></label>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold control-label" for="name">Nama Lengkap <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" name="name" placeholder="Nama lengkap" required>
+                            <div class="help-block with-errors"></div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Jenis Kelamin <span class="text-danger">*</span></label>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold control-label" for="gender">Jenis Kelamin <span class="text-danger">*</span></label>
                             <div class="d-flex gap-4 mt-2">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="gender" id="gender-male" value="Laki-laki" required>
@@ -74,16 +69,19 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="help-block with-errors"></div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">No. Telepon <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" name="phone_number" placeholder="08xxxxxxxxxx" required>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold control-label" for="phone_number">No. Telepon <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="08xxxxxxxxxx" required>
+                            <div class="help-block with-errors"></div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" name="email" placeholder="email@contoh.com" required>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold control-label" for="email">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="email@contoh.com" required>
+                            <div class="help-block with-errors"></div>
                         </div>
 
                         <div id="conditional-fields-pengunjung"></div>
@@ -110,14 +108,15 @@
 
                         <div id="conditional-fields-kunjungan"></div>
 
-                        <div class="mb-3 w-50">
-                            <label class="form-label fw-semibold">Jam Selesai (Estimasi) <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" name="waktu_keluar" required>
+                        <div class="form-group mb-3 w-50">
+                            <label class="form-label fw-semibold control-label" for="waktu_keluar">Jam Selesai (Estimasi) <span class="text-danger">*</span></label>
+                            <input type="time" class="form-control" name="waktu_keluar" id="waktu_keluar" required>
+                            <div class="help-block with-errors"></div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Jenis Kendaraan/Transportasi <span class="text-danger">*</span></label>
-                            <select class="form-select" name="transportasi" required>
+                        <div class="form-group mb-3">
+                            <label class="form-label fw-semibold control-label" for="transportasi">Jenis Kendaraan/Transportasi <span class="text-danger">*</span></label>
+                            <select class="form-select" name="transportasi" id="transportasi" required>
                                 <option value="">Pilih Kendaraan/Transportasi</option>
                                 <option value="Mobil">Mobil</option>
                                 <option value="Motor">Motor</option>
@@ -127,13 +126,16 @@
                                 <option value="Jalan Kaki">Jalan Kaki</option>
                                 <option value="Lainnya">Lainnya</option>
                             </select>
+                            <div class="help-block with-errors"></div>
                         </div>
                     </div>
 
                     <div class="my-4">
-                        <button type="submit" class="btn-default w-100">
-                            <span id="btn-text">Kirim</span>
-                            <span id="btn-loading" style="display: none;">Mengirim...</span>
+                        <button type="submit" id="submitBtn" class="btn-default w-100">
+                            <span id="btn-text"></i>Kirim</span>
+                            <span id="btn-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -144,6 +146,21 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .has-error .form-control {
+                border-color: #dc3545 !important;
+                box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 0 4px rgba(220,53,69,.1) !important;
+            }
+            
+            .help-block.with-errors {
+                color: #dc3545;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            }
+        `;
+        document.head.appendChild(style);
+
         const urlParams = new URLSearchParams(window.location.search);
         const tujuan = urlParams.get('tujuan') || 'instansi';
 
@@ -162,117 +179,15 @@
         generateDynamicSection(tujuan);
 
         const form = document.getElementById('tamu-form');
+        const btnText = document.getElementById('btn-text');
+        const btnLoading = document.getElementById('btn-loading');
+        const submitBtn = document.getElementById('submitBtn');
+
         form.addEventListener('submit', function(e) {
-            e.preventDefault();
-
-            const btnText = document.getElementById('btn-text');
-            const btnLoading = document.getElementById('btn-loading');
-
-            if (!form.checkValidity()) {
-                form.reportValidity();
-                return;
-            }
-
             btnText.style.display = 'none';
             btnLoading.style.display = 'inline';
-
-            const formData = new FormData(form);
-
-            fetch(form.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    }
-                })
-                .then(response => {
-                    if (response.status === 422) {
-                        return response.json().then(data => {
-                            throw {
-                                isValidation: true,
-                                errors: data.errors || data.message
-                            };
-                        });
-                    } else if (!response.ok) {
-                        return response.json().then(data => {
-                            throw {
-                                isValidation: false,
-                                message: data.message || 'Terjadi kesalahan'
-                            };
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.status) {
-                        window.location.href = data.data.redirect_url;
-                    } else {
-                        showError(data.message);
-                        btnText.style.display = 'inline';
-                        btnLoading.style.display = 'none';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-
-                    if (error.isValidation) {
-                        if (typeof error.errors === 'object') {
-                            showValidationErrors(error.errors);
-                        } else {
-                            showError(error.errors);
-                        }
-                    } else {
-                        showError(error.message || 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
-                    }
-
-                    btnText.style.display = 'inline';
-                    btnLoading.style.display = 'none';
-                });
+            submitBtn.disabled = true;
         });
-
-        function showError(message) {
-            const errorDiv = document.getElementById('error-messages');
-            const errorList = document.getElementById('error-list');
-
-            errorList.innerHTML = `<li>${message}</li>`;
-            errorDiv.style.display = 'block';
-
-            errorDiv.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }
-
-        function showValidationErrors(errors) {
-            const errorDiv = document.getElementById('error-messages');
-            const errorList = document.getElementById('error-list');
-
-            let errorHtml = '';
-            Object.values(errors).forEach(errorArray => {
-                if (Array.isArray(errorArray)) {
-                    errorArray.forEach(error => {
-                        errorHtml += `<li>${error}</li>`;
-                    });
-                } else {
-                    errorHtml += `<li>${errorArray}</li>`;
-                }
-            });
-
-            errorList.innerHTML = errorHtml;
-            errorDiv.style.display = 'block';
-
-            errorDiv.scrollIntoView({
-                behavior: 'smooth',
-                block: 'center'
-            });
-        }
-
-        function hideErrors() {
-            const errorDiv = document.getElementById('error-messages');
-            errorDiv.style.display = 'none';
-        }
-
-        form.addEventListener('input', hideErrors);
     });
 
     function generateConditionalFields(tujuan) {
@@ -284,22 +199,23 @@
 
         if (tujuan === 'ortu') {
             pengunjungContainer.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Hubungan dengan Mahasiswa <span class="text-danger">*</span></label>
-                    <select class="form-select" name="hubungan_dengan_mahasiswa" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="hubungan_dengan_mahasiswa">Hubungan dengan Mahasiswa <span class="text-danger">*</span></label>
+                    <select class="form-select" name="hubungan_dengan_mahasiswa" id="hubungan_dengan_mahasiswa" required>
                         <option value="">Pilih Hubungan</option>
                         <option value="Orang Tua">Orang Tua</option>
                         <option value="Wali">Wali</option>
                         <option value="Saudara">Saudara</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
 
             kunjunganContainer.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Pihak yang Dituju <span class="text-danger">*</span></label>
-                    <select class="form-select" name="pihak_dituju_ortu" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="pihak_dituju_ortu">Pihak yang Dituju <span class="text-danger">*</span></label>
+                    <select class="form-select" name="pihak_dituju_ortu" id="pihak_dituju_ortu" required>
                         <option value="">Pilih Pihak yang Dituju</option>
                         <option value="BAAK">BAAK</option>
                         <option value="Program Studi">Program Studi</option>
@@ -308,41 +224,46 @@
                         <option value="Kemahasiswaan">Kemahasiswaan</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Keperluan <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="keperluan" rows="3" placeholder="Jelaskan keperluan kunjungan Anda" required></textarea>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="keperluan">Keperluan <span class="text-danger">*</span></label>
+                    <textarea class="form-control" name="keperluan" id="keperluan" rows="3" placeholder="Jelaskan keperluan kunjungan Anda" required></textarea>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'lainnya') {
             pengunjungContainer.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Instansi/Asal <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="asal" placeholder="Instansi/Asal" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="asal">Instansi/Asal <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="asal" id="asal" placeholder="Instansi/Asal" required>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'instansi') {
             kunjunganContainer.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Pihak yang Dituju <span class="text-danger">*</span></label>
-                    <select class="form-select" name="pihak_dituju" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="pihak_dituju">Pihak yang Dituju <span class="text-danger">*</span></label>
+                    <select class="form-select" name="pihak_dituju" id="pihak_dituju" required>
                         <option value="">Pilih Pihak yang Dituju</option>
                         <option value="Direktur">Direktur</option>
                         <option value="Wakil Direktur">Wakil Direktur</option>
                         <option value="BP3M">BP3M</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Tujuan Spesifik <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="tujuan_spesifik" rows="3" placeholder="Jelaskan tujuan spesifik kunjungan Anda" required></textarea>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="tujuan_spesifik">Tujuan Spesifik <span class="text-danger">*</span></label>
+                    <textarea class="form-control" name="tujuan_spesifik" id="tujuan_spesifik" rows="3" placeholder="Jelaskan tujuan spesifik kunjungan Anda" required></textarea>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'bisnis') {
             kunjunganContainer.innerHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Pihak yang Dituju <span class="text-danger">*</span></label>
-                    <select class="form-select" name="pihak_dituju" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="pihak_dituju_bisnis">Pihak yang Dituju <span class="text-danger">*</span></label>
+                    <select class="form-select" name="pihak_dituju" id="pihak_dituju_bisnis" required>
                         <option value="">Pilih Pihak yang Dituju</option>
                         <option value="Direktur">Direktur</option>
                         <option value="Wakil Direktur">Wakil Direktur</option>
@@ -350,10 +271,12 @@
                         <option value="Sumatera Carrer Center (SCC)">Sumatera Carrer Center (SCC)</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Jenis Kerjasama <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="jenis_kerjasama" rows="3" placeholder="Jelaskan jenis kerjasama yang diinginkan" required></textarea>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="jenis_kerjasama">Jenis Kerjasama <span class="text-danger">*</span></label>
+                    <textarea class="form-control" name="jenis_kerjasama" id="jenis_kerjasama" rows="3" placeholder="Jelaskan jenis kerjasama yang diinginkan" required></textarea>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         }
@@ -398,13 +321,14 @@
 
         if (tujuan === 'instansi') {
             fieldsHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Nama Instansi <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="instansi" placeholder="Nama instansi" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="instansi">Nama Instansi <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="instansi" id="instansi" placeholder="Nama instansi" required>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Jenis Instansi <span class="text-danger">*</span></label>
-                    <select class="form-select" name="jenis_instansi" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="jenis_instansi">Jenis Instansi <span class="text-danger">*</span></label>
+                    <select class="form-select" name="jenis_instansi" id="jenis_instansi" required>
                         <option value="">Pilih Jenis Instansi</option>
                         <option value="Pemerintah Pusat">Pemerintah Pusat</option>
                         <option value="Pemerintah Daerah">Pemerintah Daerah</option>
@@ -414,21 +338,24 @@
                         <option value="Yayasan">Yayasan</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Jabatan/Posisi <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="jabatan" placeholder="Jabatan/Posisi" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="jabatan">Jabatan/Posisi <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="jabatan" id="jabatan" placeholder="Jabatan/Posisi" required>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'bisnis') {
             fieldsHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Nama Perusahaan <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="instansi" placeholder="Nama perusahaan" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="instansi_bisnis">Nama Perusahaan <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="instansi" id="instansi_bisnis" placeholder="Nama perusahaan" required>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Bidang Usaha <span class="text-danger">*</span></label>
-                    <select class="form-select" name="bidang_usaha" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="bidang_usaha">Bidang Usaha <span class="text-danger">*</span></label>
+                    <select class="form-select" name="bidang_usaha" id="bidang_usaha" required>
                         <option value="">Pilih Bidang Usaha</option>
                         <option value="Teknologi Informasi">Teknologi Informasi</option>
                         <option value="Manufaktur">Manufaktur</option>
@@ -441,10 +368,11 @@
                         <option value="Media & Komunikasi">Media & Komunikasi</option>
                         <option value="Lainnya">Lainnya</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Skala Perusahaan <span class="text-danger">*</span></label>
-                    <select class="form-select" name="skala_perusahaan" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="skala_perusahaan">Skala Perusahaan <span class="text-danger">*</span></label>
+                    <select class="form-select" name="skala_perusahaan" id="skala_perusahaan" required>
                         <option value="">Pilih Skala Perusahaan</option>
                         <option value="Startup">Startup</option>
                         <option value="Perusahaan Kecil (< 50 karyawan)">Perusahaan Kecil (< 50 karyawan)</option>
@@ -452,32 +380,37 @@
                         <option value="Perusahaan Besar (> 250 karyawan)">Perusahaan Besar (> 250 karyawan)</option>
                         <option value="Multinational Corporation">Multinational Corporation</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Jabatan/Posisi <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="jabatan" placeholder="Jabatan/Posisi" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="jabatan_bisnis">Jabatan/Posisi <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="jabatan" id="jabatan_bisnis" placeholder="Jabatan/Posisi" required>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'ortu') {
             fieldsHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Nama Mahasiswa <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="nama_mahasiswa" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="nama_mahasiswa">Nama Mahasiswa <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="nama_mahasiswa" id="nama_mahasiswa" required>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">NIM Mahasiswa <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="nim_mahasiswa" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="nim_mahasiswa">NIM Mahasiswa <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="nim_mahasiswa" id="nim_mahasiswa" required>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'calon_ortu') {
             fieldsHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Asal Sekolah <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="asal_sekolah" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="asal_sekolah">Asal Sekolah <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="asal_sekolah" id="asal_sekolah" required>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Program Studi yang Diminati <span class="text-danger">*</span></label>
-                    <select class="form-select" name="prodi_diminati" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="prodi_diminati">Program Studi yang Diminati <span class="text-danger">*</span></label>
+                    <select class="form-select" name="prodi_diminati" id="prodi_diminati" required>
                         <option value="">Pilih Program Studi</option>
                         <option value="Teknik Informatika">Teknik Informatika</option>
                         <option value="Sistem Informasi">Sistem Informasi</option>
@@ -492,17 +425,20 @@
                         <option value="Bisnis Digital">Bisnis Digital</option>
                         <option value="Hubungan Masyarakat dan Komunikasi Digital">Hubungan Masyarakat dan Komunikasi Digital</option>
                     </select>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         } else if (tujuan === 'lainnya') {
             fieldsHTML = `
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Detail Keperluan <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="keperluan_detail" rows="3" required></textarea>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="keperluan_detail">Detail Keperluan <span class="text-danger">*</span></label>
+                    <textarea class="form-control" name="keperluan_detail" id="keperluan_detail" rows="3" required></textarea>
+                    <div class="help-block with-errors"></div>
                 </div>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">Pihak yang Dituju <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="pihak_dituju_lainnya" required>
+                <div class="form-group mb-3">
+                    <label class="form-label fw-semibold control-label" for="pihak_dituju_lainnya">Pihak yang Dituju <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" name="pihak_dituju_lainnya" id="pihak_dituju_lainnya" required>
+                    <div class="help-block with-errors"></div>
                 </div>
             `;
         }
@@ -513,6 +449,7 @@
         }
     }
 
+    // ==================================================== //
     function autoFillForm() {
         const urlParams = new URLSearchParams(window.location.search);
         const tujuan = urlParams.get('tujuan') || 'instansi';

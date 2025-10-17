@@ -33,7 +33,7 @@ class PresensiController extends Controller
         return view('contents.tamu.pages.nonevent-form');
     }
 
-    public function store(StorePresensiRequest $request): JsonResponse
+    public function store(StorePresensiRequest $request)
     {
         $data = [
             'name' => $request->name,
@@ -73,21 +73,9 @@ class PresensiController extends Controller
             }
 
             DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Presensi berhasil disimpan.',
-                'data' => [
-                    'kode_kunjungan' => $kunjungan->kunjungan_id,
-                    'redirect_url' => route('tamu.sukses')
-                ]
-            ]);
+            return redirect()->route('tamu.sukses', $kunjungan->kunjungan_id)->with('success', 'Presensi berhasil disimpan.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'status' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan data: ' . $e->getMessage()
-            ], 500);
+            return redirect()->back()->with('error', 'Terjadi kesalahan. Silahkan coba lagi');
         }
     }
 
@@ -146,9 +134,14 @@ class PresensiController extends Controller
         return $detailData;
     }
 
-    public function sukses()
+    public function sukses($kunjunganId)
     {
-        return view('contents.tamu.pages.success');
+        try {
+            $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
+            return view('contents.tamu.pages.success', compact('kunjungan'));
+        } catch (\Exception $e) {
+            return redirect()->route('tamu.home')->with('error', 'Kunjungan tidak ditemukan.');
+        }
     }
 
     public function event()
@@ -162,7 +155,7 @@ class PresensiController extends Controller
             $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
 
             if ($kunjungan->is_checkout) {
-                return view('contents.tamu.pages.checkout-already', compact('kunjungan'));
+                return view('contents.tamu.pages.checkout-success', compact('kunjungan'));
             }
             return view('contents.tamu.pages.checkout-confirm', compact('kunjungan'));
         } catch (\Exception $e) {
@@ -178,9 +171,17 @@ class PresensiController extends Controller
                 'is_checkout' => true,
                 'checkout_time' => now()
             ]);
-            return view('contents.tamu.pages.success', compact('kunjungan'));
+            return redirect()->route('tamu.feedback', $kunjunganId)
+                ->with('success', 'Waktu checkout Anda berhasil terkirim!');
         } catch (\Exception $e) {
-            return redirect()->route('tamu.home')->with('error', 'Maaf, terjadi kesalahan saat memproses checkout');
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan. Silahkan coba lagi');
         }
+    }
+
+    public function feedback($kunjunganId)
+    {
+        $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
+        return view('contents.tamu.pages.feedback');
     }
 }

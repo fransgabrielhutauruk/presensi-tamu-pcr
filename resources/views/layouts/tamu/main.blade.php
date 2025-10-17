@@ -7,12 +7,6 @@
 @section('base-content')
 {{-- @include('contents.frontend.partials.common.preloader') --}}
 
-@hasSection('header')
-@yield('header')
-@else
-@include('contents.frontend.partials.common.header')
-@endif
-
 <main class="flex-grow-1">
     @yield('content')
 </main>
