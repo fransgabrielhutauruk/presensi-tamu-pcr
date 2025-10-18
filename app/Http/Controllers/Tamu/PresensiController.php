@@ -7,9 +7,12 @@ use App\Http\Requests\StorePresensiRequest;
 use App\Models\Tamu;
 use App\Models\Kunjungan;
 use App\Models\KunjunganDetail;
+use App\Models\Feedback;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class PresensiController extends Controller
 {
@@ -182,6 +185,35 @@ class PresensiController extends Controller
     public function feedback($kunjunganId)
     {
         $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
-        return view('contents.tamu.pages.feedback');
+        return view(
+            'contents.tamu.pages.feedback',
+            [
+                'kunjunganId' => $kunjunganId
+            ]
+        );
+    }
+
+    public function storeFeedback(Request $request, $kunjunganId)
+    {
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required|integer|min:1|max:5',
+            'komentar' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data');
+        }
+
+        try {
+            Feedback::create([
+                'kunjungan_id' => $kunjunganId,
+                'rating' => $request->rating,
+                'komentar' => $request->komentar,
+            ]);
+            return redirect()->route('tamu.home')->with('success', 'Terima kasih atas penilaian Anda!');
+        } catch (\Exception $e) {
+            Log::error('Failed ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
+        }
     }
 }

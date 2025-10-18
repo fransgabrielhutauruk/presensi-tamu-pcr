@@ -9,7 +9,7 @@
                     <img
                         src="{{ asset('theme/images/akreditasi-unggul.webp') }}"
                         alt="Logo Akreditasi Unggul"
-                        class="mx-auto d-block w-50 px-4 mb-3 img-fluid" />
+                        class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
                     <h1 class="mt-3 lh-1 fs-2">Terima Kasih!</h1>
                     <p class="mt-1 lh-sm text-body">Presensi kunjungan Anda telah berhasil disimpan.</p>
 

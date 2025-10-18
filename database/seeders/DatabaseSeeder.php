@@ -15,22 +15,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            EventKategoriSeeder::class,
-            PostLabelSeeder::class,
-            PostKategoriSeeder::class,
-            TestiKategoriSeeder::class,
-            // KontenJurusanSeeder::class,
-            // KontenProdiSeeder::class,
-            // KontenTipeSeeder::class,
-            // KontenPageConfigSeeder::class,
-            // KontenMainSeeder::class,
-            DmProdiSeeder::class,
-            DmJurusanSeeder::class,
-            DmInfografisSeeder::class,
-            PartnerSeeder::class,
-            // KontenConfigSeeder::class
-            KontenSeeder::class,
-            PostSeeder::class,
+            RoleSeeder::class,
         ]);
     }
 }

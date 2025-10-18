@@ -8,7 +8,7 @@
                 <img
                     src="{{ asset('theme/images/akreditasi-unggul.webp') }}"
                     alt="Logo Akreditasi Unggul"
-                    class="img-fluid mx-auto" style="width:7rem" />
+                    class="img-fluid mx-auto" style="width:30%"/>
 
                 <div class="mt-2">
                     <h1>Konfirmasi Checkout</h1>

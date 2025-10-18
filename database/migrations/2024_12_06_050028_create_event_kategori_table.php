@@ -10,8 +10,7 @@ class CreateEventKategoriTable extends Migration
     {
         Schema::create('event_kategori', function (Blueprint $table) {
             $table->increments('eventkategori_id');
-            $table->string('kode_kategori', 100);
-            $table->string('nama_kategori', 100);
+            $table->string('nama_kategori');
             $table->text('deskripsi_kategori')->nullable();
             $table->string('created_by', 10)->nullable();
             $table->string('updated_by', 10)->nullable();

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->increments('feedback_id');
             $table->unsignedInteger('kunjungan_id');
             $table->integer('rating');
-            $table->text('komentar')->nulalble();
+            $table->text('komentar')->nullable();
             $table->string('created_by', 10)->nullable();
             $table->string('updated_by', 10)->nullable();
             $table->string('deleted_by', 10)->nullable();

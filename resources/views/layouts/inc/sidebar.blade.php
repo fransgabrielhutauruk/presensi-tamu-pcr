@@ -7,6 +7,7 @@
 
         @if(hasAnyActiveRole(['Mahasiswa', 'Staf', 'Admin', 'Eksekutif']))
         <x-theme.menu link="{{ route('app.dashboard.index') }}" text="Dashboard" icon="ki-outline ki-graph-up" :active="$pageData->activeMenu == 'dashboard'" />
+        <x-theme.menu link="{{ route('app.event.index') }}" text="Event" icon="ki-outline ki-calendar-edit" :active="$pageData->activeMenu == 'event'" />
         @endif
 
         @if(hasAnyActiveRole(['Admin', 'Eksekutif']))

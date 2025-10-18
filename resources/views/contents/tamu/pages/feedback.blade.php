@@ -21,10 +21,8 @@
                         Bagaimana penilaian Anda terhadap pelayanan kami?
                     </h3>
 
-                    <form id="feedbackForm" method="POST" action="#">
+                    <form id="feedbackForm" method="POST" action="{{ route('tamu.storeFeedback', $kunjunganId) }}">
                         @csrf
-                        <input type="hidden" name="kode_kunjungan" value="{{ $kunjungan->kode_kunjungan ?? '' }}">
-
                         <div class="text-center my-2">
                             <div class="star-rating">
                                 @for($i = 1; $i <= 5; $i++)
@@ -40,13 +38,13 @@
                         </div>
 
                         <div class="mt-4">
-                            <label for="feedback" class="feedback-label">
+                            <label for="komentar" class="komentar-label">
                                 Saran dan Masukan (Opsional)
                             </label>
                             <textarea
-                                name="feedback"
-                                id="feedback"
-                                class="feedback-textarea"
+                                name="komentar"
+                                id="komentar"
+                                class="komentar-textarea"
                                 rows="4"
                                 placeholder="Bagikan pengalaman atau saran Anda untuk membantu kami meningkatkan pelayanan..."></textarea>
                         </div>
@@ -57,6 +55,13 @@
                                 <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
                             </span>
                         </button>
+
+                        @if (session('error'))
+                        <div class="alert alert-danger d-flex align-items-center mb-4 mt-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            {{ session('error') }}
+                        </div>
+                        @endif
                     </form>
                 </div>
             </div>
@@ -148,7 +153,7 @@
         margin: 0;
     }
 
-    .feedback-label {
+    .komentar-label {
         display: block;
         font-weight: bold;
         font-size: 0.875rem;
@@ -156,7 +161,7 @@
         color: var(--dark-color);
     }
 
-    .feedback-textarea {
+    .komentar-textarea {
         width: 100%;
         padding: 0.75rem;
         border: 1px solid #ced4da;
@@ -167,7 +172,7 @@
         transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     }
 
-    .feedback-textarea:focus {
+    .komentar-textarea:focus {
         border-color: var(--primary-color);
         box-shadow: 0 0 0 0.2rem rgba(var(--primary-rgb), 0.25);
         outline: 0;
@@ -259,7 +264,7 @@
             submitLoading.classList.remove('d-none');
             submitBtn.disabled = true;
 
-            // this.submit();
+            this.submit();
         });
 
         updateSubmitButton();

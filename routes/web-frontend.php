@@ -33,6 +33,7 @@ Route::name('tamu.')->group(function () {
         Route::post('/checkout/{kunjunganId}', 'storeCheckout')->name('storeCheckout');
 
         Route::get('/feedback/{kunjunganId}', 'feedback')->name('feedback');
+        Route::post('/feedback/{kunjunganId}', 'storeFeedback')->name('storeFeedback');
 
         Route::prefix('/event')->name('event.')->group(function () {
             Route::get('/event', 'event')->name('form');

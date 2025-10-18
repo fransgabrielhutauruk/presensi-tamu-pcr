@@ -29,10 +29,18 @@
                         class="img-fluid rounded shadow-sm mb-4" />
                     <a href="{{ route('tamu.tujuan') }}" class="btn-default w-100 mt-2">Isi Buku Tamu</a>
                 </div>
+                
                 @if (session('error'))
                 <div class="alert alert-danger d-flex align-items-center mb-4 mt-3">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     {{ session('error') }}
+                </div>
+                @endif
+
+                @if (session('success'))
+                <div class="alert alert-success d-flex align-items-center mb-4 mt-3">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    {{ session('success') }}
                 </div>
                 @endif
             </div>
