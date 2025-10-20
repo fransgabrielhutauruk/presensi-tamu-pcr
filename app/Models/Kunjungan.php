@@ -14,6 +14,7 @@ class Kunjungan extends Model
 
     protected $fillable = [
         'tamu_id',
+        'event_id',
         'kategori_tujuan',
         'waktu_masuk',
         'waktu_keluar',
@@ -36,6 +37,11 @@ class Kunjungan extends Model
     public function tamu()
     {
         return $this->belongsTo(Tamu::class, 'tamu_id', 'tamu_id');
+    }
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id', 'event_id');
     }
 
     public function details()

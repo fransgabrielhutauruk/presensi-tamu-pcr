@@ -10,10 +10,27 @@
             </div>
 
             <div class="position-relative text-center" style="z-index: 10;">
+                @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center mb-3 ">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    {{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+
+                @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-3">
+                    <i class="fa-solid fa-circle-check me-2"></i>
+                    {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                @endif
+
                 <img
                     src="{{ asset('theme/images/akreditasi-unggul.webp') }}"
                     alt="Logo Akreditasi Unggul"
                     class="mx-auto d-block w-25 mb-3 img-fluid" />
+
                 <h1 class="wow fadeInOut" data-wow-delay="0.5s">
                     SELAMAT DATANG
                 </h1>
@@ -29,20 +46,6 @@
                         class="img-fluid rounded shadow-sm mb-4" />
                     <a href="{{ route('tamu.tujuan') }}" class="btn-default w-100 mt-2">Isi Buku Tamu</a>
                 </div>
-                
-                @if (session('error'))
-                <div class="alert alert-danger d-flex align-items-center mb-4 mt-3">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    {{ session('error') }}
-                </div>
-                @endif
-
-                @if (session('success'))
-                <div class="alert alert-success d-flex align-items-center mb-4 mt-3">
-                    <i class="fa-solid fa-circle-check me-2"></i>
-                    {{ session('success') }}
-                </div>
-                @endif
             </div>
         </div>
     </div>

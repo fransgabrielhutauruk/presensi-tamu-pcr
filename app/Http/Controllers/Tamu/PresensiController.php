@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Tamu;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\StorePresensiRequest;
 use App\Models\Tamu;
-use App\Models\Kunjungan;
-use App\Models\KunjunganDetail;
+use App\Models\Event;
 use App\Models\Feedback;
+use App\Models\Kunjungan;
 use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
+use App\Models\KunjunganDetail;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StorePresensiRequest;
 
 class PresensiController extends Controller
 {
@@ -214,6 +214,121 @@ class PresensiController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed ' . $e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
+        }
+    }
+
+    public function eventList(Request $request)
+    {
+        $currentDate = now()->format('Y-m-d');
+
+        $events = Event::with('eventKategori')
+            ->where('tanggal_event', '=', $currentDate)
+            ->orderBy('tanggal_event', 'asc')
+            ->orderBy('waktu_mulai_event', 'asc')
+            ->get();
+
+        return view('contents.tamu.pages.event-list', compact('events'));
+    }
+
+    public function eventForm(Request $request)
+    {
+        $eventId = $request->get('event_id');
+
+        if (!$eventId) {
+            return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
+        }
+
+        try {
+            $event = Event::with('eventKategori')->findOrFail(decid($eventId));
+
+            $eventDate = $event->tanggal_event;
+            $currentDate = now()->format('Y-m-d');
+
+            if ($eventDate && $eventDate < $currentDate) {
+                return redirect()->route('tamu.home')->with('error', 'Event ini sudah berakhir.');
+            }
+
+            return view('contents.tamu.pages.event-form', compact('event', 'eventId'));
+        } catch (\Exception $e) {
+            return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
+        }
+    }
+
+    public function storeEvent(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'event_id' => 'required|string',
+            'name' => 'required|string',
+            'gender' => 'required|in:Laki-laki,Perempuan',
+            'email' => 'required|email',
+            'phone_number' => 'required|string|max:20',
+            'instansi' => 'nullable|string',
+            'jabatan' => 'nullable|string',
+            'transportasi' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Mohon periksa kembali data yang Anda masukkan.');
+        }
+
+        try {
+            $event = Event::findOrFail(decid($request->event_id));
+
+            DB::beginTransaction();
+
+            $tamuData = [
+                'name' => $request->name,
+                'gender' => $request->gender,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'created_by' => 'system'
+            ];
+
+            $tamu = Tamu::create($tamuData);
+
+            $kunjunganData = [
+                'tamu_id' => $tamu->tamu_id,
+                'kategori_tujuan' => 'event',
+                'event_id' => $event->event_id,
+                'waktu_keluar' => $event->waktu_selesai_event,
+                'transportasi' => $request->transportasi,
+                'status_validasi' => false,
+                'is_checkout' => false,
+            ];
+
+            $kunjungan = Kunjungan::create($kunjunganData);
+
+            $detailData = [
+                'nama_event' => $event->nama_event,
+                'kategori_event' => $event->eventKategori->nama_kategori ?? '',
+                'instansi' => $request->instansi,
+                'jabatan' => $request->jabatan,
+            ];
+
+            $urutan = 1;
+            foreach ($detailData as $key => $value) {
+                if (!empty($value)) {
+                    KunjunganDetail::create([
+                        'kunjungan_id' => $kunjungan->kunjungan_id,
+                        'kunci' => $key,
+                        'nilai' => $value,
+                        'urutan' => $urutan++,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('tamu.sukses', $kunjungan->kunjungan_id)
+                ->with('success', 'Presensi event berhasil disimpan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Event presensi failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
     }
 }

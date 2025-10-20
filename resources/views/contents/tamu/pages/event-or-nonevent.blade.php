@@ -20,7 +20,7 @@
 
                 <div class="row g-4">
                     <div class="col-12">
-                        <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp" data-wow-delay="0.5s">
+                        <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp">
                             <div class="card-body d-flex flex-column justify-content-center text-center p-4">
                                 <div class="mb-2">
                                     <h5><i class="fas fa-user fa-2x mb-1"></i></h5>
@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="col-12 mb-4">
-                        <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp" data-wow-delay="0.5s" >
+                        <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp">
                             <div class="card-body d-flex flex-column justify-content-center text-center p-4">
                                 <div class="mb-2">
                                     <h5><i class="fas fa-calendar-alt fa-2x mb-1"></i></h5>
@@ -44,7 +44,7 @@
                                 <p class="card-text text-muted mb-2 flex-grow-1">
                                     Kunjungan untuk menghadiri kegiatan / sudah ada janji kunjungan
                                 </p>
-                                <a href="{{ route('tamu.event.form') }}" class="btn-default w-100 mt-1">Pilih Presensi Event</a>
+                                <a href="{{ route('tamu.event.list') }}" class="btn-default w-100 mt-1">Pilih Presensi Event</a>
                             </div>
                         </div>
                     </div>

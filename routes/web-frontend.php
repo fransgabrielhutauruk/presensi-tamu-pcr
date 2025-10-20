@@ -36,14 +36,11 @@ Route::name('tamu.')->group(function () {
         Route::post('/feedback/{kunjunganId}', 'storeFeedback')->name('storeFeedback');
 
         Route::prefix('/event')->name('event.')->group(function () {
+            Route::get('/pilih', 'eventList')->name('list');
             Route::get('/form', 'eventForm')->name('form');
             Route::post('/store', 'storeEvent')->name('store');
         });
     });
-});
-
-Route::get('/testForm', function() {
-        return view('contents.tamu.pages.test-form');
 });
 
 Route::get(

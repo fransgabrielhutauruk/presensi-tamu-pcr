@@ -50,7 +50,7 @@
 
                         <div class="form-group mb-3">
                             <label class="form-label fw-semibold control-label" for="name">Nama Lengkap <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="name" placeholder="Nama lengkap" required>
+                            <input type="text" class="form-control" name="name" placeholder="Nama lengkap" value="{{ old('name') }}" required>
                             <div class="help-block with-errors"></div>
                         </div>
 
@@ -58,13 +58,13 @@
                             <label class="form-label fw-semibold control-label" for="gender">Jenis Kelamin <span class="text-danger">*</span></label>
                             <div class="d-flex gap-4 mt-2">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="gender-male" value="Laki-laki" required>
+                                    <input class="form-check-input" type="radio" name="gender" id="gender-male" value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'checked' : '' }} required>
                                     <label class="form-check-label" for="gender-male">
                                         Laki-laki
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="gender" id="gender-female" value="Perempuan" required>
+                                    <input class="form-check-input" type="radio" name="gender" id="gender-female" value="Perempuan" {{ old('gender') == 'Perempuan' ? 'checked' : '' }} required>
                                     <label class="form-check-label" for="gender-female">
                                         Perempuan
                                     </label>
@@ -75,13 +75,13 @@
 
                         <div class="form-group mb-3">
                             <label class="form-label fw-semibold control-label" for="phone_number">No. Telepon <span class="text-danger">*</span></label>
-                            <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="08xxxxxxxxxx" required>
+                            <input type="tel" class="form-control" name="phone_number" id="phone_number" placeholder="08xxxxxxxxxx" value="{{ old('phone_number') }}" required>
                             <div class="help-block with-errors"></div>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="form-label fw-semibold control-label" for="email">Email <span class="text-danger">*</span></label>
-                            <input type="email" class="form-control" name="email" id="email" placeholder="email@contoh.com" required>
+                            <input type="email" class="form-control" name="email" id="email" placeholder="email@contoh.com" value="{{ old('email') }}" required>
                             <div class="help-block with-errors"></div>
                         </div>
 
@@ -111,7 +111,7 @@
 
                         <div class="form-group mb-3 w-50">
                             <label class="form-label fw-semibold control-label" for="waktu_keluar">Jam Selesai (Estimasi) <span class="text-danger">*</span></label>
-                            <input type="time" class="form-control" name="waktu_keluar" id="waktu_keluar" required>
+                            <input type="time" class="form-control" name="waktu_keluar" id="waktu_keluar" value="{{ old('waktu_keluar') }}" required>
                             <div class="help-block with-errors"></div>
                         </div>
 
@@ -119,13 +119,13 @@
                             <label class="form-label fw-semibold control-label" for="transportasi">Jenis Kendaraan/Transportasi <span class="text-danger">*</span></label>
                             <select class="form-select" name="transportasi" id="transportasi" required>
                                 <option value="">Pilih Kendaraan/Transportasi</option>
-                                <option value="Mobil">Mobil</option>
-                                <option value="Motor">Motor</option>
-                                <option value="Bus">Bus</option>
-                                <option value="Travel">Travel</option>
-                                <option value="Online Ride">Online Ride</option>
-                                <option value="Jalan Kaki">Jalan Kaki</option>
-                                <option value="Lainnya">Lainnya</option>
+                                <option value="Mobil" {{ old('transportasi') == 'Mobil' ? 'selected' : '' }}>Mobil</option>
+                                <option value="Motor" {{ old('transportasi') == 'Motor' ? 'selected' : '' }}>Motor</option>
+                                <option value="Bus" {{ old('transportasi') == 'Bus' ? 'selected' : '' }}>Bus</option>
+                                <option value="Travel" {{ old('transportasi') == 'Travel' ? 'selected' : '' }}>Travel</option>
+                                <option value="Online Ride" {{ old('transportasi') == 'Online Ride' ? 'selected' : '' }}>Online Ride</option>
+                                <option value="Jalan Kaki" {{ old('transportasi') == 'Jalan Kaki' ? 'selected' : '' }}>Jalan Kaki</option>
+                                <option value="Lainnya" {{ old('transportasi') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                             </select>
                             <div class="help-block with-errors"></div>
                         </div>
@@ -204,10 +204,10 @@
                     <label class="form-label fw-semibold control-label" for="hubungan_dengan_mahasiswa">Hubungan dengan Mahasiswa <span class="text-danger">*</span></label>
                     <select class="form-select" name="hubungan_dengan_mahasiswa" id="hubungan_dengan_mahasiswa" required>
                         <option value="">Pilih Hubungan</option>
-                        <option value="Orang Tua">Orang Tua</option>
-                        <option value="Wali">Wali</option>
-                        <option value="Saudara">Saudara</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Orang Tua" {{ old('hubungan_dengan_mahasiswa') == 'Orang Tua' ? 'selected' : '' }}>Orang Tua</option>
+                        <option value="Wali" {{ old('hubungan_dengan_mahasiswa') == 'Wali' ? 'selected' : '' }}>Wali</option>
+                        <option value="Saudara" {{ old('hubungan_dengan_mahasiswa') == 'Saudara' ? 'selected' : '' }}>Saudara</option>
+                        <option value="Lainnya" {{ old('hubungan_dengan_mahasiswa') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -218,18 +218,18 @@
                     <label class="form-label fw-semibold control-label" for="pihak_dituju_ortu">Pihak yang Dituju <span class="text-danger">*</span></label>
                     <select class="form-select" name="pihak_dituju_ortu" id="pihak_dituju_ortu" required>
                         <option value="">Pilih Pihak yang Dituju</option>
-                        <option value="BAAK">BAAK</option>
-                        <option value="Program Studi">Program Studi</option>
-                        <option value="Dosen Wali">Dosen Wali</option>
-                        <option value="Bagian Keuangan">Bagian Keuangan</option>
-                        <option value="Kemahasiswaan">Kemahasiswaan</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="BAAK" {{ old('pihak_dituju_ortu') == 'BAAK' ? 'selected' : '' }}>BAAK</option>
+                        <option value="Program Studi" {{ old('pihak_dituju_ortu') == 'Program Studi' ? 'selected' : '' }}>Program Studi</option>
+                        <option value="Dosen Wali" {{ old('pihak_dituju_ortu') == 'Dosen Wali' ? 'selected' : '' }}>Dosen Wali</option>
+                        <option value="Bagian Keuangan" {{ old('pihak_dituju_ortu') == 'Bagian Keuangan' ? 'selected' : '' }}>Bagian Keuangan</option>
+                        <option value="Kemahasiswaan" {{ old('pihak_dituju_ortu') == 'Kemahasiswaan' ? 'selected' : '' }}>Kemahasiswaan</option>
+                        <option value="Lainnya" {{ old('pihak_dituju_ortu') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="keperluan">Keperluan <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="keperluan" id="keperluan" rows="3" placeholder="Jelaskan keperluan kunjungan Anda" required></textarea>
+                    <textarea class="form-control" name="keperluan" id="keperluan" rows="3" placeholder="Jelaskan keperluan kunjungan Anda" required>{{ old('keperluan') }}</textarea>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -237,7 +237,7 @@
             pengunjungContainer.innerHTML = `
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="asal">Instansi/Asal <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="asal" id="asal" placeholder="Instansi/Asal" required>
+                    <input type="text" class="form-control" name="asal" id="asal" placeholder="Instansi/Asal" value="{{ old('asal') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -247,16 +247,16 @@
                     <label class="form-label fw-semibold control-label" for="pihak_dituju">Pihak yang Dituju <span class="text-danger">*</span></label>
                     <select class="form-select" name="pihak_dituju" id="pihak_dituju" required>
                         <option value="">Pilih Pihak yang Dituju</option>
-                        <option value="Direktur">Direktur</option>
-                        <option value="Wakil Direktur">Wakil Direktur</option>
-                        <option value="BP3M">BP3M</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Direktur" {{ old('pihak_dituju') == 'Direktur' ? 'selected' : '' }}>Direktur</option>
+                        <option value="Wakil Direktur" {{ old('pihak_dituju') == 'Wakil Direktur' ? 'selected' : '' }}>Wakil Direktur</option>
+                        <option value="BP3M" {{ old('pihak_dituju') == 'BP3M' ? 'selected' : '' }}>BP3M</option>
+                        <option value="Lainnya" {{ old('pihak_dituju') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="tujuan_spesifik">Tujuan Spesifik <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="tujuan_spesifik" id="tujuan_spesifik" rows="3" placeholder="Jelaskan tujuan spesifik kunjungan Anda" required></textarea>
+                    <textarea class="form-control" name="tujuan_spesifik" id="tujuan_spesifik" rows="3" placeholder="Jelaskan tujuan spesifik kunjungan Anda" required>{{ old('tujuan_spesifik') }}</textarea>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -266,17 +266,17 @@
                     <label class="form-label fw-semibold control-label" for="pihak_dituju_bisnis">Pihak yang Dituju <span class="text-danger">*</span></label>
                     <select class="form-select" name="pihak_dituju" id="pihak_dituju_bisnis" required>
                         <option value="">Pilih Pihak yang Dituju</option>
-                        <option value="Direktur">Direktur</option>
-                        <option value="Wakil Direktur">Wakil Direktur</option>
-                        <option value="BP3M">BP3M</option>
-                        <option value="Sumatera Carrer Center (SCC)">Sumatera Carrer Center (SCC)</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Direktur" {{ old('pihak_dituju') == 'Direktur' ? 'selected' : '' }}>Direktur</option>
+                        <option value="Wakil Direktur" {{ old('pihak_dituju') == 'Wakil Direktur' ? 'selected' : '' }}>Wakil Direktur</option>
+                        <option value="BP3M" {{ old('pihak_dituju') == 'BP3M' ? 'selected' : '' }}>BP3M</option>
+                        <option value="Sumatera Carrer Center (SCC)" {{ old('pihak_dituju') == 'Sumatera Carrer Center (SCC)' ? 'selected' : '' }}>Sumatera Carrer Center (SCC)</option>
+                        <option value="Lainnya" {{ old('pihak_dituju') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="jenis_kerjasama">Jenis Kerjasama <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="jenis_kerjasama" id="jenis_kerjasama" rows="3" placeholder="Jelaskan jenis kerjasama yang diinginkan" required></textarea>
+                    <textarea class="form-control" name="jenis_kerjasama" id="jenis_kerjasama" rows="3" placeholder="Jelaskan jenis kerjasama yang diinginkan" required>{{ old('jenis_kerjasama') }}</textarea>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -324,26 +324,26 @@
             fieldsHTML = `
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="instansi">Nama Instansi <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="instansi" id="instansi" placeholder="Nama instansi" required>
+                    <input type="text" class="form-control" name="instansi" id="instansi" placeholder="Nama instansi" value="{{ old('instansi') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="jenis_instansi">Jenis Instansi <span class="text-danger">*</span></label>
                     <select class="form-select" name="jenis_instansi" id="jenis_instansi" required>
                         <option value="">Pilih Jenis Instansi</option>
-                        <option value="Pemerintah Pusat">Pemerintah Pusat</option>
-                        <option value="Pemerintah Daerah">Pemerintah Daerah</option>
-                        <option value="BUMN">BUMN</option>
-                        <option value="Swasta">Swasta</option>
-                        <option value="Perguruan Tinggi">Perguruan Tinggi</option>
-                        <option value="Yayasan">Yayasan</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Pemerintah Pusat" {{ old('jenis_instansi') == 'Pemerintah Pusat' ? 'selected' : '' }}>Pemerintah Pusat</option>
+                        <option value="Pemerintah Daerah" {{ old('jenis_instansi') == 'Pemerintah Daerah' ? 'selected' : '' }}>Pemerintah Daerah</option>
+                        <option value="BUMN" {{ old('jenis_instansi') == 'BUMN' ? 'selected' : '' }}>BUMN</option>
+                        <option value="Swasta" {{ old('jenis_instansi') == 'Swasta' ? 'selected' : '' }}>Swasta</option>
+                        <option value="Perguruan Tinggi" {{ old('jenis_instansi') == 'Perguruan Tinggi' ? 'selected' : '' }}>Perguruan Tinggi</option>
+                        <option value="Yayasan" {{ old('jenis_instansi') == 'Yayasan' ? 'selected' : '' }}>Yayasan</option>
+                        <option value="Lainnya" {{ old('jenis_instansi') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="jabatan">Jabatan/Posisi <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="jabatan" id="jabatan" placeholder="Jabatan/Posisi" required>
+                    <input type="text" class="form-control" name="jabatan" id="jabatan" placeholder="Jabatan/Posisi" value="{{ old('jabatan') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -351,23 +351,23 @@
             fieldsHTML = `
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="instansi_bisnis">Nama Perusahaan <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="instansi" id="instansi_bisnis" placeholder="Nama perusahaan" required>
+                    <input type="text" class="form-control" name="instansi" id="instansi_bisnis" placeholder="Nama perusahaan" value="{{ old('instansi') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="bidang_usaha">Bidang Usaha <span class="text-danger">*</span></label>
                     <select class="form-select" name="bidang_usaha" id="bidang_usaha" required>
                         <option value="">Pilih Bidang Usaha</option>
-                        <option value="Teknologi Informasi">Teknologi Informasi</option>
-                        <option value="Manufaktur">Manufaktur</option>
-                        <option value="Jasa Konsultasi">Jasa Konsultasi</option>
-                        <option value="Perdagangan">Perdagangan</option>
-                        <option value="Konstruksi">Konstruksi</option>
-                        <option value="Pendidikan">Pendidikan</option>
-                        <option value="Kesehatan">Kesehatan</option>
-                        <option value="Keuangan/Perbankan">Keuangan/Perbankan</option>
-                        <option value="Media & Komunikasi">Media & Komunikasi</option>
-                        <option value="Lainnya">Lainnya</option>
+                        <option value="Teknologi Informasi" {{ old('bidang_usaha') == 'Teknologi Informasi' ? 'selected' : '' }}>Teknologi Informasi</option>
+                        <option value="Manufaktur" {{ old('bidang_usaha') == 'Manufaktur' ? 'selected' : '' }}>Manufaktur</option>
+                        <option value="Jasa Konsultasi" {{ old('bidang_usaha') == 'Jasa Konsultasi' ? 'selected' : '' }}>Jasa Konsultasi</option>
+                        <option value="Perdagangan" {{ old('bidang_usaha') == 'Perdagangan' ? 'selected' : '' }}>Perdagangan</option>
+                        <option value="Konstruksi" {{ old('bidang_usaha') == 'Konstruksi' ? 'selected' : '' }}>Konstruksi</option>
+                        <option value="Pendidikan" {{ old('bidang_usaha') == 'Pendidikan' ? 'selected' : '' }}>Pendidikan</option>
+                        <option value="Kesehatan" {{ old('bidang_usaha') == 'Kesehatan' ? 'selected' : '' }}>Kesehatan</option>
+                        <option value="Keuangan/Perbankan" {{ old('bidang_usaha') == 'Keuangan/Perbankan' ? 'selected' : '' }}>Keuangan/Perbankan</option>
+                        <option value="Media & Komunikasi" {{ old('bidang_usaha') == 'Media & Komunikasi' ? 'selected' : '' }}>Media & Komunikasi</option>
+                        <option value="Lainnya" {{ old('bidang_usaha') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -375,17 +375,17 @@
                     <label class="form-label fw-semibold control-label" for="skala_perusahaan">Skala Perusahaan <span class="text-danger">*</span></label>
                     <select class="form-select" name="skala_perusahaan" id="skala_perusahaan" required>
                         <option value="">Pilih Skala Perusahaan</option>
-                        <option value="Startup">Startup</option>
-                        <option value="Perusahaan Kecil (< 50 karyawan)">Perusahaan Kecil (< 50 karyawan)</option>
-                        <option value="Perusahaan Menengah (50-250 karyawan)">Perusahaan Menengah (50-250 karyawan)</option>
-                        <option value="Perusahaan Besar (> 250 karyawan)">Perusahaan Besar (> 250 karyawan)</option>
-                        <option value="Multinational Corporation">Multinational Corporation</option>
+                        <option value="Startup" {{ old('skala_perusahaan') == 'Startup' ? 'selected' : '' }}>Startup</option>
+                        <option value="Perusahaan Kecil (< 50 karyawan)" {{ old('skala_perusahaan') == 'Perusahaan Kecil (< 50 karyawan)' ? 'selected' : '' }}>Perusahaan Kecil (< 50 karyawan)</option>
+                        <option value="Perusahaan Menengah (50-250 karyawan)" {{ old('skala_perusahaan') == 'Perusahaan Menengah (50-250 karyawan)' ? 'selected' : '' }}>Perusahaan Menengah (50-250 karyawan)</option>
+                        <option value="Perusahaan Besar (> 250 karyawan)" {{ old('skala_perusahaan') == 'Perusahaan Besar (> 250 karyawan)' ? 'selected' : '' }}>Perusahaan Besar (> 250 karyawan)</option>
+                        <option value="Multinational Corporation" {{ old('skala_perusahaan') == 'Multinational Corporation' ? 'selected' : '' }}>Multinational Corporation</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="jabatan_bisnis">Jabatan/Posisi <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="jabatan" id="jabatan_bisnis" placeholder="Jabatan/Posisi" required>
+                    <input type="text" class="form-control" name="jabatan" id="jabatan_bisnis" placeholder="Jabatan/Posisi" value="{{ old('jabatan') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -393,12 +393,12 @@
             fieldsHTML = `
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="nama_mahasiswa">Nama Mahasiswa <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="nama_mahasiswa" id="nama_mahasiswa" required>
+                    <input type="text" class="form-control" name="nama_mahasiswa" id="nama_mahasiswa" value="{{ old('nama_mahasiswa') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="nim_mahasiswa">NIM Mahasiswa <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="nim_mahasiswa" id="nim_mahasiswa" required>
+                    <input type="text" class="form-control" name="nim_mahasiswa" id="nim_mahasiswa" value="{{ old('nim_mahasiswa') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
@@ -406,25 +406,25 @@
             fieldsHTML = `
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="asal_sekolah">Asal Sekolah <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="asal_sekolah" id="asal_sekolah" required>
+                    <input type="text" class="form-control" name="asal_sekolah" id="asal_sekolah" value="{{ old('asal_sekolah') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="prodi_diminati">Program Studi yang Diminati <span class="text-danger">*</span></label>
                     <select class="form-select" name="prodi_diminati" id="prodi_diminati" required>
                         <option value="">Pilih Program Studi</option>
-                        <option value="Teknik Informatika">Teknik Informatika</option>
-                        <option value="Sistem Informasi">Sistem Informasi</option>
-                        <option value="Teknologi Rekayasa Komputer">Teknologi Rekayasa Komputer</option>
-                        <option value="Teknik Mesin">Teknik Mesin</option>
-                        <option value="Teknologi Rekayasa Sistem Elektronika">Teknologi Rekayasa Sistem Elektronika</option>
-                        <option value="Teknologi Rekayasa Mekatronika">Teknologi Rekayasa Mekatronika</option>
-                        <option value="Teknik Elektronika">Teknik Elektronika</option>
-                        <option value="Teknik Listrik">Teknik Listrik</option>
-                        <option value="Teknologi Rekayasa Jaringan Telekomunikasi">Teknologi Rekayasa Jaringan Telekomunikasi</option>
-                        <option value="Akuntansi Perpajakan">Akuntansi Perpajakan</option>
-                        <option value="Bisnis Digital">Bisnis Digital</option>
-                        <option value="Hubungan Masyarakat dan Komunikasi Digital">Hubungan Masyarakat dan Komunikasi Digital</option>
+                        <option value="Teknik Informatika" {{ old('prodi_diminati') == 'Teknik Informatika' ? 'selected' : '' }}>Teknik Informatika</option>
+                        <option value="Sistem Informasi" {{ old('prodi_diminati') == 'Sistem Informasi' ? 'selected' : '' }}>Sistem Informasi</option>
+                        <option value="Teknologi Rekayasa Komputer" {{ old('prodi_diminati') == 'Teknologi Rekayasa Komputer' ? 'selected' : '' }}>Teknologi Rekayasa Komputer</option>
+                        <option value="Teknik Mesin" {{ old('prodi_diminati') == 'Teknik Mesin' ? 'selected' : '' }}>Teknik Mesin</option>
+                        <option value="Teknologi Rekayasa Sistem Elektronika" {{ old('prodi_diminati') == 'Teknologi Rekayasa Sistem Elektronika' ? 'selected' : '' }}>Teknologi Rekayasa Sistem Elektronika</option>
+                        <option value="Teknologi Rekayasa Mekatronika" {{ old('prodi_diminati') == 'Teknologi Rekayasa Mekatronika' ? 'selected' : '' }}>Teknologi Rekayasa Mekatronika</option>
+                        <option value="Teknik Elektronika" {{ old('prodi_diminati') == 'Teknik Elektronika' ? 'selected' : '' }}>Teknik Elektronika</option>
+                        <option value="Teknik Listrik" {{ old('prodi_diminati') == 'Teknik Listrik' ? 'selected' : '' }}>Teknik Listrik</option>
+                        <option value="Teknologi Rekayasa Jaringan Telekomunikasi" {{ old('prodi_diminati') == 'Teknologi Rekayasa Jaringan Telekomunikasi' ? 'selected' : '' }}>Teknologi Rekayasa Jaringan Telekomunikasi</option>
+                        <option value="Akuntansi Perpajakan" {{ old('prodi_diminati') == 'Akuntansi Perpajakan' ? 'selected' : '' }}>Akuntansi Perpajakan</option>
+                        <option value="Bisnis Digital" {{ old('prodi_diminati') == 'Bisnis Digital' ? 'selected' : '' }}>Bisnis Digital</option>
+                        <option value="Hubungan Masyarakat dan Komunikasi Digital" {{ old('prodi_diminati') == 'Hubungan Masyarakat dan Komunikasi Digital' ? 'selected' : '' }}>Hubungan Masyarakat dan Komunikasi Digital</option>
                     </select>
                     <div class="help-block with-errors"></div>
                 </div>
@@ -433,12 +433,12 @@
             fieldsHTML = `
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="keperluan_detail">Detail Keperluan <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="keperluan_detail" id="keperluan_detail" rows="3" required></textarea>
+                    <textarea class="form-control" name="keperluan_detail" id="keperluan_detail" rows="3" required>{{ old('keperluan_detail') }}</textarea>
                     <div class="help-block with-errors"></div>
                 </div>
                 <div class="form-group mb-3">
                     <label class="form-label fw-semibold control-label" for="pihak_dituju_lainnya">Pihak yang Dituju <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" name="pihak_dituju_lainnya" id="pihak_dituju_lainnya" required>
+                    <input type="text" class="form-control" name="pihak_dituju_lainnya" id="pihak_dituju_lainnya" value="{{ old('pihak_dituju_lainnya') }}" required>
                     <div class="help-block with-errors"></div>
                 </div>
             `;
