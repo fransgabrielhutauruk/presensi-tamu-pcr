@@ -12,9 +12,7 @@
 
         @if(hasAnyActiveRole(['Admin', 'Eksekutif']))
         <div class="separator separator-dashed border-gray-10 my-2"></div>
-        <x-theme.menu text="Manajemen Sistem" icon="ki-outline ki-setting-3" :active="$pageData->activeRoot == 'manajemen_sistem'">
-            <x-theme.submenu link="{{ route('app.user.index') }}" text="Pengguna" :active="$pageData->activeMenu == 'pengguna'" />
-        </x-theme.menu>
+        <x-theme.menu link="{{ route('app.user.index') }}" text="Pengguna" icon="ki-outline ki-setting-3" :active="$pageData->activeMenu == 'pengguna'" />
         @endif
 
     </div>

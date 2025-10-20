@@ -36,7 +36,8 @@ Route::name('tamu.')->group(function () {
         Route::post('/feedback/{kunjunganId}', 'storeFeedback')->name('storeFeedback');
 
         Route::prefix('/event')->name('event.')->group(function () {
-            Route::get('/event', 'event')->name('form');
+            Route::get('/form', 'eventForm')->name('form');
+            Route::post('/store', 'storeEvent')->name('store');
         });
     });
 });

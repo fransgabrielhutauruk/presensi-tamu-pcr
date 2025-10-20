@@ -11,6 +11,7 @@ use Yajra\DataTables\Html\Column;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Blade;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class EventController extends Controller
 {
@@ -298,6 +299,7 @@ class EventController extends Controller
                 $dataAction = [
                     'id'  => $id,
                     'btn' => [
+                        ['action' => 'qrcode', 'title' => 'QR Code Presensi', 'link' => route('app.event.qr-code', $id)],
                         ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
                         ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
                     ]
@@ -345,5 +347,41 @@ class EventController extends Controller
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }
+    }
+
+    public function showQrCode(Request $request, $eventId)
+    {
+        $event = Event::with('eventKategori')->findOrFail(decid($eventId));
+        $this->title = 'QR Code Event - ' . $event->nama_event;
+        $this->activeMenu = 'event';
+        $this->breadCrump[] = ['title' => 'QR Code', 'link' => url()->current()];
+
+        $presensiUrl = route('tamu.event.form', ['event_id' => $eventId]);
+        if ($request->get('generate') === 'true') {
+            $qrCode = QrCode::size(300)
+                ->backgroundColor(255, 255, 255)
+                ->color(0, 0, 0)
+                ->margin(2)
+                ->generate($presensiUrl);
+
+            return response($qrCode, 200, [
+                'Content-Type' => 'image/svg+xml',
+                'Content-Disposition' => 'inline; filename="qr-event-' . $event->event_id . '.svg"'
+            ]);
+        }
+
+        $qrCodeSvg = QrCode::size(250)
+            ->backgroundColor(255, 255, 255)
+            ->color(0, 0, 0)
+            ->margin(2)
+            ->generate($presensiUrl);
+
+        $this->dataView([
+            'event' => $event,
+            'presensiUrl' => $presensiUrl,
+            'qrCodeSvg' => $qrCodeSvg
+        ]);
+
+        return $this->view('admin.event.qr-code');
     }
 }

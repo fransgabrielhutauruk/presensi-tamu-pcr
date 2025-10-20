@@ -18,29 +18,13 @@ require __DIR__ . '/auth.php';
 Route::prefix('app')
     ->middleware(['auth', 'active-role:Mahasiswa,Staf,Admin,Eksekutif'])
     ->group(function () {
-        generalRoute(App\Http\Controllers\Admin\DashboardController::class, 'dashboard', 'app');
-
-        // User management hanya untuk Admin dan Eksekutif - menggunakan active role
         Route::middleware('active-role:Mahasiswa,Admin,Eksekutif')->group(function () {
             generalRoute(App\Http\Controllers\Admin\UserController::class, 'user', 'app');
+            Route::get('event/qr/{eventId}', [App\Http\Controllers\Admin\EventController::class, 'showQrCode'])->name('app.event.qr-code');
             generalRoute(App\Http\Controllers\Admin\EventController::class, 'event', 'app');
         });
 
-        generalRoute(App\Http\Controllers\Admin\Konten\KontenController::class, 'konten', 'app');
-        generalRoute(App\Http\Controllers\Admin\Konten\KontenMainController::class, 'konten-main', 'app');
-        generalRoute(App\Http\Controllers\Admin\Konten\KontenSlideController::class, 'konten-slide', 'app');
-        generalRoute(App\Http\Controllers\Admin\Konten\KontenPageController::class, 'konten-page', 'app');
-        generalRoute(App\Http\Controllers\Admin\Konten\KontenJurusanController::class, 'konten-jurusan', 'app');
-        generalRoute(App\Http\Controllers\Admin\Konten\KontenProdiController::class, 'konten-prodi', 'app');
-
-        generalRoute(App\Http\Controllers\Admin\PostController::class, 'post', 'app');
-        generalRoute(App\Http\Controllers\Admin\AgendaController::class, 'agenda', 'app');
-        generalRoute(App\Http\Controllers\Admin\TestiController::class, 'testi', 'app');
-
-        generalRoute(App\Http\Controllers\Admin\MediaController::class, 'media', 'app', false);
-        generalRoute(App\Http\Controllers\Admin\MasterController::class, 'master', 'app');
-
-
+        generalRoute(App\Http\Controllers\Admin\DashboardController::class, 'dashboard', 'app');
         Route::get('icons', function () {
             if (!config('app.debug')) {
                 abort(403, 'Icon gallery is only available in debug mode.');

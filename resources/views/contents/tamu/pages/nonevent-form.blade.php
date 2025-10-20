@@ -16,11 +16,12 @@
                 </div>
 
                 <div class="text-start">
-                    <button type="button" class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
-                        onclick="window.location.href='{{ route('tamu.nonevent.tujuan') }}'" style="color: var(--dark-color);">
+                    <a href="{{ route('tamu.nonevent.tujuan') }}"
+                        class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
+                        style="color: var(--dark-color);">
                         <i class="fas fa-arrow-left"></i>
                         <span>Kembali</span>
-                    </button>
+                    </a>
                 </div>
 
                 <form id="tamu-form" class="text-start" action="{{ route('tamu.nonevent.store') }}" method="POST" data-toggle="validator">
