@@ -16,11 +16,11 @@
                 </div>
 
                 <div class="text-start">
-                    <a href="{{ route('tamu.event.list') }}"
+                    <a href="{{ route('tamu.event.identity-selection', ['event_id' => $eventId]) }}"
                         class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
                         style="color: var(--dark-color);">
                         <i class="fas fa-arrow-left"></i>
-                        <span>Kembali</span>
+                        <span>Kembali ke Pilih Jenis Peserta</span>
                     </a>
                 </div>
 

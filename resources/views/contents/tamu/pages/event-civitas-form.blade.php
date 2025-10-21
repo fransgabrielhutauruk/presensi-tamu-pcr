@@ -224,11 +224,11 @@
                 </div>
 
                 <div class="text-start mt-3 mb-4 wow fadeInUp">
-                    <a href="{{ route('tamu.event.list') }}"
-                        class="btn btn-link p-0 d-flex align-items-center gap-2 text-decoration-none"
+                    <a href="{{ route('tamu.event.identity-selection', ['event_id' => $eventId]) }}" 
+                        class="btn btn-link p-0 d-flex align-items-center gap-2 text-decoration-none" 
                         style="color: var(--dark-color);">
                         <i class="fas fa-arrow-left"></i>
-                        <span class="ms-2">Kembali ke Daftar Event</span>
+                        <span class="ms-2">Kembali ke Pilih Jenis Peserta</span>
                     </a>
                 </div>
             </div>

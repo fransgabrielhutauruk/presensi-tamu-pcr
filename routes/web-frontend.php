@@ -37,6 +37,7 @@ Route::name('tamu.')->group(function () {
 
         Route::prefix('/event')->name('event.')->group(function () {
             Route::get('/pilih', 'eventList')->name('list');
+            Route::get('/pilih-identitas', 'eventIdentitySelection')->name('identity-selection');
             Route::get('/form', 'eventForm')->name('form');
             Route::post('/store', 'storeEvent')->name('store');
             Route::get('/civitas-form', 'eventCivitasForm')->name('civitas-form');

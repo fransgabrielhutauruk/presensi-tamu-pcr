@@ -231,6 +231,30 @@ class PresensiController extends Controller
         return view('contents.tamu.pages.event-list', compact('events'));
     }
 
+    public function eventIdentitySelection(Request $request)
+    {
+        $eventId = $request->get('event_id');
+
+        if (!$eventId) {
+            return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
+        }
+
+        try {
+            $event = Event::with('eventKategori')->findOrFail(decid($eventId));
+
+            $eventDate = $event->tanggal_event;
+            $currentDate = now()->format('Y-m-d');
+
+            if ($eventDate && $eventDate < $currentDate) {
+                return redirect()->route('tamu.home')->with('error', 'Event ini sudah berakhir.');
+            }
+
+            return view('contents.tamu.pages.event-identity-selection', compact('event', 'eventId'));
+        } catch (\Exception $e) {
+            return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
+        }
+    }
+
     public function eventForm(Request $request)
     {
         $eventId = $request->get('event_id');

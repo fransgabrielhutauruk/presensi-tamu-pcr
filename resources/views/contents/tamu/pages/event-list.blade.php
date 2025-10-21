@@ -15,38 +15,7 @@
                     <div class="mx-auto" style="height: 3px; width: 5rem; background-color: var(--primary-color); border-radius: 9999px;"></div>
                 </div>
 
-                <div class="text-start mb-4">
-                    <a href="{{ route('tamu.tujuan') }}"
-                        class="btn btn-link p-0  align-items-center gap-2 text-decoration-none"
-                        style="color: var(--dark-color);">
-                        <i class="fas fa-arrow-left"></i>
-                        <span class="ms-2">Kembali</span>
-                    </a>
-                </div>
-
-                <div class="mb-4">
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="card border-0 shadow-sm participant-option" data-type="tamu_luar">
-                                <div class="card-body p-3 text-center">
-                                    <i class="fas fa-users fa-2x text-primary mb-2"></i>
-                                    <h6 class="mb-1">Tamu Luar</h6>
-                                    <small class="text-muted">Pengunjung dari luar PCR</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="card border-0 shadow-sm participant-option" data-type="civitas_pcr">
-                                <div class="card-body p-3 text-center">
-                                    <i class="fas fa-id-card fa-2x text-success mb-2"></i>
-                                    <h6 class="mb-1">Civitas PCR</h6>
-                                    <small class="text-muted">Dosen, Staf, Mahasiswa</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="form-section mb-1 position-relative d-flex align-items-center events-section">
+                <div class="form-section mb-4 position-relative d-flex align-items-center">
                     <input type="text"
                         class="form-control input-sm form-sm ps-5"
                         placeholder="Cari event berdasarkan nama"
@@ -55,13 +24,13 @@
                     <i class="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y ms-2 text-muted" style="left: 0.75rem;"></i>
                 </div>
 
-                <div class="text-end mb-3 events-section" id="search-info">
+                <div class="text-start mb-2" id="search-info">
                     <small class="text-muted">
                         <span id="event-count">{{ $events->count() }}</span> event tersedia
                     </small>
                 </div>
 
-                <div class="text-start events-section">
+                <div class="text-start">
                     @if($events->count() > 0)
                     <div class="row g-3" id="events-container">
                         @foreach($events as $event)
@@ -70,10 +39,9 @@
                             data-kategori="{{ strtolower($event->eventKategori->nama_kategori ?? '') }}"
                             data-lokasi="{{ strtolower($event->lokasi_event ?? '') }}"
                             data-deskripsi="{{ strtolower($event->deskripsi_event ?? '') }}">
-                            <a href="#"
+                            <a href="{{ route('tamu.event.identity-selection', ['event_id' => encid($event->event_id)]) }}"
                                 class="card border-0 shadow-sm h-100 wow fadeInUp event-card"
-                                style="cursor: pointer; text-decoration: none; color: inherit;"
-                                onclick="selectEvent('{{ encid($event->event_id) }}')">
+                                style="cursor: pointer; text-decoration: none; color: inherit;">
                                 <div class="card-body p-3">
                                     <div class="row align-items-center">
                                         <div class="col-md-8">
@@ -153,61 +121,15 @@
     .event-item.hidden {
         display: none !important;
     }
-
-    .participant-option {
-        cursor: pointer;
-        transition: all 0.3s ease;
-        border: 2px solid transparent !important;
-    }
-
-    .participant-option:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    .participant-option.selected {
-        border: 2px solid var(--primary-color) !important;
-        background-color: var(--gray-200);
-    }
-
-    .events-section {
-        display: none;
-    }
-
-    .events-section.show {
-        display: block;
-    }
 </style>
 
 <script>
-    let selectedParticipantType = null;
-    let selectedEventId = null;
-
     document.addEventListener('DOMContentLoaded', function() {
-        const participantOptions = document.querySelectorAll('.participant-option');
-        const eventsSection = document.querySelectorAll('.events-section');
         const searchInput = document.getElementById('search-input');
         const eventItems = document.querySelectorAll('.event-item');
         const eventCount = document.getElementById('event-count');
         const noResults = document.getElementById('no-results');
-        const eventsContainer = document.getElementById('events-container');
-
-        // Handle participant type selection
-        participantOptions.forEach(option => {
-            option.addEventListener('click', function() {
-                // Remove previous selection
-                participantOptions.forEach(opt => opt.classList.remove('selected'));
-
-                // Add selection to clicked option
-                this.classList.add('selected');
-                selectedParticipantType = this.dataset.type;
-
-                // Show events section
-                eventsSection.forEach(section => section.classList.add('show'));
-            });
-        });
-
-        function performSearch() {
+        const eventsContainer = document.getElementById('events-container');        function performSearch() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             let visibleCount = 0;
 
@@ -247,20 +169,5 @@
             searchInput.focus();
         };
     });
-
-    function selectEvent(eventId) {
-        if (!selectedParticipantType) {
-            alert('Silakan pilih jenis peserta terlebih dahulu');
-            return;
-        }
-
-        selectedEventId = eventId;
-
-        if (selectedParticipantType === 'tamu_luar') {
-            window.location.href = `{{ route('tamu.event.form') }}?event_id=${eventId}&identitas=tamu_luar`;
-        } else if (selectedParticipantType === 'civitas_pcr') {
-            window.location.href = `{{ route('tamu.event.civitas-form') }}?event_id=${eventId}&identitas=civitas_pcr`;
-        }
-    }
 </script>
 @endsection
