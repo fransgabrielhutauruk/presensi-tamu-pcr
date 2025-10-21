@@ -37,6 +37,7 @@
                     <form id="event-form" class="text-start" action="{{ route('tamu.event.store') }}" method="POST" data-toggle="validator">
                         @csrf
                         <input type="hidden" name="event_id" value="{{ $eventId }}">
+                        <input type="hidden" name="identitas" value="tamu_luar">
 
                         <div id="error-messages" class="alert alert-danger" style="display: none;">
                             <ul id="error-list" class="mb-0"></ul>

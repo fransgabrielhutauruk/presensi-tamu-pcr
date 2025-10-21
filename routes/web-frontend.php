@@ -39,6 +39,8 @@ Route::name('tamu.')->group(function () {
             Route::get('/pilih', 'eventList')->name('list');
             Route::get('/form', 'eventForm')->name('form');
             Route::post('/store', 'storeEvent')->name('store');
+            Route::get('/civitas-form', 'eventCivitasForm')->name('civitas-form');
+            Route::post('/civitas-store', 'storeCivitasEvent')->name('civitas-store');
         });
     });
 });

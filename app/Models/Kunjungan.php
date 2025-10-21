@@ -15,6 +15,7 @@ class Kunjungan extends Model
     protected $fillable = [
         'tamu_id',
         'event_id',
+        'identitas',
         'kategori_tujuan',
         'waktu_masuk',
         'waktu_keluar',

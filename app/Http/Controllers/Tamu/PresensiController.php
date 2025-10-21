@@ -53,6 +53,7 @@ class PresensiController extends Controller
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => $request->kategori_tujuan,
+                'identitas' => 'tamu_luar',
                 'waktu_keluar' => $request->waktu_keluar,
                 'transportasi' => $request->transportasi ?? 'Tidak Diketahui',
                 'status_validasi' => false,
@@ -233,6 +234,7 @@ class PresensiController extends Controller
     public function eventForm(Request $request)
     {
         $eventId = $request->get('event_id');
+        $identitas = $request->get('identitas', 'tamu_luar');
 
         if (!$eventId) {
             return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
@@ -248,7 +250,32 @@ class PresensiController extends Controller
                 return redirect()->route('tamu.home')->with('error', 'Event ini sudah berakhir.');
             }
 
-            return view('contents.tamu.pages.event-form', compact('event', 'eventId'));
+            return view('contents.tamu.pages.event-form', compact('event', 'eventId', 'identitas'));
+        } catch (\Exception $e) {
+            return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
+        }
+    }
+
+    public function eventCivitasForm(Request $request)
+    {
+        $eventId = $request->get('event_id');
+        $identitas = $request->get('identitas', 'civitas_pcr');
+
+        if (!$eventId) {
+            return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
+        }
+
+        try {
+            $event = Event::with('eventKategori')->findOrFail(decid($eventId));
+
+            $eventDate = $event->tanggal_event;
+            $currentDate = now()->format('Y-m-d');
+
+            if ($eventDate && $eventDate < $currentDate) {
+                return redirect()->route('tamu.home')->with('error', 'Event ini sudah berakhir.');
+            }
+
+            return view('contents.tamu.pages.event-civitas-form', compact('event', 'eventId', 'identitas'));
         } catch (\Exception $e) {
             return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
         }
@@ -292,6 +319,7 @@ class PresensiController extends Controller
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => 'event',
+                'identitas' => 'tamu_luar',
                 'event_id' => $event->event_id,
                 'waktu_keluar' => $event->waktu_selesai_event,
                 'transportasi' => $request->transportasi,
@@ -326,6 +354,88 @@ class PresensiController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Event presensi failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');
+        }
+    }
+
+    public function storeCivitasEvent(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'event_id' => 'required|string',
+            'identitas' => 'required|in:civitas_pcr',
+            'jenis_civitas' => 'required|in:dosen,staff,mahasiswa',
+            'nim_nip' => 'required|string|max:20',
+            'nama_lengkap' => 'required|string|max:255',
+            'gender' => 'required|in:Laki-laki,Perempuan',
+            'email' => 'required|email|max:255',
+            'phone_number' => 'required|string|max:20',
+            'prodi_unit' => 'nullable|string|max:255',
+            'transportasi' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Mohon periksa kembali data yang Anda masukkan.');
+        }
+
+        try {
+            $event = Event::findOrFail(decid($request->event_id));
+
+            DB::beginTransaction();
+
+            $tamuData = [
+                'name' => $request->nama_lengkap,
+                'gender' => $request->gender,
+                'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'created_by' => 'system'
+            ];
+
+            $tamu = Tamu::create($tamuData);
+
+            $kunjunganData = [
+                'tamu_id' => $tamu->tamu_id,
+                'kategori_tujuan' => 'event',
+                'identitas' => 'civitas_pcr',
+                'event_id' => $event->event_id,
+                'waktu_keluar' => $event->waktu_selesai_event,
+                'transportasi' => $request->transportasi,
+                'status_validasi' => false,
+                'is_checkout' => false,
+            ];
+
+            $kunjungan = Kunjungan::create($kunjunganData);
+
+            $detailData = [
+                'nama_event' => $event->nama_event,
+                'kategori_event' => $event->eventKategori->nama_kategori ?? '',
+                'jenis_civitas' => $request->jenis_civitas,
+                'nim_nip' => $request->nim_nip,
+                'prodi_unit' => $request->prodi_unit,
+            ];
+
+            $urutan = 1;
+            foreach ($detailData as $key => $value) {
+                if (!empty($value)) {
+                    KunjunganDetail::create([
+                        'kunjungan_id' => $kunjungan->kunjungan_id,
+                        'kunci' => $key,
+                        'nilai' => $value,
+                        'urutan' => $urutan++,
+                    ]);
+                }
+            }
+
+            DB::commit();
+            return redirect()->route('tamu.sukses', $kunjungan->kunjungan_id)
+                ->with('success', 'Presensi event civitas PCR berhasil disimpan.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Civitas event presensi failed: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');

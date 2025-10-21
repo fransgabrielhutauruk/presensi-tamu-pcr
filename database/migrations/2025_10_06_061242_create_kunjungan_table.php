@@ -15,6 +15,7 @@ return new class extends Migration
             $table->increments('kunjungan_id');
             $table->unsignedInteger('tamu_id');
             $table->unsignedInteger('event_id')->nullable();
+            $table->enum('identitas', ['tamu_luar', 'civitas_pcr'])->default('tamu_luar');
             $table->string('kategori_tujuan')->nullable();
             $table->time('waktu_keluar');
             $table->boolean('is_checkout')->default(false);
