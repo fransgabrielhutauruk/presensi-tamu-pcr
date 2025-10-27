@@ -8,15 +8,6 @@
                     <div class="relative min-h-screen d-flex flex-column justify-content-center mx-auto">
                         <div class="position-relative" style="z-index: 10;">
                             <x-tamu.page-header title="Kategori Kunjungan" question="Apa tujuan kunjungan Anda hari ini?" />
-                            @if (session('error'))
-                                <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center my-3 wow fadeInUp"
-                                    data-wow-delay="0.25s">
-                                    <i class="fas fa-exclamation-triangle me-2"></i>
-                                    {{ session('error') }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                        aria-label="Close"></button>
-                                </div>
-                            @endif
                             <form id="tujuan-form" class="d-flex flex-column flex-fill mt-4 mx-auto">
                                 <fieldset class="d-flex flex-column" style="gap: 1rem;">
                                     <x-form.radio-option name="tujuan" id="opt-instansi" value="instansi" icon="🏢"

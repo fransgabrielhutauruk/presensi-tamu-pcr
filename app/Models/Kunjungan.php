@@ -49,4 +49,9 @@ class Kunjungan extends Model
     {
         return $this->hasMany(KunjunganDetail::class, 'kunjungan_id', 'kunjungan_id');
     }
+
+    public function feedback()
+    {
+        return $this->hasOne(Feedback::class, 'kunjungan_id', 'kunjungan_id');
+    }
 }

@@ -13,7 +13,9 @@ Route::name('tamu.')->group(function () {
         Route::get('/event-or-non-event', 'eventOrNonEvent')->name('event-or-non-event');
         Route::get('/sukses/{kunjunganId}', 'sukses')->name('sukses');
         Route::get('/checkout/{kunjunganId}', 'checkout')->name('checkout');
-        Route::post('/checkout/{kunjunganId}', 'storeCheckout')->name('storeCheckout');
+        Route::post('/checkout/{kunjunganId}', 'storeCheckout')->name('checkout-store');
+        Route::get('/feedback/{kunjunganId}', 'feedback')->name('feedback');
+        Route::post('/feedback/{kunjunganId}', 'storeFeedback')->name('feedback-store');
 
         Route::controller(KunjunganNonEventController::class)->group(function () {
             Route::prefix('/non-event')->name('non-event.')->group(function () {
@@ -23,11 +25,7 @@ Route::name('tamu.')->group(function () {
             });
         });
 
-        // Route::get('/feedback/{kunjunganId}', 'feedback')->name('feedback');
-        // Route::post('/feedback/{kunjunganId}', 'storeFeedback')->name('storeFeedback');
-
         Route::controller(KunjunganEventController::class)->group(function () {
-
             Route::prefix('/event')->name('event.')->group(function () {
                 Route::get('/list', 'listEvent')->name('list');
                 Route::get('/identitas', 'identitas')->name('identitas');

@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row min-vh-100 align-items-center">
             <div class="col-md-5 justify-content-center mx-auto">
-                <div class="text-center">
+                <div class="text-center mt-3">
                     <x-tamu.page-header title="Jenis Kunjungan"
                         subtitle="Silakan pilih jenis presensi kunjungan Anda </br> ke Politeknik Caltex Riau" />
                     <div class="row g-4 mt-3">

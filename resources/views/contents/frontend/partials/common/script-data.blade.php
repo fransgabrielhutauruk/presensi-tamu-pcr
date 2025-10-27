@@ -27,6 +27,7 @@
 <script src="{{ asset('theme/frontend/js/jquery.mb.YTPlayer.min.js') }}"></script>
 {{-- Wow js file --}}
 <script src="{{ asset('theme/frontend/js/wow.js') }}"></script>
+{{-- SweetAlert2 --}}
+<script src="{{ asset('theme/frontend/js/sweetalert2@11.js') }}"></script>
 {{-- Main Custom js file --}}
 <script src="{{ asset('theme/frontend/js/function.js') }}"></script>
-

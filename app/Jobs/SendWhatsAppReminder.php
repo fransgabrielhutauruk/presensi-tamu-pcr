@@ -43,10 +43,10 @@ class SendWhatsAppReminder implements ShouldQueue
             $token = env('TWILIO_TOKEN');
             $twilio = new Client($sid, $token);
 
-            $gender = $kunjungan->tamu->gender;
+            $gender = $kunjungan->tamu->jenis_kelamin_tamu;
             $pakBu = ($gender == "Laki-laki") ? "Pak" : "Bu";
-            $name = $kunjungan->tamu->name;
-            $kunjunganId = (string) $this->kunjunganId;
+            $name = $kunjungan->tamu->nama_tamu;
+            $kunjunganIdHashed = (string) encid($this->kunjunganId);
 
             $tamuPhone = $this->formatWhatsAppNumber($kunjungan->tamu->phone_number);
             $adminPhoneNumber = $this->adminPhoneNumber;
@@ -59,7 +59,7 @@ class SendWhatsAppReminder implements ShouldQueue
                     "contentVariables" => json_encode([
                         "pak_bu" => $pakBu,
                         "name" => $name,
-                        "kunjungan_id" => $kunjunganId
+                        "kunjungan_id" => $kunjunganIdHashed
                     ]),
                 ]
             );
