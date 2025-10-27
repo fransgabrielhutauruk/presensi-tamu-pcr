@@ -1,7 +1,7 @@
 <x-tamu.partials.data-pengunjung />
 
 <div>
-    <x-tamu.partials.section-header title="Data Perusahaan" icon="🏢" />
+    <x-tamu.section-header title="Data Perusahaan" icon="🏢" />
     <x-form.input-field name="instansi" label="Nama Perusahaan" placeholder="Nama perusahaan" required="true" />
     <x-form.select-field name="bidang_usaha" label="Bidang Usaha" required="true" :options="[
         'Teknologi Informasi' => 'Teknologi Informasi',
@@ -26,7 +26,7 @@
 </div>
 
 <div>
-    <x-tamu.partials.section-header title="Data Kunjungan" icon="🎯" />
+    <x-tamu.section-header title="Data Kunjungan" icon="🎯" />
     <x-form.select-field name="pihak_dituju" label="Pihak yang Dituju" required="true" :options="[
         'Direktur' => 'Direktur',
         'Wakil Direktur' => 'Wakil Direktur',

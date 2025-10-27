@@ -14,7 +14,7 @@
                     <p class="mt-1 lh-sm text-body">Presensi kunjungan Anda telah berhasil disimpan.</p>
 
                     <div class="alert alert-light mt-3 mb-3 text-start">
-                        <p class="mb-0"><strong>Nama:</strong> {{ $kunjungan->tamu->name }}</p>
+                        <p class="mb-0"><strong>Nama:</strong> {{ $kunjungan->tamu->nama_tamu }}</p>
                         <p class="mb-2"><strong>Waktu Masuk:</strong> {{ $kunjungan->created_at->format('d/m/Y H:i') }}</p>
                         <small class="text-muted lh-sm">
                             <i class="fas fa-exclamation-triangle me-1"></i>
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const routeLink = document.querySelector('#route');
@@ -48,7 +48,7 @@
 
                     routeLink.style.pointerEvents = 'none';
 
-                    window.location.href = this.getAttribute('href'); 
+                    window.location.href = this.getAttribute('href');
                 });
             }
         });

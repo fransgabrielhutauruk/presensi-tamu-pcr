@@ -1,4 +1,4 @@
-<x-form.section-header
+<x-tamu.section-header
     title="Data Pengunjung"
     icon="👤" />
 

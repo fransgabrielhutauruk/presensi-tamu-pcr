@@ -71,7 +71,8 @@ class KunjunganNonEventController extends Controller
             }
 
             DB::commit();
-            return redirect()->route('tamu.sukses', $kunjungan->kunjungan_id)->with('success', 'Presensi berhasil disimpan.');
+            $kunjungan_id_hashed = encid($kunjungan->kunjungan_id);
+            return redirect()->route('tamu.sukses', $kunjungan_id_hashed);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Failed to store presensi: ' . $e->getMessage());

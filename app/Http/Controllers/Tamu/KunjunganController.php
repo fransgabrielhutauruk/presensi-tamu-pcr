@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tamu;
 
 use App\Models\Kunjungan;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class KunjunganController extends Controller
@@ -20,10 +21,11 @@ class KunjunganController extends Controller
     public function sukses($kunjunganId)
     {
         try {
-            $kunjungan = Kunjungan::with('tamu')->findOrFail($kunjunganId);
-            return view('contents.tamu.pages.success', compact('kunjungan'));
+            $kunjungan = Kunjungan::with('tamu')->findOrFail(decid($kunjunganId));
+            return view('contents.tamu.pages.sukses', compact('kunjungan'));
         } catch (\Exception $e) {
-            return redirect()->route('tamu.home')->with('error', 'Kunjungan tidak ditemukan.');
+            Log::error('Gagal memuat halaman sukses kunjungan' . $e->getMessage());
+            return redirect()->route('tamu.home')->with('error', 'Kunjungan tidak ditemukan');
         }
     }
 

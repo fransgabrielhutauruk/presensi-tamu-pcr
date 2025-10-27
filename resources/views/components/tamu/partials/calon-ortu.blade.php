@@ -1,7 +1,7 @@
 <x-tamu.partials.data-pengunjung />
 
 <div>
-    <x-form.section-header
+    <x-tamu.section-header
         title="Data Calon Mahasiswa"
         icon="🎓" />
     <x-form.input-field
@@ -30,7 +30,7 @@
 </div>
 
 <div>
-    <x-tamu.partials.section-header
+    <x-tamu.section-header
         title="Data Kunjungan"
         icon="🎯" />
     <x-tamu.partials.data-kunjungan />

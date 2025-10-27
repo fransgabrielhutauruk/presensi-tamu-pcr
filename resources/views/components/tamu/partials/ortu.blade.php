@@ -14,11 +14,9 @@
 </div>
 
 <div>
-    <x-form.section-header
+    <x-tamu.section-header
         title="Data Mahasiswa"
-        icon="🎓"
-        subtitle="Informasi mahasiswa yang bersangkutan"
-        :divider="true" />
+        icon="🎓" />
     <x-form.input-field
         name="nama_mahasiswa"
         label="Nama Mahasiswa"
@@ -33,11 +31,9 @@
 </div>
 
 <div>
-    <x-form.section-header
+    <x-tamu.section-header
         title="Data Kunjungan"
-        icon="🎯"
-        subtitle="Detail keperluan dan tujuan kunjungan"
-        :divider="true" />
+        icon="🎯" />
     <x-form.select-field
         name="pihak_dituju"
         label="Pihak yang Dituju"
