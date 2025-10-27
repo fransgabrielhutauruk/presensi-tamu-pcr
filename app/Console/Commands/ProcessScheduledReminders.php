@@ -34,7 +34,7 @@ class ProcessScheduledReminders extends Command
 
         $kunjungans = Kunjungan::with('tamu')
             ->where('is_checkout', false)
-            ->where('waktu_keluar', '<=', $currentTime)
+            ->where('waktu_keluar', '>=', $currentTime)
             ->whereDate('created_at', $now->toDateString())
             ->whereNull('reminder_sent_at')
             ->get();

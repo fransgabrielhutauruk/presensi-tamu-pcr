@@ -29,7 +29,7 @@
                 <img
                     src="{{ asset('theme/images/akreditasi-unggul.webp') }}"
                     alt="Logo Akreditasi Unggul"
-                    class="mx-auto d-block w-25 mb-3 img-fluid" />
+                    class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
 
                 <h1 class="wow fadeInOut" data-wow-delay="0.5s">
                     SELAMAT DATANG
@@ -44,12 +44,51 @@
                         src="{{ asset('theme/images/pcr-depan.webp') }}"
                         alt="Gedung utama kampus PCR"
                         class="img-fluid rounded shadow-sm mb-4" />
-                    <a href="{{ route('tamu.tujuan') }}" class="btn-default w-100 mt-2">Isi Buku Tamu</a>
+                    <a id="route" href="{{ route('tamu.event-or-non-event') }}" class="btn-default w-100 mt-2">
+                        <span id="beforeSubmit">Isi Buku Tamu</span>
+                        <span id="loadingIndicator" style="display: none;">
+                            <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                        </span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const routeLink = document.querySelector('#route');
+
+        const beforeSubmit = document.querySelector('#beforeSubmit');
+        const loadingIndicator = document.querySelector('#loadingIndicator');
+
+        if (routeLink) {
+            routeLink.addEventListener('click', function(e) {
+                beforeSubmit.style.display = 'none';
+                loadingIndicator.style.display = 'inline';
+
+                routeLink.style.pointerEvents = 'none';
+                window.location.href = this.getAttribute('href');
+            });
+        }
+
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                resetLinkState();
+            }
+        });
+
+        function resetLinkState() {
+            if (routeLink) {
+                beforeSubmit.style.display = 'inline'; 
+                loadingIndicator.style.display = 'none';
+                routeLink.style.pointerEvents = 'auto';
+            }
+        }
+
+    });
+</script>
 
 <style>
     @keyframes drift {

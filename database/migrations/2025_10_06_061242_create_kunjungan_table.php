@@ -18,18 +18,16 @@ return new class extends Migration
             $table->enum('identitas', ['tamu_luar', 'civitas_pcr'])->default('tamu_luar');
             $table->string('kategori_tujuan')->nullable();
             $table->time('waktu_keluar');
-            $table->boolean('is_checkout')->default(false);
             $table->string('transportasi');
-            $table->boolean('status_validasi')->default(false);
+            $table->boolean('is_checkout')->default(false);
             $table->timestamp('checkout_time')->nullable();
+            $table->boolean('status_validasi')->default(false);
             $table->timestamp('reminder_sent_at')->nullable();
             $table->string('created_by', 10)->nullable();
             $table->string('updated_by', 10)->nullable();
             $table->string('deleted_by', 10)->nullable();
             $table->timestamps();
             $table->softDeletes();
-            $table->foreign('tamu_id')->references('tamu_id')->on('tamu')->onDelete('cascade');
-            $table->foreign('event_id')->references('event_id')->on('event')->onDelete('cascade');
         });
     }
 

@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('tamu', function (Blueprint $table) {
             $table->increments('tamu_id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('phone_number');
-            $table->string('gender');
+            $table->string('nama_tamu');
+            $table->enum('jenis_kelamin_tamu', ['Laki-laki', 'Perempuan']);
+            $table->string('email_tamu');
+            $table->string('nomor_telepon_tamu');
             $table->string('created_by', 10)->nullable();
             $table->string('updated_by', 10)->nullable();
             $table->string('deleted_by', 10)->nullable();
@@ -33,4 +33,3 @@ return new class extends Migration
         Schema::dropIfExists('tamu');
     }
 };
-

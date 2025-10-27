@@ -13,10 +13,10 @@ class Tamu extends Model
     protected $primaryKey = 'tamu_id';
 
     protected $fillable = [
-        'name',
-        'gender', 
-        'email',
-        'phone_number',
+        'nama_tamu',
+        'jenis_kelamin_tamu', 
+        'email_tamu',
+        'nomor_telepon_tamu',
     ];
 
     public function kunjungans()

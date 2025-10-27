@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="text-start">
-                    <a href="{{ route('tamu.event.identity-selection', ['event_id' => $eventId]) }}"
+                    <a href="{{ route('tamu.event.identitas', ['event_id' => $eventId]) }}"
                         class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
                         style="color: var(--dark-color);">
                         <i class="fas fa-arrow-left"></i>

@@ -14,15 +14,13 @@ class StorePresensiRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            // Data Pengunjung
-            'name' => 'required|string|max:255',
-            'gender' => 'required|in:Laki-laki,Perempuan',
-            'phone_number' => 'required|string|max:20',
-            'email' => 'required|email|max:255',
-            
-            // Data Kunjungan
+            'nama' => 'required',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'nomor_telepon' => 'required|max:20',
+            'email' => 'required|email',
+
             'kategori_tujuan' => 'required|in:instansi,bisnis,ortu,calon_ortu,lainnya',
-            'waktu_keluar' => 'required|date_format:H:i|after:waktu_masuk',
+            'waktu_keluar' => 'required|date_format:H:i',
             'transportasi' => 'required|string|max:255',
         ];
 
@@ -32,8 +30,8 @@ class StorePresensiRequest extends FormRequest
                     'instansi' => 'required|string|max:255',
                     'jenis_instansi' => 'required|string|max:255',
                     'jabatan' => 'required|string|max:255',
-                    'tujuan_spesifik' => 'required|string|max:255',
                     'pihak_dituju' => 'required|string|max:255',
+                    'keperluan' => 'required|string|max:1000',
                 ]);
                 break;
 
@@ -43,8 +41,8 @@ class StorePresensiRequest extends FormRequest
                     'bidang_usaha' => 'required|string|max:255',
                     'skala_perusahaan' => 'required|string|max:255',
                     'jabatan' => 'required|string|max:255',
-                    'jenis_kerjasama' => 'required|string|max:255',
                     'pihak_dituju' => 'required|string|max:255',
+                    'keperluan' => 'required|string|max:1000',
                 ]);
                 break;
 
@@ -53,8 +51,8 @@ class StorePresensiRequest extends FormRequest
                     'hubungan_dengan_mahasiswa' => 'required|string|max:255',
                     'nim_mahasiswa' => 'required|string|max:20',
                     'nama_mahasiswa' => 'required|string|max:255',
-                    'keperluan' => 'required|string|max:255',
-                    'pihak_dituju_ortu' => 'required|string|max:255',
+                    'pihak_dituju' => 'required|string|max:255',
+                    'keperluan' => 'required|string|max:1000',
                 ]);
                 break;
 
@@ -62,14 +60,14 @@ class StorePresensiRequest extends FormRequest
                 $rules = array_merge($rules, [
                     'asal_sekolah' => 'required|string|max:255',
                     'prodi_diminati' => 'required|string|max:255',
+                    'keperluan' => 'required|string|max:1000',
                 ]);
                 break;
 
             case 'lainnya':
                 $rules = array_merge($rules, [
-                    'asal' => 'required|string|max:255',
-                    'keperluan_detail' => 'required|string|max:1000',
-                    'pihak_dituju_lainnya' => 'required|string|max:255',
+                    'pihak_dituju' => 'required|string|max:255',
+                    'keperluan' => 'required|string|max:1000',
                 ]);
                 break;
         }

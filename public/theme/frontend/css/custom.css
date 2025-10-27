@@ -40,6 +40,7 @@
 31. 404 Page css
 32. Custom css
 33. Responsive css
+34. Error input css
 -------------------------------------------------------------------------------------- */
 
 /************************************/
@@ -347,20 +348,6 @@ body {
 
 .btn-default:hover::before {
     transform: rotate(0deg);
-}
-
-.btn-default:disabled,
-.btn-default.disabled {
-    background-color: var(--dark-color) !important;
-    color: var(--white-color) !important;
-    cursor: not-allowed !important;
-    opacity: 0.65 !important;
-    pointer-events: none !important;
-}
-
-.btn-default:disabled::before,
-.btn-default.disabled::before {
-    opacity: 0.5 !important;
 }
 
 .btn-default.btn-highlighted {
@@ -10584,4 +10571,20 @@ main .bg-hero {
     max-width: 60px;
     max-height: 50px;
     object-fit: contain;
+}
+
+
+/************************************/
+/***       35. Error Input Css    ***/
+/************************************/
+
+.has-error .form-control {
+    border-color: #dc3545;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 0 4px rgba(220, 53, 69, .1) !important;
+}
+
+.help-block.with-errors {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
 }

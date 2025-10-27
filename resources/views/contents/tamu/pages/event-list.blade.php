@@ -39,7 +39,7 @@
                             data-kategori="{{ strtolower($event->eventKategori->nama_kategori ?? '') }}"
                             data-lokasi="{{ strtolower($event->lokasi_event ?? '') }}"
                             data-deskripsi="{{ strtolower($event->deskripsi_event ?? '') }}">
-                            <a href="{{ route('tamu.event.identity-selection', ['event_id' => encid($event->event_id)]) }}"
+                            <a href="{{ route('tamu.event.identitas', ['event_id' => encid($event->event_id)]) }}"
                                 class="card border-0 shadow-sm h-100 wow fadeInUp event-card"
                                 style="cursor: pointer; text-decoration: none; color: inherit;">
                                 <div class="card-body p-3">
@@ -129,7 +129,9 @@
         const eventItems = document.querySelectorAll('.event-item');
         const eventCount = document.getElementById('event-count');
         const noResults = document.getElementById('no-results');
-        const eventsContainer = document.getElementById('events-container');        function performSearch() {
+        const eventsContainer = document.getElementById('events-container');
+
+        function performSearch() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             let visibleCount = 0;
 
