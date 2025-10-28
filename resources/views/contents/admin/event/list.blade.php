@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!--begin::Content container-->
 <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
     data-delay="0">
     @include('contents.admin.event.tabs')
@@ -25,6 +24,9 @@
     <form id="formData" class="needs-validation" jf-form="event">
         <input type="hidden" name="id" value="">
         <div class="mb-4">
+            <x-form.input type="text" label="Nama Event" name="nama_event" value="" required></x-form.input>
+        </div>
+        <div class="mb-4">
             <x-form.select name="eventkategori_id" label="Kategori Event" required>
                 @foreach ($pageData->dataKategori as $row)
                 <option value="{{ $row['id'] }}">
@@ -33,22 +35,19 @@
                 @endforeach
             </x-form.select>
         </div>
-        <div class="mb-4">
-            <x-form.input type="text" label="Nama Event" name="nama_event" value="" required></x-form.input>
-        </div>
         <div class="row">
             <div class="col-md-4 mb-4">
                 <x-form.input type="date" label="Tanggal Event" name="tanggal_event" value="" required></x-form.input>
             </div>
             <div class="col-md-4 mb-4">
-                <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value=""></x-form.input>
+                <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value="" required></x-form.input>
             </div>
             <div class="col-md-4 mb-4">
-                <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value=""></x-form.input>
+                <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value="" required></x-form.input>
             </div>
         </div>
         <div class="mb-4">
-            <x-form.input type="text" label="Lokasi Event" name="lokasi_event" value=""></x-form.input>
+            <x-form.input type="text" label="Lokasi Event" name="lokasi_event" value="" required></x-form.input>
         </div>
         <div class="mb-4">
             <x-form.textarea label="Deskripsi Event" name="deskripsi_event" value="" rows="4"></x-form.textarea>

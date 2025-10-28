@@ -87,6 +87,9 @@ class EventController extends Controller
                 'nama_event' => ['Nama Event', 'required'],
                 'eventkategori_id' => ['Kategori Event', 'required'],
                 'tanggal_event' => ['Tanggal Event', 'required|date'],
+                'waktu_mulai_event' => ['Waktu Mulai', 'required|date_format:H:i'],
+                'waktu_selesai_event' => ['Waktu Selesai', 'required|date_format:H:i'],
+                'lokasi_event' => ['Lokasi Event', 'required'],
             ]);
 
             $data = [
@@ -356,7 +359,8 @@ class EventController extends Controller
         $this->activeMenu = 'event';
         $this->breadCrump[] = ['title' => 'QR Code', 'link' => url()->current()];
 
-        $presensiUrl = route('tamu.event.form', ['event_id' => $eventId]);
+        $presensiUrl = route('tamu.event.identitas', $eventId);
+        
         if ($request->get('generate') === 'true') {
             $qrCode = QrCode::size(300)
                 ->backgroundColor(255, 255, 255)

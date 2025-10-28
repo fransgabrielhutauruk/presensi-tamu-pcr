@@ -1,0 +1,174 @@
+@extends('layouts.tamu.main')
+
+@section('content')
+    <div class="container">
+        <div class="row min-vh-100">
+            <div class="col-md-6 justify-content-center mx-auto">
+                <div class="text-center mt-5">
+                    <x-tamu.page-header title="Form Presensi EVENT" subtitle="CIVITAS PCR" />
+
+                    <div class="text-start mt-3 mb-4 wow fadeInUp">
+                        <a href="{{ route('tamu.event.identitas', $eventId) }}"
+                            class="btn btn-link p-0 d-flex align-items-center gap-2 text-decoration-none"
+                            style="color: var(--dark-color);">
+                            <i class="fas fa-arrow-left"></i>
+                            <span class="ms-2">Kembali ke Pilih Jenis Peserta</span>
+                        </a>
+                    </div>
+
+                    @if (app()->environment('local'))
+                        <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
+                            <small><i class="fas fa-info-circle"></i> Mode Development - Auto Fill untuk Testing</small>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
+                                <i class="fas fa-magic"></i> Auto Fill
+                            </button>
+                        </div>
+                    @endif
+
+                    <div class="card border-0 shadow-sm my-4 wow fadeInUp">
+                        <div class="card-body px-4 py-3">
+                            <div class="row align-items-center">
+                                <div class="col-md-9 text-start">
+                                    <h5 class="fw-bold mb-1">{{ $event->nama_event }}</h5>
+                                    <div class="row">
+                                        @if ($event->tanggal_event)
+                                            <small class="text-muted d-flex align-items-center gap-1">
+                                                <i class="fas fa-calendar"></i>
+                                                <span>{{ \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
+                                            </small>
+                                        @endif
+                                        @if ($event->waktu_mulai_event)
+                                            <small class="text-muted d-flex align-items-center gap-1">
+                                                <i class="fas fa-clock"></i>
+                                                <span>{{ \Carbon\Carbon::parse($event->waktu_mulai_event)->format('H:i') }}
+                                                    WIB</span>
+                                            </small>
+                                        @endif
+                                    </div>
+                                    @if ($event->lokasi_event)
+                                        <small class="text-muted d-flex align-items-center gap-1">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ $event->lokasi_event }}</span>
+                                        </small>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="event-form" class="text-start wow fadeInUp"
+                        action="{{ route('tamu.event.store-presensi-civitas') }}" method="POST" data-toggle="validator"
+                        novalidate>
+                        @csrf
+                        <input type="hidden" name="event_id" value="{{ $eventId }}">
+                        <x-tamu.partials.data-pengunjung />
+                        <x-form.input-field name="nim_nip" label="NIM/NIP" placeholder="NIM atau NIP" required="true" />
+
+                        <x-form.select-field name="transportasi" label="Jenis Kendaraan/Transportasi" required="true"
+                            :options="[
+                                'Mobil' => 'Mobil',
+                                'Motor' => 'Motor',
+                                'Bus' => 'Bus',
+                                'Travel' => 'Travel',
+                                'Online Ride' => 'Online Ride',
+                                'Jalan Kaki' => 'Jalan Kaki',
+                                'Lainnya' => 'Lainnya',
+                            ]" />
+
+                        <div class="mt-5 mb-4">
+                            <button type="submit" id="submitBtn" class="btn-default w-100">
+                                <span id="btn-text">Kirim</span>
+                                <span id="btn-loading" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const jenisCivitasSelect = document.getElementById('jenis_civitas');
+            const nimNipLabel = document.getElementById('nim_nip_label');
+            const prodiUnitLabel = document.getElementById('prodi_unit_label');
+            const prodiUnitSection = document.getElementById('prodi_unit_section');
+
+            const phoneInput = document.getElementById('phone_number');
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.startsWith('08')) {
+                    e.target.value = value;
+                } else if (value.startsWith('8')) {
+                    e.target.value = '0' + value;
+                } else {
+                    e.target.value = value;
+                }
+            });
+
+            jenisCivitasSelect.addEventListener('change', function() {
+                const selectedValue = this.value;
+
+                switch (selectedValue) {
+                    case 'dosen':
+                        nimNipLabel.textContent = 'NIP';
+                        prodiUnitLabel.textContent = 'Program Studi';
+                        prodiUnitSection.style.display = 'block';
+                        break;
+                    case 'staff':
+                        nimNipLabel.textContent = 'NIP';
+                        prodiUnitLabel.textContent = 'Unit Kerja';
+                        prodiUnitSection.style.display = 'block';
+                        break;
+                    case 'mahasiswa':
+                        nimNipLabel.textContent = 'NIM';
+                        prodiUnitLabel.textContent = 'Program Studi';
+                        prodiUnitSection.style.display = 'block';
+                        break;
+                    default:
+                        nimNipLabel.textContent = 'NIM/NIP';
+                        prodiUnitLabel.textContent = 'Prodi/Unit Kerja';
+                        prodiUnitSection.style.display = 'block';
+                }
+            });
+
+            if (jenisCivitasSelect.value) {
+                jenisCivitasSelect.dispatchEvent(new Event('change'));
+            }
+        });
+
+
+
+        // ==================================================
+        // ==================================================== //
+        function autoFillForm() {
+            document.querySelector('input[name="nama"]').value = 'John Doe Event Test';
+
+            const genderMale = document.querySelector('input[name="jenis_kelamin"][value="Laki-laki"]');
+            if (genderMale) genderMale.checked = true;
+
+            document.querySelector('input[name="nomor_telepon"]').value = '081234567890';
+            document.querySelector('input[name="email"]').value = 'test.event@example.com';
+            document.querySelector('input[name="nim_nip"]').value = '2253';
+
+            const transportasiField = document.querySelector('select[name="transportasi"]');
+            if (transportasiField) transportasiField.value = 'Mobil';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+            <i class="fas fa-check-circle"></i> Form berhasil diisi otomatis untuk testing!
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+
+            const form = document.getElementById('event-form');
+            form.insertBefore(alertDiv, form.firstChild);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+    </script>
+@endsection

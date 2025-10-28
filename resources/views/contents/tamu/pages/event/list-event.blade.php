@@ -3,7 +3,7 @@
 @section('content')
     <div class="container">
         <div class="row min-vh-100">
-            <div class="col-md-8 justify-content-center mx-auto">
+            <div class="col-md-6 justify-content-center mx-auto">
                 <div class="text-center">
                     <div class="mb-5 mt-5">
                         <h1 class="fw-bold wow fadeInOut fs-2" style="font-size: 1.75rem; letter-spacing: 0.025em;">
@@ -34,11 +34,8 @@
                         @if ($events->count() > 0)
                             <div class="row g-3" id="events-container">
                                 @foreach ($events as $event)
-                                    <div class="col-12 event-item mb-2" data-name="{{ strtolower($event->nama_event) }}"
-                                        data-kategori="{{ strtolower($event->eventKategori->nama_kategori ?? '') }}"
-                                        data-lokasi="{{ strtolower($event->lokasi_event ?? '') }}"
-                                        data-deskripsi="{{ strtolower($event->deskripsi_event ?? '') }}">
-                                        <a href="{{ route('tamu.event.identitas', ['event_id' => encid($event->event_id)]) }}"
+                                    <div class="col-12 event-item mb-2" data-name="{{ strtolower($event->nama_event) }}">
+                                        <a href="{{ route('tamu.event.identitas', encid($event->event_id)) }}"
                                             class="card border-0 shadow-sm h-100 wow fadeInUp event-card"
                                             style="cursor: pointer; text-decoration: none; color: inherit;">
                                             <div class="card-body p-3">
@@ -140,12 +137,8 @@
 
                 eventItems.forEach(function(item) {
                     const name = item.dataset.name;
-                    const kategori = item.dataset.kategori;
-                    const lokasi = item.dataset.lokasi;
 
-                    const isMatch = name.includes(searchTerm) ||
-                        kategori.includes(searchTerm) ||
-                        lokasi.includes(searchTerm);
+                    const isMatch = name.includes(searchTerm);
 
                     if (isMatch) {
                         item.classList.remove('hidden');

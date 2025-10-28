@@ -4,9 +4,9 @@
     <div class="container">
         <div class="row min-vh-100 align-items-center">
             <div class="col-md-5 justify-content-center mx-auto">
-                <div class="text-center mt-3">
+                <div class="text-center mt-5">
                     <x-tamu.page-header title="Jenis Kunjungan"
-                        subtitle="Silakan pilih jenis presensi kunjungan Anda </br> ke Politeknik Caltex Riau" />
+                        subtitle="Silakan pilih jenis presensi kunjungan Anda ke Politeknik Caltex Riau" />
                     <div class="row g-4 mt-3">
                         <div class="col-12">
                             <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp">
@@ -24,7 +24,7 @@
                             </div>
                         </div>
 
-                        <div class="col-12 mb-4">
+                        <div class="col-12 mb-5">
                             <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp">
                                 <div class="card-body d-flex flex-column justify-content-center text-center p-4">
                                     <div class="mb-2">

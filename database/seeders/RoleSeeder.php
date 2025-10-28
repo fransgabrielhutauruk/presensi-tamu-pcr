@@ -30,7 +30,8 @@ class RoleSeeder extends Seeder
         );
 
         if ($user->wasRecentlyCreated || !$user->hasAnyRole($roles)) {
-            $user->assignRole($roles);
+            $rolesToAssign = array_diff($roles, ['Staf']);
+            $user->assignRole($rolesToAssign);
         }
     }
 }

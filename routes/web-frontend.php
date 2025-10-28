@@ -27,12 +27,12 @@ Route::name('tamu.')->group(function () {
 
         Route::controller(KunjunganEventController::class)->group(function () {
             Route::prefix('/event')->name('event.')->group(function () {
+                Route::get('/presensi/{eventId}', 'formPresensiLuar')->name('form-presensi-luar');
+                Route::post('/store', 'storePresensiLuar')->name('store-presensi-luar');
                 Route::get('/list', 'listEvent')->name('list');
-                Route::get('/identitas', 'identitas')->name('identitas');
-                Route::get('/form', 'eventForm')->name('form');
-                Route::post('/store', 'storeEvent')->name('store');
-                //     Route::get('/civitas-form', 'eventCivitasForm')->name('civitas-form');
-                //     Route::post('/civitas-store', 'storeCivitasEvent')->name('civitas-store');
+                Route::get('/{eventId}', 'identitas')->name('identitas');
+                Route::get('/presensi-civitas/{eventId}', 'formPresensiCivitas')->name('form-presensi-civitas');
+                Route::post('/civitas-store', 'storePresensiCivitas')->name('store-presensi-civitas');
             });
         });
     });

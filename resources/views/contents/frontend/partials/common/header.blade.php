@@ -17,7 +17,7 @@
                             <li class="nav-item toggle-menu">
                                 <div class="navbar-brand">
                                     <img src="{{ data_get($siteIdentity, 'identity.logo_path') }}" alt="Logo"
-                                         class="navbar-logo">
+                                        class="navbar-logo">
                                 </div>
 
                                 <div class="navbar-toggle navbar-toggle-responsive"></div>
@@ -58,7 +58,8 @@
                                                         <ul>
                                                             @foreach ($child['children'] as $sub_child)
                                                                 @php
-                                                                    $sub_child_route = $sub_child['route'] ?? 'javascript:;';
+                                                                    $sub_child_route =
+                                                                        $sub_child['route'] ?? 'javascript:;';
                                                                 @endphp
 
                                                                 <li class="nav-item">
@@ -76,7 +77,7 @@
                                 </li>
                             @endforeach
                             <li class="nav-item d-md-none">
-                                <a class="nav-link" href="{{ route('frontend.information.contact') }}">
+                                <a class="nav-link" href="#">
                                     Kontak Kami
                                 </a>
                             </li>
@@ -85,8 +86,7 @@
                 </div>
 
                 <div class="header-btn-- d-inline-flex d-none d-md-block mt-md-2">
-                    <a href="{{ route('frontend.information.contact') }}"
-                       class="btn-default btn-highlighted text-nowrap contact-button-">
+                    <a href="#" class="btn-default btn-highlighted text-nowrap contact-button-">
                         Kontak Kami
                     </a>
                 </div>

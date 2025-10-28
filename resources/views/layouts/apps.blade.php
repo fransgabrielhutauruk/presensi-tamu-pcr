@@ -94,14 +94,6 @@
                 </div>
                 <!--end:::Main-->
 
-                <!--begin::aside-->
-                <div id="kt_app_aside" class="app-aside flex-column bg-theme" data-kt-drawer="true"
-                    data-kt-drawer-name="app-aside" data-kt-drawer-activate="{default: true, lg: false}"
-                    data-kt-drawer-overlay="true" data-kt-drawer-width="auto" data-kt-drawer-direction="end"
-                    data-kt-drawer-toggle="#kt_app_aside_mobile_toggle">
-                    @include('layouts.inc.aside')
-                </div>
-                <!--end::aside-->
             </div>
             <!--end::Wrapper-->
         </div>

@@ -19,20 +19,14 @@
         <!--end::Sidebar mobile toggle-->
         <!--begin::Logo-->
         <a href="{{ url('/') }}" class="app-sidebar-logo">
-            <img alt="Logo" src="{{ asset('theme') }}/media/logos/default.png" class="h-25px h-md-30px theme-light-show" />
-            <img alt="Logo" src="{{ asset('theme') }}/media/logos/default-dark.png" class="h-25px h-md-30px theme-dark-show" />
+            <h4 class="mb-0 fw-bold ms-2">PRESENSI TAMU</h4>
+            <!-- <img alt="Logo" src="{{ asset('theme') }}/media/logos/default.png" class="h-25px h-md-30px theme-light-show" /> -->
+            <!-- <img alt="Logo" src="{{ asset('theme') }}/media/logos/default-dark.png" class="h-25px h-md-30px theme-dark-show" /> -->
         </a>
         <!--end::Logo-->
     </div>
     <!--begin::Navbar-->
-    <div class="app-navbar flex-grow-1 justify-content-end" id="kt_app_header_navbar">
-        <div class="app-navbar-item d-flex align-items-stretch flex-lg-grow-1">
-            @include('layouts.inc.header_app')
-        </div>
-
-
-
-        @include('layouts.inc.header_notif')
+    <div class="app-navbar flex-grow-1 justify-content-end" id="kt_app_header_navbar" style="padding-right: 2.5rem;">
 
         <!--begin::User menu-->
         <div class="app-navbar-item" id="kt_header_user_menu_toggle">
@@ -55,7 +49,7 @@
                             <div class="fw-bold d-flex align-items-center fs-5 flex-wrap">
                                 <span class="text-truncate me-2">{{ Auth::user()->name }}</span>
                                 @php
-                                    $activeRole = session('active_role', Auth::user()->roles->first()?->name ?? 'Guest');
+                                $activeRole = session('active_role', Auth::user()->roles->first()?->name ?? 'Guest');
                                 @endphp
                                 <span class="badge badge-light-primary fs-7 flex-shrink-0">{{ $activeRole }}</span>
                             </div>
@@ -68,14 +62,14 @@
                 <!--begin::Menu separator-->
                 <div class="separator my-2"></div>
                 <!--end::Menu separator-->
-                
+
                 <!--begin::Switch Role Section-->
                 @php
-                    $userRoles = Auth::user()->roles->pluck('name')->toArray();
-                    $currentRole = session('active_role', $userRoles[0] ?? 'Guest');
-                    $availableRoles = array_diff($userRoles, [$currentRole]);
+                $userRoles = Auth::user()->roles->pluck('name')->toArray();
+                $currentRole = session('active_role', $userRoles[0] ?? 'Guest');
+                $availableRoles = array_diff($userRoles, [$currentRole]);
                 @endphp
-                
+
                 @if(count($availableRoles) > 0)
                 <div class="menu-item px-5">
                     <div class="menu-content px-5">
@@ -90,7 +84,7 @@
                     </a>
                 </div>
                 @endforeach
-                
+
                 <div class="separator my-2"></div>
                 @endif
                 <!--end::Switch Role Section-->
@@ -158,21 +152,16 @@
         <!--end::User menu-->
         <!--begin::Action-->
         <div class="d-none d-md-inline app-navbar-item ms-2 mx-lg-2">
-            <!--begin::Link-->
-            <a href="{{ asset('demo39/dist/authentication/layouts/corporate/sign-in.html') }}" class="btn btn-icon btn-custom btn-color-gray-600 btn-active-color-primary w-35px h-35px w-md-40px h-md-40px">
-                <i class="ki-outline ki-exit-right fs-1"></i>
-            </a>
-            <!--end::Link-->
+            <!--begin::Logout Form-->
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="btn btn-icon btn-custom btn-color-gray-600 btn-active-color-primary w-35px h-35px w-md-40px h-md-40px" style="border: none; background: none;">
+                    <i class="ki-outline ki-exit-right fs-1"></i>
+                </button>
+            </form>
+            <!--end::Logout Form-->
         </div>
         <!--end::Action-->
-
-        <!--begin::Header menu toggle-->
-        <div class="app-navbar-item ms-3 ms-lg-6 me-3 d-flex d-lg-none">
-            <div class="btn btn-icon btn-custom btn-color-gray-600 btn-active-color-primary w-35px h-35px w-md-40px h-md-40px" id="kt_app_aside_mobile_toggle">
-                <i class="ki-duotone ki-tablet-book fs-3x"><i class="path1"></i><i class="path2"></i></i>
-            </div>
-        </div>
-        <!--end::Header menu toggle-->
     </div>
     <!--end::Navbar-->
 </div>
@@ -183,51 +172,51 @@
 
 <!--begin::Switch Role Script-->
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle switch role buttons
-    document.querySelectorAll('.switch-role-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const role = this.getAttribute('data-role');
-            const button = this;
-            
-            // Show loading state
-            const originalText = button.innerHTML;
-            button.innerHTML = '<i class="ki-outline ki-loading fs-4 me-2"></i>Switching...';
-            button.style.pointerEvents = 'none';
-            
-            // Send request to switch role
-            fetch('{{ route("switch.role") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({
-                    role: role
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status) {
-                    // Success - reload page to update UI
-                    window.location.reload();
-                } else {
-                    // Error
-                    alert(data.message || 'Error switching role');
-                    button.innerHTML = originalText;
-                    button.style.pointerEvents = 'auto';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error switching role');
-                button.innerHTML = originalText;
-                button.style.pointerEvents = 'auto';
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle switch role buttons
+        document.querySelectorAll('.switch-role-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const role = this.getAttribute('data-role');
+                const button = this;
+
+                // Show loading state
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="ki-outline ki-loading fs-4 me-2"></i>Switching...';
+                button.style.pointerEvents = 'none';
+
+                // Send request to switch role
+                fetch('{{ route("switch.role") }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            role: role
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status) {
+                            // Success - reload page to update UI
+                            window.location.reload();
+                        } else {
+                            // Error
+                            alert(data.message || 'Error switching role');
+                            button.innerHTML = originalText;
+                            button.style.pointerEvents = 'auto';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error switching role');
+                        button.innerHTML = originalText;
+                        button.style.pointerEvents = 'auto';
+                    });
             });
         });
     });
-});
 </script>
 <!--end::Switch Role Script-->
