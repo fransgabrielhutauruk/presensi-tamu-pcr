@@ -13,10 +13,10 @@
                         class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
 
                     <h1 class="wow fadeInOut" data-wow-delay="0.5s">
-                        SELAMAT DATANG
+                        {{ __('visitor.welcome_message') }}
                     </h1>
                     <h5 class="wow fadeInOut" data-wow-delay="1s">
-                        DI POLITEKNIK CALTEX RIAU
+                        {{ __('visitor.at_institution') }}
                     </h5>
                     <p class="text-muted mb-4 fs-6 lh-base" id="typewriter-text">
                     </p>
@@ -24,9 +24,9 @@
                         <img src="{{ asset('theme/images/pcr-depan.webp') }}" alt="Gedung utama kampus PCR"
                             class="img-fluid rounded shadow-sm mb-4" />
                         <a id="route" href="{{ route('tamu.event-or-non-event') }}" class="btn-default w-100 mt-2">
-                            <span id="beforeSubmit">Isi Buku Tamu</span>
+                            <span id="beforeSubmit">{{ __('visitor.fill_guest_book') }}</span>
                             <span id="loadingIndicator" style="display: none;">
-                                <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                                <i class="fas fa-spinner fa-spin me-2"></i>{{ __('common.processing') }}
                             </span>
                         </a>
                     </div>
@@ -92,7 +92,7 @@
             const typewriterElement = document.getElementById('typewriter-text');
             typewriterElement.innerHTML = '';
 
-            const fullText = "Kampus Ramah Lingkungan, Bebas Asap Rokok, \ndan Tertib Lalu Lintas";
+            const fullText = @json(__('visitor.campus_slogan'));
             let index = 0;
             let currentText = '';
 

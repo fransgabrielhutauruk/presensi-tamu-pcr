@@ -7,7 +7,7 @@
                 <div class="text-center">
                     <div class="mb-5 mt-5">
                         <h1 class="fw-bold wow fadeInOut fs-2" style="font-size: 1.75rem; letter-spacing: 0.025em;">
-                            Pilih Event yang Diikuti
+                            {{ __('visitor.select_event') }}
                         </h1>
                         <p class="text-muted mb-2" style="font-size: 0.875rem; font-weight: 500; letter-spacing: 0.15em;">
                             POLITEKNIK CALTEX RIAU
@@ -19,14 +19,14 @@
 
                     <div class="form-section mb-4 position-relative d-flex align-items-center">
                         <input type="text" class="form-control input-sm form-sm ps-5"
-                            placeholder="Cari event berdasarkan nama" style="border-radius: 8px;" id="search-input">
+                            placeholder="{{ __('visitor.search_event_placeholder') }}" style="border-radius: 8px;" id="search-input">
                         <i class="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y ms-2 text-muted"
                             style="left: 0.75rem;"></i>
                     </div>
 
                     <div class="text-start mb-2" id="search-info">
                         <small class="text-muted">
-                            <span id="event-count">{{ $events->count() }}</span> event tersedia
+                            <span id="event-count">{{ $events->count() }}</span> {{ __('visitor.events_available') }}
                         </small>
                     </div>
 

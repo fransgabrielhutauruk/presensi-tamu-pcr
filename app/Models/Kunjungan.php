@@ -17,7 +17,7 @@ class Kunjungan extends Model
         'event_id',
         'identitas',
         'kategori_tujuan',
-        'waktu_masuk',
+        'jumlah_rombongan',
         'waktu_keluar',
         'transportasi',
         'status_validasi',

@@ -79,7 +79,7 @@
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid">
         <div class="row justify-content-center">
-            <div class="col-lg-12 my-3 py-3">
+            <div class="col-lg-10 my-3 py-3">
                 <div class="card">
                     <div class="card-body text-center">
                         <div class="mb-5">

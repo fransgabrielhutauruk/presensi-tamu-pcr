@@ -182,7 +182,6 @@ class EventController extends Controller
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
                 'nama_kategori' => ['Nama Kategori', 'required'],
-                'deskripsi_kategori' => ['Deskripsi Kategori', 'nullable'],
             ]);
 
             $currData = EventKategori::findOrFail(decid($req->input('id')));
@@ -325,7 +324,6 @@ class EventController extends Controller
                 $dt = [];
                 $dt['no'] = ++$start;
                 $dt['eventkategori_id'] = $value['eventkategori_id'] ?? '-';
-                $dt['kode_kategori'] = $value['kode_kategori'] ?? '-';
                 $dt['nama_kategori'] = $value['nama_kategori'] ?? '-';
                 $dt['deskripsi_kategori'] = $value['deskripsi_kategori'] ?? '-';
 

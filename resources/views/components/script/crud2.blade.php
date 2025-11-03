@@ -15,6 +15,8 @@
                     param.toLowerCase() : ''),
                 edit: options.url && options.url.edit ? options.url.edit : base_url + '/data/detail' + (
                     param ? '/' + param.toLowerCase() : ''),
+                detail: options.url && options.url.detail ? options.url.detail : base_url + '/data/detail' + (
+                    param ? '/' + param.toLowerCase() : ''),
                 update: options.url && options.url.update ? options.url.update : base_url + '/update' + (
                     param ? '/' + param.toLowerCase() : ''),
                 delete: options.url && options.url.delete ? options.url.delete : base_url + '/destroy' + (
@@ -101,6 +103,68 @@
                 });
             }
 
+            var populateDetailModal = function(data, modal) {
+                modal.find('[data-field]').each(function() {
+                    var fieldName = $(this).attr('data-field');
+                    if (data.hasOwnProperty(fieldName)) {
+                        var value = data[fieldName];
+                        
+                        if ($(this).is('img')) {
+                            $(this).attr('src', value);
+                        } else if ($(this).hasClass('badge') || $(this).find('.badge').length > 0) {
+                            $(this).html(value);
+                        } else {
+                            $(this).text(value || '-');
+                        }
+                    }
+                });
+
+                if (data.details && Array.isArray(data.details)) {
+                    var detailContainer = modal.find('[data-details-container]');
+                    if (detailContainer.length > 0) {
+                        detailContainer.empty();
+                        data.details.forEach(function(detail) {
+                            var detailHtml = '<div class="row mb-2">' +
+                                '<div class="col-4 fw-bold">' + detail.kunci + ':</div>' +
+                                '<div class="col-8">' + detail.nilai + '</div>' +
+                                '</div>';
+                            detailContainer.append(detailHtml);
+                        });
+                    }
+                }
+            }
+
+            var populateDetailContainer = function(data, container) {
+                container.find('[data-field]').each(function() {
+                    var fieldName = $(this).attr('data-field');
+                    if (data.hasOwnProperty(fieldName)) {
+                        var value = data[fieldName];
+                        
+                        if ($(this).is('img')) {
+                            $(this).attr('src', value);
+                        } else if ($(this).hasClass('badge') || $(this).find('.badge').length > 0) {
+                            $(this).html(value);
+                        } else {
+                            $(this).text(value || '-');
+                        }
+                    }
+                });
+
+                if (data.details && Array.isArray(data.details)) {
+                    var detailContainer = container.find('[data-details-container]');
+                    if (detailContainer.length > 0) {
+                        detailContainer.empty();
+                        data.details.forEach(function(detail) {
+                            var detailHtml = '<div class="row mb-2">' +
+                                '<div class="col-4 fw-bold">' + detail.kunci + ':</div>' +
+                                '<div class="col-8">' + detail.nilai + '</div>' +
+                                '</div>';
+                            detailContainer.append(detailHtml);
+                        });
+                    }
+                }
+            }
+
             // Tambahkan event handler untuk tombol tambah
             $(document).on('click', '[jf-add="' + name + '"]', function() {
                 var form = $('[jf-form="' + name + '"]').attr('id')
@@ -140,6 +204,37 @@
                         pupulateForm(data)
                         refreshCustomStyle()
                         onEdit(data)
+                    }
+                })
+            });
+
+            $(document).on('click', '[jf-data="' + name + '"] [jf-detail]', function() {
+                var detailId = $(this).attr('jf-detail');
+                var paramData = {}
+                const attributes = $(this).data();
+                for (const key in attributes) {
+                    if (Object.hasOwnProperty.call(attributes, key)) {
+                        paramData[key] = attributes[key];
+                    }
+                }
+                paramData['id'] = detailId
+                ajaxRequest({
+                    link: url.detail,
+                    data: paramData,
+                    callback: function(origin, resp) {
+                        data = resp.data
+                        var detailModal = $('[jf-detail-modal="' + name + '"]');
+                        var detailContainer = $('[jf-detail-container="' + name + '"]');
+                        if (detailModal.length > 0) {
+                            populateDetailModal(data, detailModal);
+                            detailModal.modal('show');
+                        } else if (detailContainer.length > 0) {
+                            populateDetailContainer(data, detailContainer);
+                            detailContainer.removeClass('d-none');
+                        }
+                        if (options.onDetail && typeof options.onDetail === 'function') {
+                            options.onDetail(data);
+                        }
                     }
                 })
             });

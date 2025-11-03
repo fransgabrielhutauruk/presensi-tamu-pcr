@@ -16,6 +16,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             RoleSeeder::class,
+            MstOpsiKunjunganSeeder::class,
+            EventKategoriSeeder::class,
+            EventSeeder::class
         ]);
     }
 }

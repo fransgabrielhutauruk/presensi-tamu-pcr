@@ -15,5 +15,5 @@
     </span>
 
     <span class="user-select-none" style="font-size: 1.125rem; line-height: 1;">{{ $icon }}</span>
-    <span class="fw-medium user-select-none text-dark" style="font-size: 0.875rem;">{{ $label }}</span>
+    <span class="fw-medium user-select-none text-dark text-start" style="font-size: 0.875rem;">{{ $label }}</span>
 </label>

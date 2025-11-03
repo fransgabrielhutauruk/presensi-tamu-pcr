@@ -1,7 +1,9 @@
 <?php
 
+use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\AjaxRequest;
 use Illuminate\Foundation\Application;
+use App\Http\Middleware\CheckActiveRole;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
@@ -14,7 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'ajax' => AjaxRequest::class,
-            'active-role' => \App\Http\Middleware\CheckActiveRole::class,
+            'active-role' => CheckActiveRole::class,
+            'setlocale' => SetLocale::class,
+        ]);
+        
+        $middleware->web(append: [
+            SetLocale::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

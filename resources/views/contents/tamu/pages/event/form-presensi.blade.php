@@ -5,22 +5,22 @@
         <div class="row">
             <div class="col-md-5 justify-content-center mx-auto">
                 <div class="text-center mt-5">
-                    <x-tamu.page-header title="Form Presensi Event" subtitle="Tamu Luar" />
+                    <x-tamu.page-header :title="__('visitor.event_attendance_form')" :subtitle="__('visitor.external_guest')" />
 
                     <div class="text-start mt-4">
                         <a href="{{ route('tamu.event.identitas', $eventId) }}"
-                            class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
+                            class="btn btn-link p-0 mb-4 align-items-center gap-2 text-decoration-none"
                             style="color: var(--dark-color);">
                             <i class="fas fa-arrow-left"></i>
-                            <span>Kembali ke Pilih Jenis Peserta</span>
+                            <span>{{ __('visitor.back') }}</span>
                         </a>
                     </div>
 
                     @if (app()->environment('local'))
                         <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
-                            <small><i class="fas fa-info-circle"></i> Mode Development - Auto Fill untuk Testing</small>
+                            <small><i class="fas fa-info-circle"></i> {{ __('visitor.development_mode') }}</small>
                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
-                                <i class="fas fa-magic"></i> Auto Fill
+                                <i class="fas fa-magic"></i> {{ __('visitor.auto_fill') }}
                             </button>
                         </div>
                     @endif
@@ -57,31 +57,31 @@
                     </div>
 
                     <form id="event-form" class="text-start wow fadeInUp"
-                        action="{{ route('tamu.event.store-presensi-luar') }}" method="POST" data-toggle="validator"
+                        action="{{ route('tamu.event.store-presensi-non-civitas') }}" method="POST" data-toggle="validator"
                         novalidate>
                         @csrf
                         <input type="hidden" name="event_id" value="{{ $eventId }}">
                         <x-tamu.partials.data-pengunjung />
-                        <x-form.input-field name="institusi" label="Institusi" placeholder="Nama institusi"
+                        <x-form.input-field name="institusi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_placeholder')"
                             required="true" />
-                        <x-form.input-field name="jabatan" label="Jabatan/Posisi" placeholder="Jabatan/posisi"
+                        <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')"
                             required="true" />
-                        <x-form.select-field name="transportasi" label="Jenis Kendaraan/Transportasi" required="true"
+                        <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true"
                             :options="[
-                                'Mobil' => 'Mobil',
-                                'Motor' => 'Motor',
-                                'Bus' => 'Bus',
-                                'Travel' => 'Travel',
-                                'Online Ride' => 'Online Ride',
-                                'Jalan Kaki' => 'Jalan Kaki',
-                                'Lainnya' => 'Lainnya',
+                                __('visitor.car_option') => __('visitor.car_option'),
+                                __('visitor.motorcycle_option') => __('visitor.motorcycle_option'),
+                                __('visitor.bus_option') => __('visitor.bus_option'),
+                                __('visitor.travel_option') => __('visitor.travel_option'),
+                                __('visitor.online_ride_option') => __('visitor.online_ride_option'),
+                                __('visitor.walking_option') => __('visitor.walking_option'),
+                                __('visitor.other_option') => __('visitor.other_option'),
                             ]" />
 
                         <div class="mt-5 mb-4">
                             <button type="submit" id="submitBtn" class="btn-default w-100">
-                                <span id="btn-text">Kirim</span>
+                                <span id="btn-text">{{ __('visitor.submit') }}</span>
                                 <span id="btn-loading" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                                    <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}
                                 </span>
                             </button>
                         </div>
@@ -131,7 +131,7 @@
             const alertDiv = document.createElement('div');
             alertDiv.className = 'alert alert-success alert-dismissible fade show';
             alertDiv.innerHTML = `
-            <i class="fas fa-check-circle"></i> Form berhasil diisi otomatis untuk testing!
+            <i class="fas fa-check-circle"></i> {{ __('visitor.form_auto_filled') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
 

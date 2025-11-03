@@ -1,5 +1,7 @@
 {{-- Jquery Library File --}}
 <script src="{{ asset('theme/frontend/js/jquery-3.7.1.min.js') }}"></script>
+{{-- Popper.js for Bootstrap dropdowns --}}
+<script src="{{ asset('theme/frontend/js/popper.min.js') }}"></script>
 {{-- Bootstrap js file --}}
 <script src="{{ asset('theme/frontend/js/bootstrap.min.js') }}"></script>
 {{-- Validator js file --}}

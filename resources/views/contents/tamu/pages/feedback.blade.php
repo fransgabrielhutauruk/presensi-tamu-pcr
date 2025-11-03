@@ -5,10 +5,10 @@
         <div class="row min-vh-100 align-items-center justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <div class="checkout-success-container">
-                    <x-tamu.page-header title="Feedback" img=true />
+                    <x-tamu.page-header title="{{ __('visitor.visitor_feedback') }}" img=true />
                     <div class="feedback-card wow fadeInUp my-4" data-wow-delay="0.5s">
                         <h6 class="text-center mb-0">
-                            Bagaimana penilaian Anda terhadap pelayanan kami?
+                            {{ __('visitor.service_rating') }}
                         </h6>
 
                         <form id="feedbackForm" method="POST" action="{{ route('tamu.feedback-store', $kunjunganId) }}">
@@ -24,7 +24,10 @@
                                         </button>
                                     @endfor
                                 </div>
-                                <p class="rating-help-text">Pilih rating untuk memberikan penilaian</p>
+                                <p class="rating-help-text" id="defaultHelpText">Pilih rating untuk memberikan penilaian</p>
+                                <div class="rating-description" id="ratingDescription" style="display: none;">
+                                    <span class="rating-label"></span>
+                                </div>
                                 <input type="hidden" name="rating" id="ratingInput" required>
                                 <div id="rating-error" class="rating-error-message" style="display: none;">
                                     <i class="fas fa-exclamation-triangle me-1"></i>
@@ -96,6 +99,14 @@
             margin: 0;
         }
 
+        .rating-description {
+            margin-top: 0.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: var(--primary-main);
+            font-weight: bold;
+        }
+
         .rating-error-message {
             font-size: 0.875rem;
             color: #e74c3c;
@@ -130,8 +141,18 @@
             const submitLoading = document.querySelector('.submit-loading');
             const ratingError = document.getElementById('rating-error');
             const starRating = document.querySelector('.star-rating');
+            const defaultHelpText = document.getElementById('defaultHelpText');
+            const ratingDescription = document.getElementById('ratingDescription');
+            const ratingLabel = document.querySelector('.rating-label');
 
             let currentRating = 0;
+            const ratingDescriptions = {
+                1: "Sangat Tidak Baik",
+                2: "Tidak Baik", 
+                3: "Cukup",
+                4: "Baik",
+                5: "Sangat Baik"
+            };
 
             starBtns.forEach((btn, index) => {
                 btn.addEventListener('click', function() {
@@ -154,6 +175,7 @@
                 ratingInput.value = rating;
                 hideRatingError();
                 highlightStars(rating);
+                showRatingDescription(rating);
             }
 
             function highlightStars(rating) {
@@ -164,6 +186,17 @@
                         btn.classList.remove('active');
                     }
                 });
+            }
+
+            function showRatingDescription(rating) {
+                if (rating > 0) {
+                    defaultHelpText.style.display = 'none';
+                    ratingDescription.style.display = 'block';
+                    ratingLabel.textContent = ratingDescriptions[rating];
+                } else {
+                    defaultHelpText.style.display = 'block';
+                    ratingDescription.style.display = 'none';
+                }
             }
 
             function showRatingError() {

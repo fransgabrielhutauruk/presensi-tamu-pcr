@@ -19,7 +19,7 @@
         <!--end::Sidebar mobile toggle-->
         <!--begin::Logo-->
         <a href="{{ url('/') }}" class="app-sidebar-logo">
-            <h4 class="mb-0 fw-bold ms-2">PRESENSI TAMU</h4>
+            <h4 class="mb-0 fw-bold ms-2 text-dark">PRESENSI TAMU</h4>
             <!-- <img alt="Logo" src="{{ asset('theme') }}/media/logos/default.png" class="h-25px h-md-30px theme-light-show" /> -->
             <!-- <img alt="Logo" src="{{ asset('theme') }}/media/logos/default-dark.png" class="h-25px h-md-30px theme-dark-show" /> -->
         </a>

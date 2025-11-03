@@ -2,46 +2,41 @@
 
 <div>
     <x-tamu.section-header
-        title="Data Instansi"
+        :title="__('visitor.institution_data')"
         icon="🏛️" />
     <x-form.input-field
         name="instansi"
-        label="Nama Instansi"
-        placeholder="Nama instansi"
+        :label="__('visitor.institution_name')"
+        :placeholder="__('visitor.institution_name_placeholder')"
         required="true" />
     <x-form.select-field
         name="jenis_instansi"
-        label="Jenis Instansi"
+        :label="__('visitor.institution_type')"
         required="true"
-        :options="[
-                'Pemerintah Pusat' => 'Pemerintah Pusat',
-                'Pemerintah Daerah' => 'Pemerintah Daerah', 
-                'BUMN' => 'BUMN',
-                'Swasta' => 'Swasta',
-                'Perguruan Tinggi' => 'Perguruan Tinggi',
-                'Yayasan' => 'Yayasan',
-                'Lainnya' => 'Lainnya'
+        :options="$opsiData['jenis_instansi'] ?? [
+                __('visitor.central_government') => __('visitor.central_government'),
+                __('visitor.regional_government') => __('visitor.regional_government'), 
+                __('visitor.state_enterprise') => __('visitor.state_enterprise'),
+                __('visitor.private') => __('visitor.private'),
+                __('visitor.university') => __('visitor.university'),
+                __('visitor.foundation') => __('visitor.foundation'),
+                __('visitor.others') => __('visitor.others')
             ]" />
     <x-form.input-field
         name="jabatan"
-        label="Jabatan/Posisi"
-        placeholder="Jabatan/Posisi"
+        :label="__('visitor.position_job')"
+        :placeholder="__('visitor.position_placeholder')"
         required="true" />
 </div>
 
 <div>
     <x-tamu.section-header
-        title="Data Kunjungan"
+        :title="__('visitor.visit_data')"
         icon="🎯" />
     <x-form.select-field
         name="pihak_dituju"
-        label="Pihak yang Dituju"
+        :label="__('visitor.visiting_party')"
         required="true"
-        :options="[
-            'Direktur' => 'Direktur', 
-            'Wakil Direktur' => 'Wakil Direktur', 
-            'BP3M' => 'BP3M', 
-            'Lainnya' => 'Lainnya'
-        ]" />
+        :options="$options['pihak_dituju']" />
     <x-tamu.partials.data-kunjungan />
 </div>

@@ -37,6 +37,8 @@
             $validationAttrs .= ' ' . $validationRules;
         }
     }
+    
+    $requiredErrorMessage = __('visitor.field_required', ['field' => $label]);
 @endphp
 
 <div class="form-group mb-3">
@@ -48,7 +50,7 @@
     </label>
     <textarea class="form-control @if ($hasBackendError) is-invalid @endif" name="{{ $name }}"
         id="{{ $fieldId }}" rows="{{ $rows }}" placeholder="{{ $placeholder }}" {!! $validationAttrs !!}
-        data-error="{{ $label }} harus diisi">{{ old($name, $value) }}</textarea>
+        data-error="{{ $requiredErrorMessage }}">{{ old($name, $value) }}</textarea>
 
     @if ($hasBackendError)
         <div class="invalid-feedback">

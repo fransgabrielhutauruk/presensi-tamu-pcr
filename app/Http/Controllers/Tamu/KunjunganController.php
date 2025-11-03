@@ -24,10 +24,10 @@ class KunjunganController extends Controller
     public function sukses($kunjunganId)
     {
         try {
-            $kunjungan = Kunjungan::with('tamu')->findOrFail(decid($kunjunganId));
+            $kunjungan = Kunjungan::with(['tamu', 'details'])->findOrFail(decid($kunjunganId));
             return view('contents.tamu.pages.sukses', compact('kunjungan'));
-        } catch (\Exception $e) {
-            Log::error('Gagal memuat halaman sukses kunjungan' . $e->getMessage());
+        } catch (\Throwable $th) {
+            Log::error('Gagal memuat halaman sukses kunjungan' . $th->getMessage());
             return redirect()->route('tamu.home')->with('error', 'Kunjungan tidak ditemukan');
         }
     }
@@ -60,7 +60,7 @@ class KunjunganController extends Controller
                 'is_checkout' => true,
                 'checkout_time' => now()
             ]);
-            return redirect()->route('tamu.feedback', $kunjunganId)->with('success', 'Waktu checkout berhasil disimpan');
+            return redirect()->route('tamu.feedback', $kunjunganId);
         } catch (\Exception $e) {
             Log::error('Gagal menyimpan checkout kunjungan' . $e->getMessage());
             return redirect()->back()

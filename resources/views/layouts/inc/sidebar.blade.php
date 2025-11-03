@@ -8,6 +8,9 @@
         @if(hasAnyActiveRole(['Mahasiswa', 'Staf', 'Admin', 'Eksekutif']))
         <x-theme.menu link="{{ route('app.dashboard.index') }}" text="Dashboard" icon="ki-outline ki-graph-up" :active="$pageData->activeMenu == 'dashboard'" />
         <x-theme.menu link="{{ route('app.event.index') }}" text="Event" icon="ki-outline ki-calendar-edit" :active="$pageData->activeMenu == 'event' || $pageData->activeMenu == 'event-kategori'" />
+        <x-theme.menu link="{{ route('app.kunjungan.index') }}" text="Kunjungan" icon="ki-outline ki-user-tick" :active="$pageData->activeMenu == 'kunjungan'" />
+        <x-theme.menu link="{{ route('app.kunjungan.validasi') }}" text="Validasi Kunjungan" icon="ki-outline ki-check-circle" :active="$pageData->activeMenu == 'validasi-kunjungan'" />
+        <x-theme.menu link="{{ route('app.monitoring.kunjungan') }}" text="Monitoring Kunjungan" icon="ki-outline ki-monitor-mobile" :active="$pageData->activeMenu == 'monitoring-kunjungan'" />
         @endif
 
         @if(hasAnyActiveRole(['Admin', 'Eksekutif']))
