@@ -74,6 +74,35 @@ function avatar($fileName = '', $type = 'url')
         return $folder;
 }
 
+function getAvailableLocales()
+{
+    return [
+        'id' => [
+            'name' => 'Bahasa Indonesia',
+            'flag' => '🇮🇩',
+            'code' => 'id'
+        ],
+        'en' => [
+            'name' => 'English',
+            'flag' => '🇺🇸', 
+            'code' => 'en'
+        ]
+    ];
+}
+
+function getCurrentLocale()
+{
+    $locales = getAvailableLocales();
+    $currentLocale = app()->getLocale();
+    
+    return $locales[$currentLocale] ?? $locales['id'];
+}
+
+function languageSwitchUrl($locale)
+{
+    return route('language.switch', ['locale' => $locale]);
+}
+
 
 if (!function_exists('publicMedia')) {
     /**

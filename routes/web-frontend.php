@@ -2,10 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Frontend\DEV;
+use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\Frontend\MainController;
 use App\Http\Controllers\Tamu\KunjunganController;
 use App\Http\Controllers\Tamu\KunjunganEventController;
 use App\Http\Controllers\Tamu\KunjunganNonEventController;
+
+Route::get('/language/switch/{locale}', [LanguageController::class, 'switch'])->name('language.switch');
+Route::get('/language/current', [LanguageController::class, 'current'])->name('language.current');
 
 Route::name('tamu.')->group(function () {
     Route::controller(KunjunganController::class)->group(function () {
@@ -27,8 +31,8 @@ Route::name('tamu.')->group(function () {
 
         Route::controller(KunjunganEventController::class)->group(function () {
             Route::prefix('/event')->name('event.')->group(function () {
-                Route::get('/presensi/{eventId}', 'formPresensiLuar')->name('form-presensi-luar');
-                Route::post('/store', 'storePresensiLuar')->name('store-presensi-luar');
+                Route::get('/presensi/{eventId}', 'formPresensiNonCivitas')->name('form-presensi-non-civitas');
+                Route::post('/store', 'storePresensiNonCivitas')->name('store-presensi-non-civitas');
                 Route::get('/list', 'listEvent')->name('list');
                 Route::get('/{eventId}', 'identitas')->name('identitas');
                 Route::get('/presensi-civitas/{eventId}', 'formPresensiCivitas')->name('form-presensi-civitas');

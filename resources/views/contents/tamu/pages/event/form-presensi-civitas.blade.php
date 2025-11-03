@@ -5,22 +5,22 @@
         <div class="row min-vh-100">
             <div class="col-md-6 justify-content-center mx-auto">
                 <div class="text-center mt-5">
-                    <x-tamu.page-header title="Form Presensi EVENT" subtitle="CIVITAS PCR" />
+                    <x-tamu.page-header :title="__('visitor.event_attendance_form')" :subtitle="__('visitor.pcr_civitas')" />
 
                     <div class="text-start mt-3 mb-4 wow fadeInUp">
                         <a href="{{ route('tamu.event.identitas', $eventId) }}"
-                            class="btn btn-link p-0 d-flex align-items-center gap-2 text-decoration-none"
+                            class="btn btn-link p-0 align-items-center gap-2 text-decoration-none"
                             style="color: var(--dark-color);">
                             <i class="fas fa-arrow-left"></i>
-                            <span class="ms-2">Kembali ke Pilih Jenis Peserta</span>
+                            <span class="ms-2">{{ __('visitor.back') }}</span>
                         </a>
                     </div>
 
                     @if (app()->environment('local'))
                         <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
-                            <small><i class="fas fa-info-circle"></i> Mode Development - Auto Fill untuk Testing</small>
+                            <small><i class="fas fa-info-circle"></i> {{ __('visitor.development_mode') }}</small>
                             <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
-                                <i class="fas fa-magic"></i> Auto Fill
+                                <i class="fas fa-magic"></i> {{ __('visitor.auto_fill') }}
                             </button>
                         </div>
                     @endif
@@ -61,25 +61,27 @@
                         novalidate>
                         @csrf
                         <input type="hidden" name="event_id" value="{{ $eventId }}">
-                        <x-tamu.partials.data-pengunjung />
-                        <x-form.input-field name="nim_nip" label="NIM/NIP" placeholder="NIM atau NIP" required="true" />
-
-                        <x-form.select-field name="transportasi" label="Jenis Kendaraan/Transportasi" required="true"
+                        <x-tamu.section-header :title="__('visitor.personal_data')" icon="👤" />
+                        <x-form.input-field name="nim_nip" :label="__('visitor.nim_nip')" :placeholder="__('visitor.nim_nip_placeholder')" required="true" />
+                        <x-form.input-field name="nama" :label="__('visitor.full_name')" :placeholder="__('visitor.enter_visitor_name')"
+                            required="true" />
+                        <x-form.radio-group name="jenis_kelamin" :label="__('visitor.gender')" :required="true"
                             :options="[
-                                'Mobil' => 'Mobil',
-                                'Motor' => 'Motor',
-                                'Bus' => 'Bus',
-                                'Travel' => 'Travel',
-                                'Online Ride' => 'Online Ride',
-                                'Jalan Kaki' => 'Jalan Kaki',
-                                'Lainnya' => 'Lainnya',
+                                __('visitor.male') => __('visitor.male'),
+                                __('visitor.female') => __('visitor.female'),
                             ]" />
-
+                        <x-form.input-field name="nomor_telepon" :label="__('visitor.phone_number')" :placeholder="__('visitor.enter_phone')"
+                            required="true" type="tel"
+                            :validationRules="'pattern=\"[0-9]+\" data-pattern-error=\"' . __('visitor.phone_pattern_error') . '\"'" />
+                        <x-form.input-field name="email" :label="__('visitor.email_address')" :placeholder="__('visitor.enter_email')" required="true"
+                            type="email" />
+                        <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')"
+                            required="true" />
                         <div class="mt-5 mb-4">
                             <button type="submit" id="submitBtn" class="btn-default w-100">
-                                <span id="btn-text">Kirim</span>
+                                <span id="btn-text">{{ __('visitor.submit') }}</span>
                                 <span id="btn-loading" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                                    <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}
                                 </span>
                             </button>
                         </div>
@@ -159,7 +161,7 @@
             const alertDiv = document.createElement('div');
             alertDiv.className = 'alert alert-success alert-dismissible fade show';
             alertDiv.innerHTML = `
-            <i class="fas fa-check-circle"></i> Form berhasil diisi otomatis untuk testing!
+            <i class="fas fa-check-circle"></i> {{ __('visitor.form_auto_filled') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
 

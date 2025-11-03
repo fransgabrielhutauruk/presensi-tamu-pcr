@@ -3,16 +3,16 @@
 @section('content')
     @php
         $tujuanMap = [
-            'instansi' => 'Kunjungan Resmi Instansi',
-            'bisnis' => 'Keperluan Bisnis/Kemitraan',
-            'ortu' => 'Orang Tua/Wali Mahasiswa',
-            'calon_ortu' => 'Calon Orang Tua/Wali Mahasiswa',
-            'lainnya' => 'Lainnya',
+            'instansi' => __('visitor.institutional_official'),
+            'bisnis' => __('visitor.business_matters'),
+            'ortu' => __('visitor.parent_guardian_visit'),
+            'informasi_kampus' => __('visitor.campus_information'),
+            'lainnya' => __('visitor.other_purposes'),
         ];
     @endphp
 
     <div class="container">
-        <div class="row">
+        <div class="row min-vh-100">
             <div class="col-md-5 justify-content-center mx-auto">
                 <div class="text-center mt-5">
                     <x-tamu.page-header :title="$tujuanMap[$tujuan] ?? 'Kunjungan'" />
@@ -22,7 +22,7 @@
                             class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
                             style="color: var(--dark-color);">
                             <i class="fas fa-arrow-left"></i>
-                            <span>Kembali</span>
+                            <span>{{ __('visitor.back') }}</span>
                         </a>
                     </div>
 
@@ -34,9 +34,9 @@
 
                         @if (app()->environment('local'))
                             <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
-                                <small><i class="fas fa-info-circle"></i> Mode Development - Auto Fill untuk Testing</small>
+                                <small><i class="fas fa-info-circle"></i> {{ __('visitor.development_mode') }}</small>
                                 <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
-                                    <i class="fas fa-magic"></i> Auto Fill
+                                    <i class="fas fa-magic"></i> {{ __('visitor.auto_fill') }}
                                 </button>
                             </div>
                         @endif
@@ -54,27 +54,20 @@
                                 @include('components.tamu.partials.ortu')
                             @break
 
-                            @case('calon_ortu')
+                            @case('informasi_kampus')
                                 @include('components.tamu.partials.calon-ortu')
                             @break
 
                             @case('lainnya')
                                 @include('components.tamu.partials.lainnya')
                             @break
-
-                            @default
-                                <div class="alert alert-warning">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Kategori tujuan tidak valid. <a href="{{ route('tamu.non-event.tujuan') }}">Silahkan pilih
-                                        kembali</a>.
-                                </div>
                         @endswitch
 
                         <div class="my-4">
                             <button type="submit" id="submitBtn" class="btn-default w-100">
-                                <span id="btn-text">Kirim</span>
+                                <span id="btn-text">{{ __('visitor.submit') }}</span>
                                 <span id="btn-loading" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                                    <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}
                                 </span>
                             </button>
                         </div>
@@ -133,7 +126,9 @@
                     const pihakDitujuOrtuField = document.querySelector('select[name="pihak_dituju"]');
                     const namaMahasiswaField = document.querySelector('input[name="nama_mahasiswa"]');
                     const nimMahasiswaField = document.querySelector('input[name="nim_mahasiswa"]');
+                    const jumlahRombongan = document.querySelector('input[name="jumlah_rombongan"]');
 
+                    if (jumlahRombongan) jumlahRombongan.value = 1;
                     if (hubunganField) hubunganField.value = 'Orang Tua';
                     if (pihakDitujuOrtuField) pihakDitujuOrtuField.value = 'BAAK';
                     if (namaMahasiswaField) namaMahasiswaField.value = 'Jane Doe';
@@ -143,7 +138,9 @@
                     const jenisInstansiField = document.querySelector('select[name="jenis_instansi"]');
                     const jabatanField = document.querySelector('input[name="jabatan"]');
                     const pihakDitujuField = document.querySelector('select[name="pihak_dituju"]');
+                    const jumlahRombongan = document.querySelector('input[name="jumlah_rombongan"]');
 
+                    if (jumlahRombongan) jumlahRombongan.value = 1;
                     if (instansiField) instansiField.value = 'Kementerian Teknologi';
                     if (jenisInstansiField) jenisInstansiField.value = 'Pemerintah Pusat';
                     if (jabatanField) jabatanField.value = 'Staff IT';
@@ -154,7 +151,9 @@
                     const skalaPerusahaanField = document.querySelector('select[name="skala_perusahaan"]');
                     const jabatanField = document.querySelector('input[name="jabatan"]');
                     const pihakDitujuField = document.querySelector('select[name="pihak_dituju"]');
+                    const jumlahRombongan = document.querySelector('input[name="jumlah_rombongan"]');
 
+                    if (jumlahRombongan) jumlahRombongan.value = 1;
                     if (instansiField) instansiField.value = 'PT. Teknologi Maju';
                     if (bidangUsahaField) bidangUsahaField.value = 'Teknologi Informasi';
                     if (skalaPerusahaanField) skalaPerusahaanField.value = 'Perusahaan Menengah (50-250 karyawan)';
@@ -163,14 +162,18 @@
                 } else if (tujuan === 'calon_ortu') {
                     const asalSekolahField = document.querySelector('input[name="asal_sekolah"]');
                     const prodiDiminatiField = document.querySelector('select[name="prodi_diminati"]');
+                    const jumlahRombongan = document.querySelector('input[name="jumlah_rombongan"]');
 
+                    if (jumlahRombongan) jumlahRombongan.value = 1;
                     if (asalSekolahField) asalSekolahField.value = 'SMA Negeri 1 Jakarta';
                     if (prodiDiminatiField) prodiDiminatiField.value = 'Teknik Informatika';
                 } else if (tujuan === 'lainnya') {
                     const asalField = document.querySelector('input[name="asal"]');
                     const keperluanDetailField = document.querySelector('textarea[name="keperluan_detail"]');
                     const pihakDitujuLainnyaField = document.querySelector('input[name="pihak_dituju"]');
+                    const jumlahRombongan = document.querySelector('input[name="jumlah_rombongan"]');
 
+                    if (jumlahRombongan) jumlahRombongan.value = 1;
                     if (asalField) asalField.value = 'Universitas Test';
                     if (keperluanDetailField) keperluanDetailField.value = 'Konsultasi proyek akhir mahasiswa';
                     if (pihakDitujuLainnyaField) pihakDitujuLainnyaField.value = 'Dosen Pembimbing';
@@ -180,7 +183,7 @@
             const alertDiv = document.createElement('div');
             alertDiv.className = 'alert alert-success alert-dismissible fade show';
             alertDiv.innerHTML = `
-            <i class="fas fa-check-circle"></i> Form berhasil diisi otomatis untuk testing!
+            <i class="fas fa-check-circle"></i> {{ __('visitor.form_auto_filled') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
 

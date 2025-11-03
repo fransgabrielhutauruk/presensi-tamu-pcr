@@ -15,10 +15,11 @@ return new class extends Migration
             $table->increments('kunjungan_id');
             $table->unsignedInteger('tamu_id');
             $table->unsignedInteger('event_id')->nullable();
-            $table->enum('identitas', ['tamu_luar', 'civitas_pcr'])->default('tamu_luar');
+            $table->enum('identitas', ['non-civitas', 'civitas']);
             $table->string('kategori_tujuan')->nullable();
+            $table->integer('jumlah_rombongan')->nullable();
             $table->time('waktu_keluar');
-            $table->string('transportasi');
+            $table->string('transportasi')->nullable();
             $table->boolean('is_checkout')->default(false);
             $table->timestamp('checkout_time')->nullable();
             $table->boolean('status_validasi')->default(false);

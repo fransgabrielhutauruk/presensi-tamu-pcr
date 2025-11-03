@@ -7,24 +7,24 @@
                 <div class="text-center">
                     <div class="relative min-h-screen d-flex flex-column justify-content-center mx-auto">
                         <div class="position-relative" style="z-index: 10;">
-                            <x-tamu.page-header title="Kategori Kunjungan" question="Apa tujuan kunjungan Anda hari ini?" />
+                            <x-tamu.page-header title="{{ __('visitor.visit_purpose_title') }}" question="{{ __('visitor.select_purpose') }}" />
                             <form id="tujuan-form" class="d-flex flex-column flex-fill mt-4 mx-auto">
                                 <fieldset class="d-flex flex-column" style="gap: 1rem;">
                                     <x-form.radio-option name="tujuan" id="opt-instansi" value="instansi" icon="🏢"
-                                        label="Kunjungan Resmi Instansi" delay="0.2s" :required="true" />
+                                        label="{{ __('visitor.institutional_visit') }}" delay="0.2s" :required="true" />
 
                                     <x-form.radio-option name="tujuan" id="opt-bisnis" value="bisnis" icon="🤝"
-                                        label="Keperluan Bisnis/Kemitraan" delay="0.3s" :required="true" />
+                                        label="{{ __('visitor.business_partnership') }}" delay="0.3s" :required="true" />
 
                                     <x-form.radio-option name="tujuan" id="opt-ortu" value="ortu" icon="👪"
-                                        label="Orang Tua/Wali Mahasiswa" delay="0.4s" :required="true" />
+                                        label="{{ __('visitor.parent_student') }}" delay="0.4s" :required="true" />
 
-                                    <x-form.radio-option name="tujuan" id="opt-calon-ortu" value="calon_ortu"
-                                        icon="👨‍👩‍👧" label="Calon Orang Tua/Wali Mahasiswa" delay="0.5s"
+                                    <x-form.radio-option name="tujuan" id="opt-calon-ortu" value="informasi_kampus"
+                                        icon="👨‍👩‍👧" label="{{ __('visitor.campus_info_pmb') }}" delay="0.5s"
                                         :required="true" />
 
                                     <x-form.radio-option name="tujuan" id="opt-lainnya" value="lainnya" icon="🗓️"
-                                        label="Lainnya" delay="0.6s" :required="true" />
+                                        label="{{ __('visitor.other') }}" delay="0.6s" :required="true" />
                                 </fieldset>
 
                                 <div id="error-message" class="alert alert-danger mt-3" role="alert"
@@ -32,7 +32,7 @@
 
                                 <button type="submit" id="submit-btn" class="btn-default w-100 mt-4 wow fadeInUp"
                                     data-wow-delay="0.7s">
-                                    Lanjutkan
+                                    {{ __('visitor.continue') }}
                                 </button>
                             </form>
                         </div>
@@ -91,7 +91,7 @@
                 const selectedValue = document.querySelector('input[name="tujuan"]:checked');
 
                 if (!selectedValue) {
-                    errorMessage.textContent = 'Silakan pilih tujuan kunjungan Anda.';
+                    errorMessage.textContent = '{{ __("visitor.purpose_required") }}';
                     errorMessage.style.display = 'block';
                     return;
                 }

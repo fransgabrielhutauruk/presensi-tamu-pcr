@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePresensiRequest;
+use App\Models\MstOpsiKunjungan;
 
 class KunjunganNonEventController extends Controller
 {
@@ -21,15 +22,23 @@ class KunjunganNonEventController extends Controller
     public function formPresensi(Request $request)
     {
         $tujuan = $request->get('tujuan');
-
-        $validCategories = ['instansi', 'bisnis', 'ortu', 'calon_ortu', 'lainnya'];
-
+        $validCategories = [
+            'instansi',
+            'bisnis',
+            'ortu',
+            'informasi_kampus',
+            'lainnya'
+        ];
         if (!$tujuan || !in_array($tujuan, $validCategories)) {
             return redirect()->route('tamu.non-event.tujuan')
                 ->with('error', 'Silahkan pilih tujuan kunjungan yang sesuai.');
-        }
+        };
 
-        return view('contents.tamu.pages.non-event.form-presensi', compact('tujuan'));
+        $options = MstOpsiKunjungan::getMultipleDropdownOptions([
+            'pihak_dituju',
+            'prodi'
+        ]);
+        return view('contents.tamu.pages.non-event.form-presensi', compact('tujuan', 'options'));
     }
 
     public function storePresensi(StorePresensiRequest $request)
@@ -40,14 +49,14 @@ class KunjunganNonEventController extends Controller
             'email_tamu' => $request->email,
             'nomor_telepon_tamu' => $request->nomor_telepon,
         ];
-
         DB::beginTransaction();
         try {
             $tamu = Tamu::create($data);
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => $request->kategori_tujuan,
-                'identitas' => 'tamu_luar',
+                'identitas' => 'non-civitas',
+                'jumlah_rombongan' => $request->jumlah_rombongan,
                 'waktu_keluar' => $request->waktu_keluar,
                 'transportasi' => $request->transportasi,
                 'status_validasi' => false,
@@ -98,7 +107,7 @@ class KunjunganNonEventController extends Controller
             case 'bisnis':
                 $detailData = [
                     'instansi' => $request->instansi,
-                    'bidang_usaha' => $request->bidang_usaha,
+                    'kategori_instansi' => $request->kategori_instansi,
                     'skala_perusahaan' => $request->skala_perusahaan,
                     'jabatan' => $request->jabatan,
                     'pihak_dituju' => $request->pihak_dituju,
@@ -110,6 +119,7 @@ class KunjunganNonEventController extends Controller
                 $detailData = [
                     'hubungan_dengan_mahasiswa' => $request->hubungan_dengan_mahasiswa,
                     'nama_mahasiswa' => $request->nama_mahasiswa,
+                    'prodi_mahasiswa' => $request->prodi_mahasiswa,
                     'nim_mahasiswa' => $request->nim_mahasiswa,
                     'pihak_dituju' => $request->pihak_dituju,
                     'keperluan' => $request->keperluan,

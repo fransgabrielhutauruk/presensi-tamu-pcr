@@ -5,8 +5,8 @@
         <div class="row min-vh-100 align-items-center">
             <div class="col-md-5 justify-content-center mx-auto">
                 <div class="text-center mt-5">
-                    <x-tamu.page-header title="Jenis Kunjungan"
-                        subtitle="Silakan pilih jenis presensi kunjungan Anda ke Politeknik Caltex Riau" />
+                    <x-tamu.page-header title="{{ __('visitor.choose_visit_type') }}"
+                        subtitle="{{ __('visitor.select_visit_type') }}" />
                     <div class="row g-4 mt-3">
                         <div class="col-12">
                             <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp">
@@ -14,12 +14,11 @@
                                     <div class="mb-2">
                                         <h5><i class="fas fa-user fa-2x mb-1"></i></h5>
                                     </div>
-                                    <h4 class="card-title mb-1 fw-bold">Kunjungan Non Event</h4>
+                                    <h4 class="card-title mb-1 fw-bold">{{ __('visitor.non_event_visit_title') }}</h4>
                                     <p class="card-text text-muted mb-2 flex-grow-1">
-                                        Kunjungan umum / belum ada janji kunjungan
+                                        {{ __('visitor.non_event_visit_desc') }}
                                     </p>
-                                    <a href="{{ route('tamu.non-event.tujuan') }}" class="btn-default w-100 mt- fs-6">Pilih
-                                        Kunjungan Non Event</a>
+                                    <a href="{{ route('tamu.non-event.tujuan') }}" class="btn-default w-100 mt- fs-6">{{ __('visitor.non_event_visit_title') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -30,12 +29,11 @@
                                     <div class="mb-2">
                                         <h5><i class="fas fa-calendar-alt fa-2x mb-1"></i></h5>
                                     </div>
-                                    <h4 class="card-title mb-1 fw-bold">Kunjungan Event</h4>
+                                    <h4 class="card-title mb-1 fw-bold">{{ __('visitor.event_visit_title') }}</h4>
                                     <p class="card-text text-muted mb-2 flex-grow-1">
-                                        Kunjungan untuk menghadiri kegiatan / sudah ada janji kunjungan
+                                        {{ __('visitor.event_visit_desc') }}
                                     </p>
-                                    <a href="{{ route('tamu.event.list') }}" class="btn-default w-100 mt-1">Pilih Kunjungan
-                                        Event</a>
+                                    <a href="{{ route('tamu.event.list') }}" class="btn-default w-100 mt-1">{{ __('visitor.event_visit_title') }}</a>
                                 </div>
                             </div>
                         </div>

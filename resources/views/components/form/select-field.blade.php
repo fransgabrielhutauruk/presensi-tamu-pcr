@@ -4,12 +4,14 @@
     'label',
     'options' => [],
     'required' => false,
-    'placeholder' => 'Pilih...',
+    'placeholder' => null,
     'value' => null,
 ])
 
 @php
     $fieldId = $id ?: $name;
+    $defaultPlaceholder = $placeholder ?: __('visitor.select_category');
+    $requiredErrorMessage = __('visitor.field_required', ['field' => $label]);
 @endphp
 
 <div class="form-group mb-3">
@@ -20,8 +22,8 @@
         @endif
     </label>
     <select class="form-select @error($name) is-invalid @enderror" name="{{ $name }}" id="{{ $fieldId }}"
-        {{ $required ? 'required' : '' }} data-error="{{ $label }} harus dipilih">
-        <option value="">{{ $placeholder }}</option>
+        {{ $required ? 'required' : '' }} data-error="{{ $requiredErrorMessage }}">
+        <option value="">{{ $defaultPlaceholder }}</option>
         @foreach ($options as $optionValue => $optionLabel)
             <option value="{{ $optionValue }}" {{ old($name, $value) == $optionValue ? 'selected' : '' }}>
                 {{ $optionLabel }}

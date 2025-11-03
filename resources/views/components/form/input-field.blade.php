@@ -18,7 +18,7 @@
         $validationAttrs .= ' required';
     }
     if ($type === 'email') {
-        $validationAttrs .= ' data-error="Format email tidak valid"';
+        $validationAttrs .= ' data-error="' . __('visitor.email_format_invalid') . '"';
     }
 
     if ($validationRules) {
@@ -40,6 +40,8 @@
             $validationAttrs .= ' ' . $validationRules;
         }
     }
+    
+    $requiredErrorMessage = __('visitor.field_required', ['field' => $label]);
 @endphp
 
 <div class="form-group mb-3">
@@ -51,7 +53,7 @@
     </label>
     <input type="{{ $type }}" class="form-control @if ($hasBackendError) is-invalid @endif"
         name="{{ $name }}" id="{{ $fieldId }}" placeholder="{{ $placeholder }}"
-        value="{{ old($name, $value) }}" {!! $validationAttrs !!} data-error="{{ $label }} harus diisi">
+        value="{{ old($name, $value) }}" {!! $validationAttrs !!} data-error="{{ $requiredErrorMessage }}">
 
     @if ($hasBackendError)
         <div class="invalid-feedback">

@@ -42,7 +42,7 @@ class KunjunganEventController extends Controller
         }
     }
 
-    public function formPresensiLuar(Request $request, $eventId)
+    public function formPresensiNonCivitas(Request $request, $eventId)
     {
         try {
             $event = Event::with('eventKategori')->findOrFail(decid($eventId));
@@ -58,7 +58,7 @@ class KunjunganEventController extends Controller
         }
     }
 
-    public function storePresensiLuar(Request $request)
+    public function storePresensiNonCivitas(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'event_id' => 'required',
@@ -90,7 +90,7 @@ class KunjunganEventController extends Controller
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => 'event',
-                'identitas' => 'tamu_luar',
+                'identitas' => 'non-civitas',
                 'event_id' => $event->event_id,
                 'waktu_keluar' => $event->waktu_selesai_event,
                 'transportasi' => $request->transportasi,
@@ -99,7 +99,7 @@ class KunjunganEventController extends Controller
             ];
             $kunjungan = Kunjungan::create($kunjunganData);
             $detailData = [
-                'instansi' => $request->instansi,
+                'institusi' => $request->institusi,
                 'jabatan' => $request->jabatan,
             ];
             $urutan = 1;
@@ -145,12 +145,12 @@ class KunjunganEventController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'event_id' => 'required',
+            'nim_nip' => 'required|string|max:20',
             'nama' => 'required',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'email' => 'required|email',
             'nomor_telepon' => 'required|string|max:20',
-            'nim_nip' => 'required|string|max:20',
-            'transportasi' => 'required',
+            'email' => 'required|email',
+            'jabatan' => 'required'
         ]);
         if ($validator->fails()) {
             return redirect()->back()
@@ -172,16 +172,16 @@ class KunjunganEventController extends Controller
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => 'event',
-                'identitas' => 'civitas_pcr',
+                'identitas' => 'civitas',
                 'event_id' => $event->event_id,
                 'waktu_keluar' => $event->waktu_selesai_event,
-                'transportasi' => $request->transportasi,
                 'status_validasi' => false,
                 'is_checkout' => false,
             ];
             $kunjungan = Kunjungan::create($kunjunganData);
             $detailData = [
                 'nim_nip' => $request->nim_nip,
+                'jabatan' => $request->jabatan
             ];
             $urutan = 1;
             foreach ($detailData as $key => $value) {
@@ -196,11 +196,10 @@ class KunjunganEventController extends Controller
             }
             $kunjunganIdHashed = encid($kunjungan->kunjungan_id);
             DB::commit();
-            return redirect()->route('tamu.sukses', $kunjunganIdHashed)
-                ->with('success', 'Presensi event civitas PCR berhasil disimpan.');
-        } catch (\Exception $e) {
+            return redirect()->route('tamu.sukses', $kunjunganIdHashed);
+        } catch (\Throwable $th) {
             DB::rollBack();
-            Log::error('Gagal menyimpan presensi event civitas: ' . $e->getMessage());
+            Log::error('Gagal menyimpan presensi event civitas: ' . $th->getMessage());
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');

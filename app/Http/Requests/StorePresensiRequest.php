@@ -22,6 +22,7 @@ class StorePresensiRequest extends FormRequest
             'kategori_tujuan' => 'required|in:instansi,bisnis,ortu,calon_ortu,lainnya',
             'waktu_keluar' => 'required|date_format:H:i',
             'transportasi' => 'required|string|max:255',
+            'jumlah_rombongan' => 'required|integer|min:1'
         ];
 
         switch ($this->kategori_tujuan) {
@@ -38,7 +39,7 @@ class StorePresensiRequest extends FormRequest
             case 'bisnis':
                 $rules = array_merge($rules, [
                     'instansi' => 'required|string|max:255',
-                    'bidang_usaha' => 'required|string|max:255',
+                    'kategori_instansi' => 'required|string|max:255',
                     'skala_perusahaan' => 'required|string|max:255',
                     'jabatan' => 'required|string|max:255',
                     'pihak_dituju' => 'required|string|max:255',
@@ -49,8 +50,9 @@ class StorePresensiRequest extends FormRequest
             case 'ortu':
                 $rules = array_merge($rules, [
                     'hubungan_dengan_mahasiswa' => 'required|string|max:255',
-                    'nim_mahasiswa' => 'required|string|max:20',
                     'nama_mahasiswa' => 'required|string|max:255',
+                    'prodi_mahasiswa' => 'required|string|max:255',
+                    'nim_mahasiswa' => 'max:20',
                     'pihak_dituju' => 'required|string|max:255',
                     'keperluan' => 'required|string|max:1000',
                 ]);

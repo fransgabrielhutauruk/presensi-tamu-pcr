@@ -26,7 +26,7 @@
 @elseif ($action == 'detail')
     <div class="menu-item px-3">
         <a href="{{ $link != '' ? $link : '#' }}" class="menu-link align-items-start px-3 text-gray-700 act-{{ str_replace(' ', '_', $action) }} {{ $class }}" {{ $attributes }} title="{{ $title != '' ? $title : 'detail data' }}">
-            <i class="{{ $icon != '' ? $icon : 'ki-outline ki-magnifier' }} fs-3 me-2"></i>
+            <i class="{{ $icon != '' ? $icon : 'ki-outline ki-eye' }} fs-3 me-2"></i>
 
             {{ $title != '' ? $title : 'Detail data' }}
         </a>

@@ -7,6 +7,10 @@
 @section('base-content')
     {{-- @include('contents.frontend.partials.common.preloader') --}}
 
+    <div class="position-fixed top-0 end-0 p-3 pe-4" style="z-index: 10;">
+        <x-language-switcher />
+    </div>
+
     <main class="flex-grow-1">
         @yield('content')
     </main>
