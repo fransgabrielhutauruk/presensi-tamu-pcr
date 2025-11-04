@@ -41,8 +41,11 @@
                 <div class="card">
                     <div class="card-body p-3">
                         <div class="row mb-3">
-                            <div class="col-10 text-center">
-                                <label class="form-label fs-7 fw-semibold text-muted">Opsi</label>
+                            <div class="col-5 text-center">
+                                <label class="form-label fs-7 fw-semibold text-muted">Indonesia</label>
+                            </div>
+                            <div class="col-5 text-center">
+                                <label class="form-label fs-7 fw-semibold text-muted">English</label>
                             </div>
                             <div class="col-2 text-center">
                                 <label class="form-label fs-7 fw-semibold text-muted text-center">Aksi</label>
@@ -118,17 +121,24 @@
         }
 
         function createOptionItemHtml(option, index) {
+            const idLabel = option.id || option.label || '';
+            const enLabel = option.en || option.label || '';
+            
             return `
                 <div class="mb-3 option-item" data-index="${index}">
                     <div class="row align-items-center">
-                        <div class="col-10">
-                                <input type="text" class="form-control form-control-sm option-label required" 
-                                       value="${option.label || ''}" placeholder=".........">
+                        <div class="col-5">
+                            <input type="text" class="form-control form-control-sm option-id required" 
+                                   value="${idLabel}" placeholder="e.g: Direktur">
+                        </div>
+                        <div class="col-5">
+                            <input type="text" class="form-control form-control-sm option-en required" 
+                                   value="${enLabel}" placeholder="e.g: Director">
                         </div>
                         <div class="col-2 text-center">
-                                <x-btn type="light-danger" class="option-remove w-100" title="Hapus item">
-                                    <i class="ki-outline ki-trash fs-7"></i>
-                                </x-btn>
+                            <button type="button" class="btn btn-sm btn-light-danger option-remove w-100" title="Hapus item">
+                                <i class="ki-outline ki-trash fs-7"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -136,29 +146,29 @@
         }
 
         function collectOptionsData() {
-            const items = document.querySelectorAll('.option-item');
-            optionsData = [];
-
-            items.forEach((item, index) => {
-                const label = item.querySelector('.option-label').value.trim();
-                if (label) {
-                    optionsData.push({
-                        label: label,
+            const options = [];
+            document.querySelectorAll('.option-item').forEach(function(item, index) {
+                const id = item.querySelector('.option-id').value.trim();
+                const en = item.querySelector('.option-en').value.trim();
+                
+                if (id || en) {
+                    options.push({
+                        id: id,
+                        en: en
                     });
                 }
             });
-
-            if (optionsData.length > 0) {
-                document.getElementById('hiddenNilaiOpsi').value = JSON.stringify(optionsData);
-            } else {
-                document.getElementById('hiddenNilaiOpsi').value = '';
-            }
+            
+            document.getElementById('hiddenNilaiOpsi').value = JSON.stringify(options);
+            optionsData = options;
+            return options;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('addOptionItem').addEventListener('click', function() {
                 optionsData.push({
-                    label: '',
+                    id: '',
+                    en: ''
                 });
                 renderOptionsList();
             });
@@ -176,7 +186,8 @@
             });
 
             document.getElementById('optionsList').addEventListener('input', function(e) {
-                if (e.target.classList.contains('option-label')) {
+                if (e.target.classList.contains('option-id') || 
+                    e.target.classList.contains('option-en')) {
                     collectOptionsData();
                 }
             });

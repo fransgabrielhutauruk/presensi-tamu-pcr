@@ -89,16 +89,16 @@
                                 <div class="mb-3">
                                     <i class="fas fa-search fa-3x text-muted"></i>
                                 </div>
-                                <h5 class="text-muted mb-2">Tidak ada event yang ditemukan</h5>
-                                <p class="text-muted">Coba gunakan kata kunci yang berbeda</p>
+                                <h5 class="text-muted mb-2">{{ __('visitor.no_events_found') }}</h5>
+                                <p class="text-muted">{{ __('visitor.try_different_keywords') }}</p>
                             </div>
                         @else
                             <div class="text-center py-5 events-section" id="empty-state">
                                 <div class="mb-3">
                                     <i class="fas fa-calendar-times fa-3x text-muted"></i>
                                 </div>
-                                <h5 class="text-muted mb-2">Belum ada event hari ini</h5>
-                                <p class="text-muted">Silakan kembali lagi nanti untuk melihat event yang tersedia.</p>
+                                <h5 class="text-muted mb-2">{{ __('visitor.no_events_today') }}</h5>
+                                <p class="text-muted">{{ __('visitor.check_back_later') }}</p>
                         @endif
                         </p>
                     </div>

@@ -36,8 +36,10 @@ class KunjunganNonEventController extends Controller
 
         $options = MstOpsiKunjungan::getMultipleDropdownOptions([
             'pihak_dituju',
+            'pihak_dituju_ortu',
             'prodi'
-        ]);
+        ], app()->getLocale());
+
         return view('contents.tamu.pages.non-event.form-presensi', compact('tujuan', 'options'));
     }
 
@@ -108,7 +110,7 @@ class KunjunganNonEventController extends Controller
                 $detailData = [
                     'instansi' => $request->instansi,
                     'kategori_instansi' => $request->kategori_instansi,
-                    'skala_perusahaan' => $request->skala_perusahaan,
+                    'skala_instansi' => $request->skala_instansi,
                     'jabatan' => $request->jabatan,
                     'pihak_dituju' => $request->pihak_dituju,
                     'keperluan' => $request->keperluan,
@@ -126,7 +128,7 @@ class KunjunganNonEventController extends Controller
                 ];
                 break;
 
-            case 'calon_ortu':
+            case 'informasi_kampus':
                 $detailData = [
                     'asal_sekolah' => $request->asal_sekolah,
                     'prodi_diminati' => $request->prodi_diminati,

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\MstOpsiKunjungan;
+use Illuminate\Support\Facades\DB;
 
 class MstOpsiKunjunganSeeder extends Seeder
 {
@@ -17,31 +18,82 @@ class MstOpsiKunjunganSeeder extends Seeder
                 'nama_opsi' => 'pihak_dituju',
                 'deskripsi_opsi' => 'Digunakan pada form presensi non-event kategori: Kunjungan Resmi Instansi dan Keperluan Bisnis/Kemitraan',
                 'nilai_opsi' => [
-                    ['label' => 'Direktur'],
-                    ['label' => 'Penjaminan Mutu'],
-                    ['label' => 'Akademik dan Inovasi Pembelajaran'],
-                    ['label' => 'Keuangan, Perencanaan, dan Kelembagaan'],
+                    [
+                        'id' => 'Direktur',
+                        'en' => 'Director'
+                    ],
+                    [
+                        'id' => 'Penjaminan Mutu',
+                        'en' => 'Quality Assurance'
+                    ],
+                    [
+                        'id' => 'Akademik dan Inovasi Pembelajaran',
+                        'en' => 'Academic and Learning Innovation'
+                    ],
+                    [
+                        'id' => 'Keuangan, Perencanaan, dan Kelembagaan',
+                        'en' => 'Finance, Planning, and Institutional'
+                    ]
                 ]
             ],
             [
                 'nama_opsi' => 'prodi',
                 'deskripsi_opsi' => 'Program studi',
                 'nilai_opsi' => [
-                    ['label' => 'Teknik Informatika (TI)'],
-                    ['label' => 'Sistem Informasi (SI)'],
-                    ['label' => 'Teknologi Rekayasa Komputer (TRK)'],
-                    ['label' => 'Magister Terapan Teknik Komputer (MTTK)'],
-                    ['label' => 'Teknologi Rekayasa Jaringan Telekomunikasi (TRJT)'],
-                    ['label' => 'Teknik Listrik (TL)'],
-                    ['label' => 'Teknik Elektronika (TET)'],
-                    ['label' => 'Teknologi Rekayasa Sistem Elektronika (TRSE)'],
-                    ['label' => 'Teknologi Rekayasa Mekatronika (TRM)'],
-                    ['label' => 'Teknik Mesin (TMS)'],
-                    ['label' => 'Akuntansi Perpajakan (AKTP)'],
-                    ['label' => 'Hubungan Masyarakat dan Komunikasi Digital (HMKD)'],
-                    ['label' => 'Bisnis Digital (BD)'],
+                    [
+                        'id' => 'Teknik Informatika (TI)',
+                        'en' => 'Computer Engineering'
+                    ],
+                    [
+                        'id' => 'Sistem Informasi (SI)',
+                        'en' => 'Information Systems'
+                    ],
+                    [
+                        'id' => 'Teknologi Rekayasa Komputer (TRK)',
+                        'en' => 'Computer Engineering Technology'
+                    ],
+                    [
+                        'id' => 'Magister Terapan Teknik Komputer (MTTK)',
+                        'en' => 'Master of Applied Computer Engineering'
+                    ],
+                    [
+                        'id' => 'Teknologi Rekayasa Jaringan Telekomunikasi (TRJT)',
+                        'en' => 'Telecommunication Network Engineering Technology'
+                    ],
+                    [
+                        'id' => 'Teknik Listrik (TL)',
+                        'en' => 'Electrical Engineering'
+                    ],
+                    [
+                        'id' => 'Teknik Elektronika (TET)',
+                        'en' => 'Electronics Engineering'
+                    ],
+                    [
+                        'id' => 'Teknologi Rekayasa Sistem Elektronika (TRSE)',
+                        'en' => 'Electronics System Engineering Technology'
+                    ],
+                    [
+                        'id' => 'Teknologi Rekayasa Mekatronika (TRM)',
+                        'en' => 'Mechatronics Engineering Technology'
+                    ],
+                    [
+                        'id' => 'Teknik Mesin (TMS)',
+                        'en' => 'Mechanical Engineering'
+                    ],
+                    [
+                        'id' => 'Hubungan Masyarakat dan Komunikasi Digital (HMKD)',
+                        'en' => 'Public Relations and Digital Communication'
+                    ],
+                    [
+                        'id' => 'Akuntansi Perpajakan (AKTP)',
+                        'en' => 'Tax Accounting'
+                    ],
+                    [
+                        'id' => 'Bisnis Digital (BD)',
+                        'en' => 'Digital Business'
+                    ]
                 ]
-            ],
+            ]
         ];
 
         foreach ($opsiData as $data) {

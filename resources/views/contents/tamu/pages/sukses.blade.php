@@ -9,7 +9,7 @@
                         <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"
                             class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
                         <h1 class="mt-3 lh-1 fs-2">{{ __('visitor.thank_you') }}!</h1>
-                        <p class="mt-1 lh-sm text-body">{{ __('visitor.registration_complete') }}.</p>
+                        <p class="mt-1 lh-sm text-body">{{ __('visitor.registration_complete') }}</p>
 
                         <div class="alert alert-light mt-3 mb-3 text-start">
                             <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong> {{ $kunjungan->tamu->nama_tamu }}</p>
@@ -26,7 +26,7 @@
                             @endif
                             <small class="text-muted lh-sm">
                                 <i class="fas fa-exclamation-triangle me-1 mt-2"></i>
-                                {{ __('visitor.checkout_reminder') }}.
+                                {{ __('visitor.checkout_reminder') }}
                             </small>
                         </div>
 

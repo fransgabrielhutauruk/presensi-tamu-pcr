@@ -13,20 +13,7 @@
         name="prodi_diminati"
         :label="__('visitor.interested_program')"
         required="true"
-        :options="[
-            __('visitor.computer_engineering') => __('visitor.computer_engineering'),
-            __('visitor.information_systems') => __('visitor.information_systems'),
-            __('visitor.computer_engineering_technology') => __('visitor.computer_engineering_technology'),
-            __('visitor.mechanical_engineering') => __('visitor.mechanical_engineering'),
-            __('visitor.electronics_system_engineering') => __('visitor.electronics_system_engineering'),
-            __('visitor.mechatronics_engineering') => __('visitor.mechatronics_engineering'),
-            __('visitor.electronics_engineering') => __('visitor.electronics_engineering'),
-            __('visitor.electrical_engineering') => __('visitor.electrical_engineering'),
-            __('visitor.telecommunication_network_engineering') => __('visitor.telecommunication_network_engineering'),
-            __('visitor.tax_accounting') => __('visitor.tax_accounting'),
-            __('visitor.digital_business') => __('visitor.digital_business'),
-            __('visitor.public_relations_digital_communication') => __('visitor.public_relations_digital_communication')
-            ]" />
+        :options="$options['prodi']" />
 </div>
 
 <div>

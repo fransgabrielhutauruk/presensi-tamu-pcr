@@ -63,20 +63,16 @@
                         <input type="hidden" name="event_id" value="{{ $eventId }}">
                         <x-tamu.section-header :title="__('visitor.personal_data')" icon="👤" />
                         <x-form.input-field name="nim_nip" :label="__('visitor.nim_nip')" :placeholder="__('visitor.nim_nip_placeholder')" required="true" />
-                        <x-form.input-field name="nama" :label="__('visitor.full_name')" :placeholder="__('visitor.enter_visitor_name')"
-                            required="true" />
-                        <x-form.radio-group name="jenis_kelamin" :label="__('visitor.gender')" :required="true"
-                            :options="[
-                                __('visitor.male') => __('visitor.male'),
-                                __('visitor.female') => __('visitor.female'),
-                            ]" />
-                        <x-form.input-field name="nomor_telepon" :label="__('visitor.phone_number')" :placeholder="__('visitor.enter_phone')"
-                            required="true" type="tel"
-                            :validationRules="'pattern=\"[0-9]+\" data-pattern-error=\"' . __('visitor.phone_pattern_error') . '\"'" />
+                        <x-form.input-field name="nama" :label="__('visitor.full_name')" :placeholder="__('visitor.enter_visitor_name')" required="true" />
+                        <x-form.radio-group name="jenis_kelamin" :label="__('visitor.gender')" :required="true" :options="[
+                            __('visitor.male', [], 'id') => __('visitor.male'),
+                            __('visitor.female', [], 'id') => __('visitor.female'),
+                        ]" />
+                        <x-form.input-field name="nomor_telepon" :label="__('visitor.phone_number')" :placeholder="__('visitor.enter_phone')" required="true"
+                            type="tel" :validationRules='"pattern=\"[0-9]+\" data-pattern-error=\"" .__("visitor.phone_pattern_error") ."\""' />
                         <x-form.input-field name="email" :label="__('visitor.email_address')" :placeholder="__('visitor.enter_email')" required="true"
                             type="email" />
-                        <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')"
-                            required="true" />
+                        <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true" />
                         <div class="mt-5 mb-4">
                             <button type="submit" id="submitBtn" class="btn-default w-100">
                                 <span id="btn-text">{{ __('visitor.submit') }}</span>

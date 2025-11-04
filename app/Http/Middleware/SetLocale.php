@@ -16,10 +16,6 @@ class SetLocale
     {
         if (Session::has('locale') && in_array(Session::get('locale'), $this->availableLocales)) {
             $locale = Session::get('locale');
-        } elseif ($request->hasHeader('Accept-Language') && !Session::has('locale')) {
-            $browserLocale = substr($request->header('Accept-Language'), 0, 2);
-            $locale = in_array($browserLocale, $this->availableLocales) ? $browserLocale : config('app.locale');
-            Session::put('locale', $locale);
         } else {
             $locale = config('app.locale');
             Session::put('locale', $locale);

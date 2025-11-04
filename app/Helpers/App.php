@@ -78,7 +78,7 @@ function getAvailableLocales()
 {
     return [
         'id' => [
-            'name' => 'Bahasa Indonesia',
+            'name' => 'Indonesia',
             'flag' => '🇮🇩',
             'code' => 'id'
         ],

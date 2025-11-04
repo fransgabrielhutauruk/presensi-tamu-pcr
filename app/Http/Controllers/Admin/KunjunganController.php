@@ -60,9 +60,6 @@ class KunjunganController extends Controller
                 Column::make(['width' => '10%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
             ]);
 
-            // MstOpsiKunjungan::all()->keyBy('nama_opsi');
-            // dd($opsiData->toArray());
-
             $this->dataView([
                 'dataTable' => $dataTable,
             ]);
@@ -107,7 +104,6 @@ class KunjunganController extends Controller
 
             DB::beginTransaction();
             try {
-                // Create Tamu first
                 $tamuData = [
                     'nama_tamu' => clean_post('nama'),
                     'jenis_kelamin_tamu' => clean_post('jenis_kelamin'),
@@ -116,7 +112,6 @@ class KunjunganController extends Controller
                 ];
                 $tamu = Tamu::create($tamuData);
 
-                // Create Kunjungan
                 $kunjunganData = [
                     'tamu_id' => $tamu->tamu_id,
                     'kategori_tujuan' => clean_post('kategori_tujuan'),
@@ -127,7 +122,6 @@ class KunjunganController extends Controller
                 ];
                 $kunjungan = Kunjungan::create($kunjunganData);
 
-                // Save additional details if provided
                 $keperluan = clean_post('keperluan');
                 if (!empty($keperluan)) {
                     KunjunganDetail::create([
@@ -158,6 +152,27 @@ class KunjunganController extends Controller
                 $nilaiOpsi = clean_post('nilai_opsi');
                 if (is_string($nilaiOpsi)) {
                     $nilaiOpsi = json_decode($nilaiOpsi, true);
+                }
+
+                if (is_array($nilaiOpsi)) {
+                    foreach ($nilaiOpsi as &$item) {
+                        if (!isset($item['id']) || !isset($item['en'])) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Format data tidak valid. Setiap item harus memiliki id (Indonesia) dan en (English).'
+                            ], 422);
+                        }
+                        
+                        $item['id'] = trim($item['id']);
+                        $item['en'] = trim($item['en']);
+                        
+                        if (empty($item['id']) || empty($item['en'])) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Semua field (Indonesia, English) wajib diisi dan tidak boleh kosong.'
+                            ], 422);
+                        }
+                    }
                 }
 
                 $opsiData = [
@@ -197,7 +212,6 @@ class KunjunganController extends Controller
 
             DB::beginTransaction();
             try {
-                // Update Tamu data
                 $currData->tamu->update([
                     'nama_tamu' => clean_post('nama'),
                     'jenis_kelamin_tamu' => clean_post('jenis_kelamin'),
@@ -205,13 +219,11 @@ class KunjunganController extends Controller
                     'nomor_telepon_tamu' => clean_post('nomor_telepon'),
                 ]);
 
-                // Update Kunjungan data
                 $currData->update([
                     'kategori_tujuan' => clean_post('kategori_tujuan'),
                     'transportasi' => clean_post('transportasi'),
                 ]);
 
-                // Update or create keperluan detail
                 $keperluan = clean_post('keperluan');
                 $existingDetail = KunjunganDetail::where('kunjungan_id', $currData->kunjungan_id)
                     ->where('kunci', 'keperluan')
@@ -272,6 +284,27 @@ class KunjunganController extends Controller
                 $nilaiOpsi = clean_post('nilai_opsi');
                 if (is_string($nilaiOpsi)) {
                     $nilaiOpsi = json_decode($nilaiOpsi, true);
+                }
+
+                if (is_array($nilaiOpsi)) {
+                    foreach ($nilaiOpsi as &$item) {
+                        if (!isset($item['id']) || !isset($item['en'])) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Format data tidak valid. Setiap item harus memiliki id (Indonesia) dan en (English).'
+                            ], 422);
+                        }
+                        
+                        $item['id'] = trim($item['id']);
+                        $item['en'] = trim($item['en']);
+                        
+                        if (empty($item['id']) || empty($item['en'])) {
+                            return response()->json([
+                                'status' => false,
+                                'message' => 'Semua field (Indonesia, English) wajib diisi dan tidak boleh kosong.'
+                            ], 422);
+                        }
+                    }
                 }
 
                 $data = [
@@ -343,13 +376,11 @@ class KunjunganController extends Controller
             $detailData = [
                 'kunjungan_id' => $currData->kunjungan_id,
 
-                // Data Tamu
                 'nama' => $currData->tamu->nama_tamu ?? '',
                 'jenis_kelamin' => $currData->tamu->jenis_kelamin_tamu ?? '',
                 'email' => $currData->tamu->email_tamu ?? '',
                 'nomor_telepon' => $currData->tamu->nomor_telepon_tamu ?? '',
 
-                // Data Kunjungan
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => $currData->kategori_tujuan ?? '',
                 'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar' : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
@@ -357,22 +388,18 @@ class KunjunganController extends Controller
                 'status_validasi' => $currData->status_validasi ? 'Tervalidasi' : 'Belum Validasi',
                 'is_checkout' => $currData->is_checkout ? 'Sudah Checkout' : 'Belum Checkout',
 
-                // Data Waktu
                 'tanggal_kunjungan' => $currData->created_at ? tanggal($currData->created_at) : '',
                 'waktu_kunjungan' => $currData->created_at ? $currData->created_at->format('H:i') : '-',
                 'waktu_keluar' => $currData->waktu_keluar ? \Carbon\Carbon::parse($currData->waktu_keluar)->format('H:i') : '-',
                 'checkout_time' => $currData->checkout_time ? $currData->checkout_time->format('H:i') : '-',
 
-                // Data Event (jika ada)
                 'event_nama' => $currData->event->nama_event ?? '-',
                 'event_kategori' => $currData->event->eventKategori->nama_kategori_event ?? '-',
                 'event_tanggal' => $currData->event ? \Carbon\Carbon::parse($currData->event->tanggal_event)->format('d/m/Y') : '-',
 
-                // Data Detail Tambahan
                 'details' => []
             ];
 
-            // Get all details
             foreach ($currData->details as $detail) {
                 $detailData['details'][] = [
                     'kunci' => $detail->kunci,
@@ -389,7 +416,6 @@ class KunjunganController extends Controller
 
             $currData = Kunjungan::with(['tamu', 'details'])->findOrFail(decid($req->input('id')));
 
-            // Format data untuk form editing
             $formData = [
                 'kunjungan_id' => $currData->kunjungan_id,
                 'nama' => $currData->tamu->nama_tamu ?? '',
@@ -401,7 +427,6 @@ class KunjunganController extends Controller
                 'keperluan' => '',
             ];
 
-            // Get keperluan from details
             foreach ($currData->details as $detail) {
                 if ($detail->kunci == 'keperluan') {
                     $formData['keperluan'] = $detail->nilai;
@@ -466,14 +491,12 @@ class KunjunganController extends Controller
                 $dt['no'] = ++$start;
                 $dt['nama'] = $value['tamu']['nama_tamu'] ?? '-';
 
-                // Jenis Kunjungan berdasarkan event_id
                 if (!empty($value['event_id'])) {
                     $dt['jenis_kunjungan'] = '<span class="badge badge-info">Event</span>';
                 } else {
                     $dt['jenis_kunjungan'] = '<span class="badge badge-secondary">Non-Event</span>';
                 }
 
-                // Tanggal dan Waktu Kunjungan
                 if ($value['created_at']) {
                     $createdAt = \Carbon\Carbon::parse($value['created_at']);
                     $dt['tanggal_kunjungan'] = $createdAt->format('d/m/Y');
@@ -513,16 +536,24 @@ class KunjunganController extends Controller
                 $dt['nama_opsi'] = $value['nama_opsi'] ?? '-';
                 $dt['deskripsi_opsi'] = $value['deskripsi_opsi'] ?? '-';
 
-                // Format nilai_opsi untuk display
                 $nilaiOpsi = $value['nilai_opsi'] ?? [];
                 if (is_string($nilaiOpsi)) {
                     $nilaiOpsi = json_decode($nilaiOpsi, true);
                 }
 
                 if (is_array($nilaiOpsi) && count($nilaiOpsi) > 0) {
-                    $labels = array_map(function ($item) {
-                        return $item['label'] ?? '-';
-                    }, $nilaiOpsi);
+                    $isMultiLanguage = isset($nilaiOpsi[0]['id']) && isset($nilaiOpsi[0]['en']);
+                    
+                    if ($isMultiLanguage) {
+                        $labels = array_map(function ($item) {
+                            return $item['id'] ?? '-';
+                        }, $nilaiOpsi);
+                    } else {
+                        $labels = array_map(function ($item) {
+                            return $item['label'] ?? '-';
+                        }, $nilaiOpsi);
+                    }
+                    
                     $dt['nilai_opsi'] = '<span class="badge badge-light-primary fs-7">' . count($nilaiOpsi) . ' item</span><br>' .
                         '<small class="text-muted">' . implode(', ', array_slice($labels, 0, 3)) .
                         (count($labels) > 3 ? '...' : '') . '</small>';

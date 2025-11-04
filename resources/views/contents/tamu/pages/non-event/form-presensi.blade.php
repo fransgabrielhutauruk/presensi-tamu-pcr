@@ -159,7 +159,7 @@
                     if (skalaPerusahaanField) skalaPerusahaanField.value = 'Perusahaan Menengah (50-250 karyawan)';
                     if (jabatanField) jabatanField.value = 'Business Development Manager';
                     if (pihakDitujuField) pihakDitujuField.value = 'BP3M';
-                } else if (tujuan === 'calon_ortu') {
+                } else if (tujuan === 'informasi_kampus') {
                     const asalSekolahField = document.querySelector('input[name="asal_sekolah"]');
                     const prodiDiminatiField = document.querySelector('select[name="prodi_diminati"]');
                     const jumlahRombongan = document.querySelector('input[name="jumlah_rombongan"]');

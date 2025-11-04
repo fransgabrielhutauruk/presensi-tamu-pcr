@@ -24,25 +24,25 @@
                                         </button>
                                     @endfor
                                 </div>
-                                <p class="rating-help-text" id="defaultHelpText">Pilih rating untuk memberikan penilaian</p>
+                                <p class="rating-help-text" id="defaultHelpText">{{ __('visitor.select_rating') }}</p>
                                 <div class="rating-description" id="ratingDescription" style="display: none;">
                                     <span class="rating-label"></span>
                                 </div>
                                 <input type="hidden" name="rating" id="ratingInput" required>
                                 <div id="rating-error" class="rating-error-message" style="display: none;">
                                     <i class="fas fa-exclamation-triangle me-1"></i>
-                                    Silakan pilih rating terlebih dahulu
+                                    {{ __('visitor.rating_required') }}
                                 </div>
                             </div>
 
-                            <x-form.textarea-field name="komentar" label="Saran dan Masukan (Opsional)" rows="4"
-                                placeholder="Bagikan pengalaman atau saran Anda untuk membantu kami meningkatkan pelayanan..."
+                            <x-form.textarea-field name="komentar" label="{{ __('visitor.suggestions_optional') }}"
+                                rows="4" placeholder="{{ __('visitor.share_experience') }}"
                                 validationRules="data-maxlength=500" />
 
                             <button type="submit" class="btn-default mt-3 w-100" id="submitBtn">
-                                <span class="submit-text">Kirim</span>
+                                <span class="submit-text">{{ __('visitor.submit') }}</span>
                                 <span class="submit-loading d-none">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>Memproses...
+                                    <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}
                                 </span>
                             </button>
                         </form>
@@ -147,11 +147,11 @@
 
             let currentRating = 0;
             const ratingDescriptions = {
-                1: "Sangat Tidak Baik",
-                2: "Tidak Baik", 
-                3: "Cukup",
-                4: "Baik",
-                5: "Sangat Baik"
+                1: "{{ __('visitor.very_bad') }}",
+                2: "{{ __('visitor.bad') }}",
+                3: "{{ __('visitor.fair') }}",
+                4: "{{ __('visitor.good') }}",
+                5: "{{ __('visitor.very_good') }}"
             };
 
             starBtns.forEach((btn, index) => {

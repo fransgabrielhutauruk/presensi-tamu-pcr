@@ -13,8 +13,8 @@
     :label="__('visitor.gender')"
     :required="true"
     :options="[
-        __('visitor.male') => __('visitor.male'),
-        __('visitor.female') => __('visitor.female')
+        __('visitor.male', [], 'id') => __('visitor.male'),
+        __('visitor.female', [], 'id') => __('visitor.female') 
     ]" />
 
 <x-form.input-field
@@ -23,7 +23,7 @@
     :placeholder="__('visitor.enter_phone')"
     required="true"
     type="tel"
-    :validationRules="'pattern=\"[0-9]+\" data-pattern-error=\"' . __('visitor.phone_pattern_error') . '\"'" />
+    :validationRules='"pattern=\"[0-9]+\" data-pattern-error=\"" . __("visitor.phone_pattern_error") . "\""' />
 
 <x-form.input-field
     name="email"
