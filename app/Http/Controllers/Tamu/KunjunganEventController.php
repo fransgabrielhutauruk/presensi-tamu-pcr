@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use App\Models\KunjunganDetail;
+use App\Enums\KategoriTujuanEnum;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
@@ -89,7 +90,7 @@ class KunjunganEventController extends Controller
             $tamu = Tamu::create($tamuData);
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
-                'kategori_tujuan' => 'event',
+                'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
                 'identitas' => 'non-civitas',
                 'event_id' => $event->event_id,
                 'waktu_keluar' => $event->waktu_selesai_event,
@@ -171,7 +172,7 @@ class KunjunganEventController extends Controller
             $tamu = Tamu::create($tamuData);
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
-                'kategori_tujuan' => 'event',
+                'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
                 'identitas' => 'civitas',
                 'event_id' => $event->event_id,
                 'waktu_keluar' => $event->waktu_selesai_event,

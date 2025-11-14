@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use App\Enums\UserRole;
 
 function getActiveRole()
 {
@@ -29,6 +30,21 @@ function hasAnyActiveRole($roles)
 {
     $activeRole = getActiveRole();
     return in_array($activeRole, $roles);
+}
+
+function isAdmin()
+{
+    return hasAnyActiveRole(UserRole::getAdminRoles());
+}
+
+function isGeneralUser()
+{
+    return hasAnyActiveRole(UserRole::getGeneralRoles());
+}
+
+function isStudentStaff()
+{
+    return hasAnyActiveRole(UserRole::getStudentStaffRoles());
 }
 
 function thumbnail($fileName = '')

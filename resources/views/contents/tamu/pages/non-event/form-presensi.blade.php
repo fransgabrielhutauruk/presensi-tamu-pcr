@@ -19,7 +19,7 @@
 
                     <div class="text-start mt-4">
                         <a href="{{ route('tamu.non-event.tujuan') }}"
-                            class="btn btn-link p-0 mb-4 d-flex align-items-center gap-2 text-decoration-none"
+                            class="btn btn-link p-0 mb-4 gap-2 text-decoration-none"
                             style="color: var(--dark-color);">
                             <i class="fas fa-arrow-left"></i>
                             <span>{{ __('visitor.back') }}</span>
@@ -63,7 +63,7 @@
                             @break
                         @endswitch
 
-                        <div class="my-4">
+                        <div class="mt-5 mb-4">
                             <button type="submit" id="submitBtn" class="btn-default w-100">
                                 <span id="btn-text">{{ __('visitor.submit') }}</span>
                                 <span id="btn-loading" style="display: none;">

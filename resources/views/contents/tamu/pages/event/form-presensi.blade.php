@@ -9,7 +9,7 @@
 
                     <div class="text-start mt-4">
                         <a href="{{ route('tamu.event.identitas', $eventId) }}"
-                            class="btn btn-link p-0 mb-4 align-items-center gap-2 text-decoration-none"
+                            class="btn btn-link p-0 align-items-center gap-2 text-decoration-none"
                             style="color: var(--dark-color);">
                             <i class="fas fa-arrow-left"></i>
                             <span>{{ __('visitor.back') }}</span>

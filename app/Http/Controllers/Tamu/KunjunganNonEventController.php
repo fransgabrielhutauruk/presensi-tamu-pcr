@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePresensiRequest;
 use App\Models\MstOpsiKunjungan;
+use App\Enums\KategoriTujuanEnum;
 
 class KunjunganNonEventController extends Controller
 {
@@ -22,14 +23,8 @@ class KunjunganNonEventController extends Controller
     public function formPresensi(Request $request)
     {
         $tujuan = $request->get('tujuan');
-        $validCategories = [
-            'instansi',
-            'bisnis',
-            'ortu',
-            'informasi_kampus',
-            'lainnya'
-        ];
-        if (!$tujuan || !in_array($tujuan, $validCategories)) {
+        
+        if (!$tujuan || !KategoriTujuanEnum::isValid($tujuan)) {
             return redirect()->route('tamu.non-event.tujuan')
                 ->with('error', 'Silahkan pilih tujuan kunjungan yang sesuai.');
         };
@@ -96,7 +91,7 @@ class KunjunganNonEventController extends Controller
         $detailData = [];
 
         switch ($request->kategori_tujuan) {
-            case 'instansi':
+            case KategoriTujuanEnum::INSTANSI->value:
                 $detailData = [
                     'instansi' => $request->instansi,
                     'jenis_instansi' => $request->jenis_instansi,
@@ -106,7 +101,7 @@ class KunjunganNonEventController extends Controller
                 ];
                 break;
 
-            case 'bisnis':
+            case KategoriTujuanEnum::BISNIS->value:
                 $detailData = [
                     'instansi' => $request->instansi,
                     'kategori_instansi' => $request->kategori_instansi,
@@ -117,7 +112,7 @@ class KunjunganNonEventController extends Controller
                 ];
                 break;
 
-            case 'ortu':
+            case KategoriTujuanEnum::ORTU->value:
                 $detailData = [
                     'hubungan_dengan_mahasiswa' => $request->hubungan_dengan_mahasiswa,
                     'nama_mahasiswa' => $request->nama_mahasiswa,
@@ -128,7 +123,7 @@ class KunjunganNonEventController extends Controller
                 ];
                 break;
 
-            case 'informasi_kampus':
+            case KategoriTujuanEnum::INFORMASI_KAMPUS->value:
                 $detailData = [
                     'asal_sekolah' => $request->asal_sekolah,
                     'prodi_diminati' => $request->prodi_diminati,
@@ -136,7 +131,7 @@ class KunjunganNonEventController extends Controller
                 ];
                 break;
 
-            case 'lainnya':
+            case KategoriTujuanEnum::LAINNYA->value:
                 $detailData = [
                     'pihak_dituju' => $request->pihak_dituju,
                     'keperluan' => $request->keperluan,

@@ -2,7 +2,7 @@
 
 return [
     // Page Titles
-    'visitor_feedback' => 'Feedback Tamu',
+    'visitor_feedback' => 'Umpan Balik',
 
     // Form Labels
     'visitor_name' => 'Nama Tamu',
@@ -64,6 +64,7 @@ return [
     'registration_complete' => 'Presensi kunjungan anda telah berhasil disimpan.',
     'checkout_reminder' => 'Jangan lupa checkout saat kunjungan anda sudah berakhir',
     'checkout_now' => 'Checkout Sekarang',
+    'checkout_now_event' => 'Checkout Untuk Event Ini',
 
     // Checkout Page
     'checkout_confirmation' => 'Konfirmasi Checkout',
@@ -173,6 +174,11 @@ return [
     'medium_company' => 'Perusahaan Menengah (50-250 karyawan)',
     'large_company' => 'Perusahaan Besar (> 250 karyawan)',
     'multinational' => 'Multinational Corporation',
+    'company_data' => 'Data Instansi/Perusahaan',
+    'company_name' => 'Nama Instansi/Perusahaan',
+    'company_name_placeholder' => 'Nama perusahaan',
+    'company_scale' => 'Skala Perusahaan',
+    'category' => 'Kategori',
 
     // Parent/Guardian Data
     'relation_student' => 'Hubungan dengan Mahasiswa',

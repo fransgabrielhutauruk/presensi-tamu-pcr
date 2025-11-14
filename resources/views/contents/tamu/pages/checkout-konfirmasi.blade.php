@@ -14,11 +14,12 @@
                     </div>
 
                     <div class="alert alert-light text-start mb-4">
-                        <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong> {{ $kunjungan->tamu->nama_tamu }}</p>
+                        <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong>
+                            {{ $kunjungan->tamu->nama_tamu }}</p>
                         <p class="mb-0"><strong>{{ __('visitor.visit_time') }}:</strong>
                             {{ $kunjungan->created_at->format('d/m/Y H:i') }}</p>
-                        @if ($kunjungan->kategori_tujuan != 'event')
-                            <p class="mb-0"><strong>{{ __('visitor.visit_purpose') }}:</strong>
+                        @if ($kunjungan->kategori_tujuan?->value != 'event')
+                            <p class="mb-0"><strong>{{ __('visitor.visiting_party') }}:</strong>
                                 {{ collect($kunjungan->details)->where('kunci', 'pihak_dituju')->first()['nilai'] ?? '-' }}
                             </p>
                         @else

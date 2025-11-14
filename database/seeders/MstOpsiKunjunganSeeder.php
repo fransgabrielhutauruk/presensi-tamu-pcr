@@ -27,13 +27,47 @@ class MstOpsiKunjunganSeeder extends Seeder
                         'en' => 'Quality Assurance'
                     ],
                     [
-                        'id' => 'Akademik dan Inovasi Pembelajaran',
-                        'en' => 'Academic and Learning Innovation'
+                        'id' => 'Bidang Akademik dan Inovasi Pembelajaran',
+                        'en' => 'Academic Field and Learning Innovation'
                     ],
                     [
-                        'id' => 'Keuangan, Perencanaan, dan Kelembagaan',
-                        'en' => 'Finance, Planning, and Institutional'
-                    ]
+                        'id' => 'Bidang Sumber Daya',
+                        'en' => 'Resource Field'
+                    ],
+                    [
+                        'id' => 'Bidang Keuangan, Perencanaan dan Kelembagaan',
+                        'en' => 'Finance, Planning and Institutional Affairs'
+                    ],
+                    [
+                        'id' => 'Bidang Kemahasiswaan, Pemasaran, dan Kemitraan',
+                        'en' => 'Student Affairs, Marketing, and Partnerships'
+                    ],
+                ]
+            ],
+            [
+                'nama_opsi' => 'pihak_dituju_ortu',
+                'deskripsi_opsi' => 'Digunakan pada form presensi non-event kategori kunjungan orang tua/wali mahasiswa',
+                'nilai_opsi' => [
+                    [
+                        'id' => 'Bagian Administrasi Akademik (BAAK)',
+                        'en' => 'Academic Administration Section'
+                    ],
+                    [
+                        'id' => 'Bagian Keuangan',
+                        'en' => 'Financial Department'
+                    ],
+                    [
+                        'id' => 'Dosen Wali',
+                        'en' => 'Guardian lecturer'
+                    ],
+                    [
+                        'id' => 'Ketua Program Studi',
+                        'en' => 'Head of The Study Program'
+                    ],
+                    [
+                        'id' => 'Kemahasiswaan',
+                        'en' => 'Student Affairs'
+                    ],
                 ]
             ],
             [

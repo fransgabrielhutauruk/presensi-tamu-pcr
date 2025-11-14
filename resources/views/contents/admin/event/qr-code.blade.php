@@ -8,6 +8,9 @@
     <x-theme.toolbar :breadCrump="$pageData->breadCrump" :title="$pageData->title">
         <x-slot:tools>
             <x-theme.back link="{{ route('app.event.index') }}" />
+            <x-btn type="button" class="btn btn-success" onclick="printQrCode()">
+                <i class="bi bi-printer fs-4 me-1"></i> Cetak QR Code
+            </x-btn>
             <x-btn type="button" class="btn btn-primary" onclick="downloadQrCode()">
                 <i class="bi bi-download fs-4 me-1"></i> Download QR Code
             </x-btn>
@@ -16,6 +19,222 @@
 
 
     <script>
+        function printQrCode() {
+            const svg = document.querySelector('#qr-code svg');
+            if (!svg) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'QR Code tidak ditemukan'
+                });
+                return;
+            }
+
+            // Create print content
+            const eventName = @json($pageData->event->nama_event);
+            const presensiUrl = @json($pageData->presensiUrl);
+            
+            const printContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>QR Code - ${eventName}</title>
+                    <style>
+                        @page {
+                            size: A4;
+                            margin: 1cm;
+                        }
+                        body {
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            background: white;
+                            color: #333;
+                        }
+                        .print-container {
+                            max-width: 100%;
+                            margin: 0 auto;
+                            padding: 1cm;
+                            border-radius: 15px;
+                            background: white;
+                            height: calc(100vh - 2cm);
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                        }
+                        .print-header {
+                            text-align: center;
+                            margin-bottom: 1cm;
+                        }
+                        .main-title {
+                            font-size: 36px;
+                            font-weight: bold;
+                            color: #000;
+                            margin-bottom: 0.3cm;
+                            letter-spacing: 6px;
+                            text-transform: uppercase;
+                        }
+                        .event-title {
+                            font-size: 20px;
+                            font-weight: 600;
+                            color: #333;
+                            margin-bottom: 0.2cm;
+                            line-height: 1.2;
+                        }
+                        .content-middle {
+                            flex: 1;
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                        }
+                        .qr-container {
+                            text-align: center;
+                            margin: 0.5cm 0;
+                        }
+                        .qr-code {
+                            width: 7cm;
+                            height: 7cm;
+                            margin: 0 auto;
+                            border: 3px solid #000;
+                            border-radius: 10px;
+                            padding: 0.5cm;
+                            background: white;
+                        }
+                        .qr-code svg {
+                            width: 100%;
+                            height: 100%;
+                        }
+                        .url-container {
+                            margin-top: 0.8cm;
+                            text-align: center;
+                        }
+                        .url-label {
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #333;
+                            margin-bottom: 0.3cm;
+                        }
+                        .url-box {
+                            background: #f8f9fa;
+                            border: 2px solid #000;
+                            border-radius: 8px;
+                            padding: 10px 15px;
+                            margin: 0 auto;
+                            max-width: 14cm;
+                            word-break: break-all;
+                            font-family: 'Courier New', monospace;
+                            font-size: 12px;
+                            color: #333;
+                        }
+                        .instructions {
+                            padding: 0.8cm;
+                            border-radius: 10px;
+                            border: 2px solid #000;
+                        }
+                        .instructions-title {
+                            font-size: 16px;
+                            font-weight: 600;
+                            color: #333;
+                            text-align: center;
+                            margin-bottom: 0.6cm;
+                        }
+                        .instruction-grid {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 0.6cm;
+                        }
+                        .instruction-item {
+                            display: flex;
+                            align-items: flex-start;
+                            margin-bottom: 0.4cm;
+                        }
+                        .instruction-number {
+                            background: #000;
+                            color: white;
+                            width: 24px;
+                            height: 24px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: bold;
+                            font-size: 12px;
+                            margin-right: 10px;
+                            flex-shrink: 0;
+                        }
+                        .instruction-text {
+                            font-size: 12px;
+                            line-height: 1.3;
+                            color: #555;
+                        }
+                        @media print {
+                            body { 
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <div class="print-header">
+                            <div class="main-title">PRESENSI</div>
+                            <div class="event-title">{nama_event}</div>
+                        </div>
+                        
+                        <div class="content-middle">
+                            <div class="qr-container">
+                                <div class="qr-code">
+                                    ${svg.outerHTML}
+                                </div>
+                            </div>
+                            
+                            <div class="url-container">
+                                <div class="url-label">Link Presensi</div>
+                                <div class="url-box">{url}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="instructions">
+                            <div class="instructions-title">Instruksi Penggunaan:</div>
+                            <div class="instruction-grid">
+                                <div class="instruction-item">
+                                    <div class="instruction-number">1</div>
+                                    <div class="instruction-text">Scan QR Code menggunakan kamera HP</div>
+                                </div>
+                                <div class="instruction-item">
+                                    <div class="instruction-number">2</div>
+                                    <div class="instruction-text">Atau buka link presensi secara manual</div>
+                                </div>
+                                <div class="instruction-item">
+                                    <div class="instruction-number">3</div>
+                                    <div class="instruction-text">Isi form presensi</div>
+                                </div>
+                                <div class="instruction-item">
+                                    <div class="instruction-number">4</div>
+                                    <div class="instruction-text">Data presensi tersimpan di sistem</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `.replace('{nama_event}', eventName).replace('{url}', presensiUrl);
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            
+            printWindow.onload = function() {
+                printWindow.focus();
+                printWindow.print();
+                printWindow.onafterprint = function() {
+                    printWindow.close();
+                };
+            };
+        }
+
         function downloadQrCode() {
             const svg = document.querySelector('#qr-code svg');
             if (!svg) {

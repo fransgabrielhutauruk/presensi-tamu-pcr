@@ -15,8 +15,8 @@
                             <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong> {{ $kunjungan->tamu->nama_tamu }}</p>
                             <p class="mb-0"><strong>{{ __('visitor.visit_time') }}:</strong>
                                 {{ $kunjungan->created_at->format('d/m/Y H:i') }}</p>
-                            @if ($kunjungan->kategori_tujuan != 'event')
-                                <p class="mb-0"><strong>{{ __('visitor.visit_purpose') }}:</strong>
+                            @if ($kunjungan->kategori_tujuan?->value != 'event')
+                                <p class="mb-0"><strong>{{ __('visitor.visiting_party') }}:</strong>
                                     {{ collect($kunjungan->details)->where('kunci', 'pihak_dituju')->first()['nilai'] ?? '-' }}
                                 </p>
                             @else
@@ -32,7 +32,7 @@
 
                         <a href="{{ route('tamu.checkout', encid($kunjungan->kunjungan_id)) }}"
                             class="btn-default w-100 mt-2" id="route">
-                            <span id="beforeSubmit">{{ __('visitor.checkout_now') }}</span>
+                            <span id="beforeSubmit">{{ $kunjungan->kategori_tujuan?->value == 'event' ? __('visitor.checkout_now_event') : __('visitor.checkout_now') }}</span>
                             <span id="loadingIndicator" style="display: none;">
                                 <i class="fas fa-spinner fa-spin me-2"></i>{{ __('common.processing') }}
                             </span>

@@ -2,7 +2,7 @@
 
 return [
     // Page Titles
-    'visitor_feedback' => 'Visitor Feedback',
+    'visitor_feedback' => 'Feedback',
 
     // Form Labels
     'visitor_name' => 'Visitor Name',
@@ -64,6 +64,7 @@ return [
     'registration_complete' => 'Your visit attendance has been successfully saved.',
     'checkout_reminder' => 'Don\'t forget to checkout when your visit is over.',
     'checkout_now' => 'Checkout Now',
+    'checkout_now_event' => 'Checkout For This Event',
 
     // Checkout Page
     'checkout_confirmation' => 'Checkout Confirmation',
@@ -173,6 +174,11 @@ return [
     'medium_company' => 'Medium Company (50-250 employees)',
     'large_company' => 'Large Company (> 250 employees)',
     'multinational' => 'Multinational Corporation',
+    'company_data' => 'Institution/Company Data',
+    'company_name' => 'Institution/Company Name',
+    'company_name_placeholder' => 'Company name',
+    'company_scale' => 'Company Scale',
+    'category' => 'Category',
 
     // Parent/Guardian Data
     'relation_student' => 'Relationship with Student',

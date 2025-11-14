@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\UserRole;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\UserController;
@@ -21,13 +22,14 @@ Route::middleware('auth')->group(function () {
 require __DIR__ . '/auth.php';
 
 Route::prefix('app')
-    ->middleware(['auth', 'active-role:Mahasiswa,Staf,Admin,Eksekutif'])
+    ->middleware(['auth', 'active-role:' . implode(',', UserRole::getGeneralRoles())])
     ->group(function () {
-        Route::middleware('active-role:Mahasiswa,Admin,Eksekutif')->group(function () {
+        Route::middleware('active-role:' . implode(',', UserRole::getStudentStaffRoles()))->group(function () {
             generalRoute(UserController::class, 'user', 'app');
             Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
             generalRoute(EventController::class, 'event', 'app');
 
+            Route::post('kunjungan/bulk-validasi', [KunjunganController::class, 'bulkValidasi'])->name('app.kunjungan.bulk-validasi');
             generalRoute(KunjunganController::class, 'kunjungan', 'app');
             Route::get('kunjungan/validasi', [KunjunganController::class, 'validasi'])->name('app.kunjungan.validasi');
             Route::get('kunjungan/data-validasi/{mode?}', [KunjunganController::class, 'dataValidasi'])->name('app.kunjungan.data-validasi');
