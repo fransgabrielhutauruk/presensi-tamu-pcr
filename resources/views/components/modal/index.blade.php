@@ -17,7 +17,7 @@
             @if ($header)
                 <div class="modal-header py-5">
                     <h5 class="modal-title" id="{{ $id }}-title">{{ $title }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
                 </div>
             @endif
             <div class="modal-body {{ $class }}">
@@ -25,7 +25,7 @@
             </div>
             @if ($action != '')
                 <div class="modal-footer p-2">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Tutup</button>
                     {!! $action === true ? '' : $action !!}
                 </div>
             @endif

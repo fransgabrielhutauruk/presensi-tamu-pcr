@@ -18,7 +18,7 @@
                 icon="ki-outline ki-check-circle" :active="$pageData->activeMenu == 'validasi-kunjungan'" />
             <x-theme.menu link="{{ route('app.kunjungan.index') }}" text="Kunjungan" icon="ki-outline ki-user-tick"
                 :active="$pageData->activeMenu == 'kunjungan'" />
-            <x-theme.menu link="{{ route('app.monitoring.kunjungan') }}" text="Monitoring Kunjungan"
+            <x-theme.menu link="{{ route('app.kunjungan.monitoring') }}" text="Monitoring Kunjungan"
                 icon="ki-outline ki-monitor-mobile" :active="$pageData->activeMenu == 'monitoring-kunjungan'" />
         @endif
 

@@ -61,4 +61,42 @@ class Kunjungan extends Model
     {
         return $this->hasOne(Feedback::class, 'kunjungan_id', 'kunjungan_id');
     }
+
+    public static function getIdentitasBadge($identitas): string
+    {
+        if ($identitas == 'non-civitas') {
+            return '<span class="badge badge-warning">Non-Civitas</span>';
+        } elseif ($identitas == 'civitas') {
+            return '<span class="badge badge-primary">Civitas PCR</span>';
+        } else {
+            return '<span class="badge badge-light">' . ($identitas ?? 'Tidak Diketahui') . '</span>';
+        }
+    }
+
+    public static function getJenisKunjunganBadge($eventId): string
+    {
+        if (!empty($eventId)) {
+            return '<span class="badge badge-info">Event</span>';
+        } else {
+            return '<span class="badge badge-secondary">Non-Event</span>';
+        }
+    }
+
+    public static function getStatusValidasiBadge($statusValidasi): string
+    {
+        if ($statusValidasi) {
+            return '<span class="badge badge-success">Tervalidasi</span>';
+        } else {
+            return '<span class="badge badge-warning">Belum Validasi</span>';
+        }
+    }
+
+    public static function getStatusCheckoutBadge($isCheckout): string
+    {
+        if ($isCheckout) {
+            return '<span class="badge badge-success">Sudah Checkout</span>';
+        } else {
+            return '<span class="badge badge-warning">Belum Checkout</span>';
+        }
+    }
 }
