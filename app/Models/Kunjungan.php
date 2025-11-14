@@ -8,6 +8,7 @@ use App\Models\KunjunganDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Enums\KategoriTujuanEnum;
 
 class Kunjungan extends Model
 {
@@ -38,6 +39,7 @@ class Kunjungan extends Model
         'waktu_presensi' => 'datetime',
         'checkout_time' => 'datetime',
         'reminder_sent_at' => 'datetime',
+        'kategori_tujuan' => KategoriTujuanEnum::class
     ];
 
     public function tamu()

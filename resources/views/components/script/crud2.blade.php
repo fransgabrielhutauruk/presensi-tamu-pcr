@@ -39,6 +39,7 @@
                     if (typeList) dataList()
                 }
             }
+
             var refreshUiInput = function(type) {
                 var modalName = $('[jf-modal="' + name + '"]');
                 var tabName = $('[jf-tab="' + name + '"]');

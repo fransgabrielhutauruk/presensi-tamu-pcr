@@ -2,10 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Tamu;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
-use App\Models\KunjunganDetail;
 use App\Models\MstOpsiKunjungan;
 use Yajra\DataTables\DataTables;
 use App\Enums\KategoriTujuanEnum;
@@ -144,7 +142,7 @@ class KunjunganController extends Controller
                 Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['width' => '30%', 'title' => 'Nama Opsi', 'data' => 'nama_opsi', 'orderable' => true]),
                 Column::make(['width' => '35%', 'title' => 'Deskripsi', 'data' => 'deskripsi_opsi', 'orderable' => true]),
-                Column::make(['width' => '30%', 'title' => 'Nilai Opsi', 'data' => 'nilai_opsi', 'orderable' => true]),
+                Column::make(['width' => '30%', 'title' => 'Nilai Opsi', 'data' => 'nilai_opsi', 'orderable' => false]),
                 Column::make(['width' => '10%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
             ]);
 
@@ -169,14 +167,46 @@ class KunjunganController extends Controller
                     'className' => 'text-center',
                     'searchable' => false
                 ]),
-                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make([
+                    'width' => '5%',
+                    'title' => 'No',
+                    'data' => 'no',
+                    'orderable' => false,
+                    'className' => 'text-center'
+                ]),
                 Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
-                Column::make(['title' => 'Jenis Kelamin', 'data' => 'jenis_kelamin', 'orderable' => true, 'className' => 'text-center']),
+                Column::make([
+                    'title' => 'Jenis Kelamin',
+                    'data' => 'jenis_kelamin',
+                    'orderable' => true,
+                    'className' => 'text-center'
+                ]),
                 Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
                 Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
-                Column::make(['title' => 'Jenis Kunjungan', 'data' => 'jenis_kunjungan', 'orderable' => true, 'className' => 'text-center']),
-                Column::make(['title' => 'Waktu Kunjungan', 'data' => 'waktu_kunjungan', 'orderable' => true, 'className' => 'text-center']),
-                Column::make(['width' => '12%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make([
+                    'title' => 'Identitas',
+                    'data' => 'identitas',
+                    'orderable' => true,
+                ]),
+                Column::make([
+                    'title' => 'Jenis Kunjungan',
+                    'data' => 'jenis_kunjungan',
+                    'orderable' => true,
+                    'className' => 'text-center'
+                ]),
+                Column::make([
+                    'title' => 'Waktu Kunjungan',
+                    'data' => 'waktu_kunjungan',
+                    'orderable' => true,
+                    'className' => 'text-center'
+                ]),
+                Column::make([
+                    'width' => '12%',
+                    'title' => 'Aksi',
+                    'data' => 'action',
+                    'orderable' => false,
+                    'className' => 'text-nowrap text-center'
+                ]),
             ]);
 
             $this->dataView([
@@ -368,19 +398,16 @@ class KunjunganController extends Controller
             foreach ($data['data'] as $key => $value) {
                 $dt = [];
 
-                // Data dasar
                 $dt['no'] = ++$start;
                 $dt['nama'] = $value['tamu']['nama_tamu'] ?? '-';
                 $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? '-';
                 $dt['email'] = $value['tamu']['email_tamu'] ?? '-';
                 $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? '-';
 
-                // Data kunjungan
                 $dt['kategori_tujuan'] = KategoriTujuanEnum::getDescription($value['kategori_tujuan']) ?? '-';
                 $dt['jumlah_rombongan'] = $value['jumlah_rombongan'] ?? '-';
                 $dt['transportasi'] = $value['transportasi'] ?? '-';
 
-                // Identitas
                 if ($value['identitas'] == 'non-civitas') {
                     $dt['identitas'] = '<span class="badge badge-warning">Non-Civitas</span>';
                 } elseif ($value['identitas'] == 'civitas') {
@@ -393,28 +420,24 @@ class KunjunganController extends Controller
                 $dt['waktu_keluar'] = $value['waktu_keluar'] ? \Carbon\Carbon::parse($value['waktu_keluar'])->format('H:i') : '-';
                 $dt['checkout_time'] = $value['checkout_time'] ? \Carbon\Carbon::parse($value['checkout_time'])->setTimezone(config('app.timezone'))->format('H:i') : '-';
 
-                // Jenis kunjungan
                 if (!empty($value['event_id'])) {
                     $dt['jenis_kunjungan'] = '<span class="badge badge-info">Event</span>';
                 } else {
                     $dt['jenis_kunjungan'] = '<span class="badge badge-secondary">Non-Event</span>';
                 }
 
-                // Status validasi
                 if ($value['status_validasi']) {
                     $dt['status_validasi'] = '<span class="badge badge-success">Tervalidasi</span>';
                 } else {
                     $dt['status_validasi'] = '<span class="badge badge-warning">Belum Validasi</span>';
                 }
 
-                // Status checkout
                 if ($value['is_checkout']) {
                     $dt['is_checkout'] = '<span class="badge badge-success">Sudah Checkout</span>';
                 } else {
                     $dt['is_checkout'] = '<span class="badge badge-warning">Belum Checkout</span>';
                 }
 
-                // Data event
                 $dt['event_nama'] = $value['event']['nama_event'] ?? '-';
                 $dt['event_kategori'] = $value['event']['event_kategori']['nama_kategori'] ?? '-';
 
@@ -498,6 +521,14 @@ class KunjunganController extends Controller
                 $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? '-';
                 $dt['kategori_tujuan'] = $value['kategori_tujuan'] ?? '-';
                 $dt['transportasi'] = $value['transportasi'] ?? '-';
+
+                if ($value['identitas'] == 'non-civitas') {
+                    $dt['identitas'] = '<span class="badge badge-warning">Non-Civitas</span>';
+                } elseif ($value['identitas'] == 'civitas') {
+                    $dt['identitas'] = '<span class="badge badge-primary">Civitas PCR</span>';
+                } else {
+                    $dt['identitas'] = '<span class="badge badge-light">' . ($value['identitas'] ?? 'Tidak Diketahui') . '</span>';
+                }
 
                 if (!empty($value['event_id'])) {
                     $dt['jenis_kunjungan'] = '<span class="badge badge-info">Event</span>';
@@ -593,10 +624,40 @@ class KunjunganController extends Controller
         return $this->show('validasi');
     }
 
-    public function updateValidasi(Request $request, $id)
+    public function validateSingle(Request $request, $id): JsonResponse
     {
-        $request->merge(['id' => $id]);
-        return $this->update($request, 'validasi');
+        $currData = Kunjungan::findOrFail(decid($id));
+
+        DB::beginTransaction();
+        try {
+            $currData->update(['status_validasi' => true]);
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Kunjungan berhasil divalidasi'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Gagal memvalidasi kunjungan, kesalahan database');
+        }
+    }
+
+    public function rejectSingle(Request $request, $id): JsonResponse
+    {
+        $currData = Kunjungan::findOrFail(decid($id));
+
+        DB::beginTransaction();
+        try {
+            $currData->delete();
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Kunjungan berhasil dihapus'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Gagal menghapus kunjungan, kesalahan database');
+        }
     }
 
     public function bulkValidasi(Request $request): JsonResponse
@@ -615,13 +676,11 @@ class KunjunganController extends Controller
             $kunjungans = Kunjungan::whereIn('kunjungan_id', $decodedIds)->get();
 
             if ($action === 'validate') {
-                // Validasi semua kunjungan yang dipilih
                 Kunjungan::whereIn('kunjungan_id', $decodedIds)->update(['status_validasi' => true]);
                 $message = count($kunjungans) . ' kunjungan berhasil divalidasi';
             } else {
-                // Hapus semua kunjungan yang dipilih (tolak)
                 Kunjungan::whereIn('kunjungan_id', $decodedIds)->delete();
-                $message = count($kunjungans) . ' kunjungan berhasil ditolak dan dihapus';
+                $message = count($kunjungans) . ' kunjungan berhasil dihapus';
             }
 
             DB::commit();
