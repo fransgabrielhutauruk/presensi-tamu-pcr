@@ -3,7 +3,6 @@
 use App\Enums\UserRole;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\DashboardController;
@@ -15,16 +14,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/switch-role', [AuthController::class, 'switchRole'])->name('switch.role');
+
+    Route::post('/switch-role', [App\Http\Controllers\Auth\AuthController::class, 'switchRole'])->name('switch.role');
 });
 
 require __DIR__ . '/auth.php';
 
 Route::prefix('app')
-    ->middleware(['auth', 'active-role:' . implode(',', UserRole::getGeneralRoles())])->group(function () {
+    ->middleware(['auth', 'active-role:' . implode(',', UserRole::getGeneralRoles())])
+    ->group(function () {
         Route::middleware('active-role:' . implode(',', UserRole::getStudentStaffRoles()))->group(function () {
             generalRoute(UserController::class, 'user', 'app');
-            
             Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
             generalRoute(EventController::class, 'event', 'app');
 

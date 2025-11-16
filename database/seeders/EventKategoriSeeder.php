@@ -16,11 +16,21 @@ class EventKategoriSeeder extends Seeder
         $categories = [
             [
                 'nama_kategori' => 'PMB',
-                'deskripsi_kategori' => 'Penerimaan Mahasiswa Baru'
+                'deskripsi_kategori' => 'Penerimaan Mahasiswa Baru',
+                'created_by' => 'FGH',
+                'updated_by' => null,
+                'deleted_by' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ],
             [
                 'nama_kategori' => 'BP2M',
-                'deskripsi_kategori' => 'Bagian Penelitian dan Pengabdian Kepada Masyarakat'
+                'deskripsi_kategori' => 'Bagian Penelitian dan Pengabdian Kepada Masyarakat',
+                'created_by' => 'FGH',
+                'updated_by' => null,
+                'deleted_by' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]
         ];
 

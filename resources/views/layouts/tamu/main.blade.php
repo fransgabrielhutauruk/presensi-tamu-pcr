@@ -1,7 +1,7 @@
 @extends('layouts.tamu.base')
 
 @push('head')
-    @include('contents.frontend.partials.common.head-data')
+    @include('contents.tamu.partials.common.head-data')
 @endpush
 
 @section('base-content')
@@ -38,7 +38,7 @@
         'buttons' => env('APP_ENV') !== 'production',
     ]) --}}
 
-    @include('contents.frontend.partials.common.footer')
-    @include('contents.frontend.partials.common.scroll-to-top')
-    @include('contents.frontend.partials.common.script-data')
+    @include('contents.tamu.partials.common.footer')
+    @include('contents.tamu.partials.common.scroll-to-top')
+    @include('contents.tamu.partials.common.script-data')
 @endsection
