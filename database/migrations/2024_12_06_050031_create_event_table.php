@@ -17,9 +17,10 @@ class CreateEventTable extends Migration
             $table->time('waktu_mulai_event')->nullable();
             $table->time('waktu_selesai_event')->nullable();
             $table->string('lokasi_event')->nullable();
-            $table->string('created_by', 10)->nullable();
-            $table->string('updated_by', 10)->nullable();
-            $table->string('deleted_by', 10)->nullable();
+            $table->string('link_dokumentasi_event')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

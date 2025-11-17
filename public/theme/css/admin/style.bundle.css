@@ -43481,6 +43481,9 @@ router-outlet{
         --bs-app-sidebar-gap-top:0px;
         --bs-app-sidebar-gap-bottom:0px
     }
+    [data-kt-app-sidebar-enabled=false]{
+        --bs-app-sidebar-width:50px;
+    }
     [data-kt-app-sidebar-sticky=on]{
         --bs-app-sidebar-width:300px;
         --bs-app-sidebar-gap-start:0px;
@@ -44297,7 +44300,8 @@ router-outlet{
 }
 @media (min-width:992px){
     .app-wrapper{
-        transition:margin-left .3s ease,margin-right .3s ease
+        transition:margin-left .3s ease,margin-right .3s ease;
+        margin-left: 50px;
     }
     [data-kt-app-header-sticky=on] .app-wrapper{
         margin-top:var(--bs-app-header-height-actual)

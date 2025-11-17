@@ -41,14 +41,3 @@ Route::name('tamu.')->group(function () {
         });
     });
 });
-
-Route::name('frontend.')->group(function () {
-    Route::controller(MainController::class)->group(function () {
-        Route::get('/pcr', 'index')->name('home');
-    });
-
-    // Development Routes
-    Route::prefix('/dev')->name('dev.')->controller(DEV\MainController::class)->group(function () {
-        Route::get('/changelog', 'changelog')->name('changelog');
-    });
-});

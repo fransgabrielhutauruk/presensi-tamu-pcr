@@ -464,6 +464,7 @@ class KunjunganController extends Controller
 
             $detailData = [
                 'kunjungan_id' => $currData->kunjungan_id,
+                'id' => $req->input('id'),
 
                 'nama' => $currData->tamu->nama_tamu ?? '',
                 'jenis_kelamin' => $currData->tamu->jenis_kelamin_tamu ?? '',
@@ -476,8 +477,8 @@ class KunjunganController extends Controller
                     : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
                 'jumlah_rombongan' => $currData->jumlah_rombongan ?? '-',
                 'transportasi' => $currData->transportasi ?? '',
-                'status_validasi' => $currData->status_validasi ? 'Tervalidasi' : 'Belum Validasi',
-                'is_checkout' => $currData->is_checkout ? 'Sudah Checkout' : 'Belum Checkout',
+                'status_validasi' => (bool) $currData->status_validasi,
+                'is_checkout' => (bool) $currData->is_checkout,
 
                 'tanggal_kunjungan' => $currData->created_at ? tanggal($currData->created_at) : '',
                 'waktu_kunjungan' => $currData->created_at ? $currData->created_at->format('H:i') : '-',

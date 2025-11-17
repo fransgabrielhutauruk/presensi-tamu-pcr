@@ -1,6 +1,12 @@
 <!--begin::Header main-->
 <div class="d-flex flex-stack flex-grow-1">
-    <div class="app-header-logo d-flex align-items-center ps-lg-9" id="kt_app_header_logo">
+    <div class="app-header-logo d-flex align-items-center ps-lg-9 ms-2" id="kt_app_header_logo">
+        @php
+            use App\Enums\UserRole;
+            $showSidebar = hasAnyActiveRole(UserRole::getAdminEksekutifSecurityRoles());
+        @endphp
+        
+        @if($showSidebar)
         <!--begin::Sidebar toggle-->
         <div id="kt_app_sidebar_toggle" class="app-sidebar-toggle btn btn-sm btn-icon bg-body btn-color-gray-500 btn-active-color-primary w-30px h-30px ms-n2 me-4 d-none d-lg-flex" data-kt-toggle="true" data-kt-toggle-state="active" data-kt-toggle-target="body" data-kt-toggle-name="app-sidebar-minimize">
             <i class="ki-duotone ki-abstract-14 fs-3 mt-1">
@@ -17,9 +23,11 @@
             </i>
         </div>
         <!--end::Sidebar mobile toggle-->
+        @endif
+        
         <!--begin::Logo-->
-        <a href="{{ url('/') }}" class="app-sidebar-logo">
-            <h4 class="mb-0 fw-bold ms-2 text-dark">PRESENSI TAMU</h4>
+        <a href="{{ url('#') }}" class="app-sidebar-logo">
+            <h4 class="mb-0 fw-bold ms-5 text-dark">PRESENSI TAMU</h4>
             <!-- <img alt="Logo" src="{{ asset('theme') }}/media/logos/default.png" class="h-25px h-md-30px theme-light-show" /> -->
             <!-- <img alt="Logo" src="{{ asset('theme') }}/media/logos/default-dark.png" class="h-25px h-md-30px theme-dark-show" /> -->
         </a>

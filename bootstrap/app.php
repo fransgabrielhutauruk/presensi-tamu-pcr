@@ -19,10 +19,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'active-role' => CheckActiveRole::class,
             'setlocale' => SetLocale::class,
         ]);
-        
+
         $middleware->web(append: [
             SetLocale::class,
         ]);
+
+        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectUsersTo('/app/event');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

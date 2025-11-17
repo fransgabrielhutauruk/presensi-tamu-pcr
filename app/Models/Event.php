@@ -8,6 +8,7 @@
 namespace App\Models;
 
 
+use App\Models\User;
 use App\Models\EventKategori;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
@@ -49,6 +50,7 @@ class Event extends Model
         'waktu_mulai_event',
         'waktu_selesai_event',
         'lokasi_event',
+        'link_dokumentasi_event',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -86,15 +88,15 @@ class Event extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = userInisial();
+            $model->created_by = userId();
         });
 
         static::updating(function ($model) {
-            $model->updated_by = userInisial();
+            $model->updated_by = userId();
         });
 
         static::deleting(function ($model) {
-            $model->deleted_by = userInisial();
+            $model->deleted_by = userId();
             $model->update();
         });
 
@@ -198,6 +200,7 @@ class Event extends Model
                 a.waktu_mulai_event,
                 a.waktu_selesai_event,
                 a.lokasi_event,
+                a.link_dokumentasi_event,
                 b.nama_kategori,
                 b.deskripsi_kategori,
                 a.created_at,

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -47,14 +48,14 @@ class AuthController extends Controller
             }
 
             if (Str::endsWith($email, '@pcr.ac.id')) {
-                $user->assignRole('Staf');
+                $user->assignRole(UserRole::STAF->value);
             } elseif (Str::endsWith($email, '@mahasiswa.pcr.ac.id')) {
-                $user->assignRole('Mahasiswa');
+                $user->assignRole(UserRole::MAHASISWA->value);
             }
 
             Auth::login($user, true);
 
-            return redirect()->intended('/app/dashboard');
+            return redirect()->intended('/app/event');
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Google login failed!');
         }
@@ -66,7 +67,7 @@ class AuthController extends Controller
         $user = Auth::user();
 
         $userRoles = $user->roles->pluck('name')->toArray();
-        $allowedRoles = ['Mahasiswa', 'Staf', 'Admin', 'Eksekutif'];
+        $allowedRoles = UserRole::getAllRoles();
 
         if (!in_array($role, $userRoles) || !in_array($role, $allowedRoles)) {
             return response()->json([

@@ -21,7 +21,6 @@ class EventSeeder extends Seeder
                 'waktu_mulai_event' => '07:00:00',
                 'waktu_selesai_event' => '12:00:00',
                 'lokasi_event' => 'GSG',
-                'created_by' => 'FGH',
                 'updated_by' => null,
                 'deleted_by' => null,
                 'created_at' => now(),
