@@ -15,7 +15,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
     Route::post('/switch-role', [AuthController::class, 'switchRole'])->name('switch.role');
 });
 
@@ -25,7 +24,6 @@ Route::prefix('app')
     ->middleware(['auth', 'active-role:' . implode(',', UserRole::getAllRoles())])->group(function () {
         Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
         generalRoute(EventController::class, 'event', 'app');
-
         Route::post('kunjungan/validate/{id}', [KunjunganController::class, 'validateSingle'])
             ->name('app.kunjungan.validate-single');
         Route::post('kunjungan/reject/{id}', [KunjunganController::class, 'rejectSingle'])
@@ -37,14 +35,18 @@ Route::prefix('app')
         })->name('app.kunjungan.detail-data');
 
         Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifSecurityRoles()))->group(function () {
-            generalRoute(UserController::class, 'user', 'app');
-            Route::get('kunjungan/validasi', [KunjunganController::class, 'validasi'])->name('app.kunjungan.validasi');
+            generalRoute(DashboardController::class, 'dashboard', 'app');
             Route::get('kunjungan/monitoring', [KunjunganController::class, 'monitoring'])
                 ->name('app.kunjungan.monitoring');
             generalRoute(KunjunganController::class, 'kunjungan', 'app');
-            generalRoute(DashboardController::class, 'dashboard', 'app');
         });
 
+        Route::middleware('active-role:' . UserRole::ADMIN->value)->group(function () {
+            Route::get('kunjungan/validasi', [KunjunganController::class, 'validasi'])->name('app.kunjungan.validasi');
+            generalRoute(UserController::class, 'user', 'app');
+        });
+
+        // -----------------
         Route::get('icons', function () {
             if (!config('app.debug')) {
                 abort(403, 'Icon gallery is only available in debug mode.');
@@ -87,4 +89,5 @@ Route::prefix('app')
 
             return view('dev.icons', compact('outline', 'solid', 'duotone', 'pageData'));
         })->name('app.icons');
+        // ---------------------
     });

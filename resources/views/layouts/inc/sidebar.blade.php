@@ -19,7 +19,6 @@
         @endif
 
         @if (hasAnyActiveRole(UserRole::getAdminEksekutifSecurityRoles()))
-            <div class="separator separator-dashed border-gray-10 my-2"></div>
             <x-theme.menu link="{{ route('app.kunjungan.index') }}" text="Kunjungan" icon="ki-outline ki-user-tick"
                 :active="$pageData->activeMenu == 'kunjungan'" />
             <x-theme.menu link="{{ route('app.kunjungan.monitoring') }}" text="Monitoring Kunjungan"
