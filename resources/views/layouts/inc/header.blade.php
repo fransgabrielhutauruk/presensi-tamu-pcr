@@ -181,7 +181,6 @@
 <!--begin::Switch Role Script-->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Handle switch role buttons
         document.querySelectorAll('.switch-role-btn').forEach(function(btn) {
             btn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -189,12 +188,10 @@
                 const role = this.getAttribute('data-role');
                 const button = this;
 
-                // Show loading state
                 const originalText = button.innerHTML;
                 button.innerHTML = '<i class="ki-outline ki-loading fs-4 me-2"></i>Switching...';
                 button.style.pointerEvents = 'none';
 
-                // Send request to switch role
                 fetch('{{ route("switch.role") }}', {
                         method: 'POST',
                         headers: {
@@ -208,10 +205,8 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status) {
-                            // Success - reload page to update UI
-                            window.location.reload();
+                            window.location.href = '/app/event';
                         } else {
-                            // Error
                             alert(data.message || 'Error switching role');
                             button.innerHTML = originalText;
                             button.style.pointerEvents = 'auto';

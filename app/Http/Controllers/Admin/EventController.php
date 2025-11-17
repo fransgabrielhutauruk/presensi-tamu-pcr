@@ -46,7 +46,9 @@ class EventController extends Controller
             Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
             Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
             Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
-            Column::make(['width' => '15%', 'title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
+            Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true, 'className' => 'text-center']),
+            Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true, 'className' => 'text-center']),
+            Column::make(['width' => '10%', 'title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
             Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
         ]);
 
@@ -388,6 +390,12 @@ class EventController extends Controller
 
                 $id = encid($value['event_id']);
 
+                $dt['tanggal_event'] = tanggal($value['tanggal_event']) ?? '-';
+                $dt['waktu_event'] = ($value['waktu_mulai_event'] ?
+                    date('H:i', strtotime($value['waktu_mulai_event'])) : '-') .
+                    ' s/d ' .
+                    ($value['waktu_selesai_event'] ? date('H:i', strtotime($value['waktu_selesai_event'])) : '-');
+
                 if (!empty($value['link_dokumentasi_event'])) {
                     $dt['dokumentasi'] = '<a href="' . $value['link_dokumentasi_event'] . '" target="_blank" class="text-primary">Lihat</a>';
                 } else {
@@ -504,7 +512,7 @@ class EventController extends Controller
         $this->breadCrump[] = ['title' => 'QR Code', 'link' => url()->current()];
 
         $presensiUrl = route('tamu.event.identitas', $eventId);
-        
+
         if ($request->get('generate') === 'true') {
             $qrCode = QrCode::size(300)
                 ->backgroundColor(255, 255, 255)

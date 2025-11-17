@@ -10,8 +10,10 @@
         class="app-sidebar-menu-primary menu menu-column menu-rounded menu-sub-indention menu-state-bullet-primary
             px-6 mb-5">
         @if (hasAnyActiveRole(UserRole::getAllRoles()))
-            <x-theme.menu link="{{ route('app.dashboard.index') }}" text="Dashboard" icon="ki-outline ki-graph-up"
-                :active="$pageData->activeMenu == 'dashboard'" />
+            @if (hasAnyActiveRole([UserRole::EKSEKUTIF->value]))
+                <x-theme.menu link="{{ route('app.dashboard.index') }}" text="Dashboard BI"
+                    icon="ki-outline ki-graph-up" :active="$pageData->activeMenu == 'dashboard'" />
+            @endif
             <x-theme.menu link="{{ route('app.event.index') }}" text="Event" icon="ki-outline ki-calendar-edit"
                 :active="$pageData->activeMenu == 'event' || $pageData->activeMenu == 'event-kategori'" />
         @endif
@@ -22,6 +24,9 @@
                 :active="$pageData->activeMenu == 'kunjungan'" />
             <x-theme.menu link="{{ route('app.kunjungan.monitoring') }}" text="Monitoring Kunjungan"
                 icon="ki-outline ki-monitor-mobile" :active="$pageData->activeMenu == 'monitoring-kunjungan'" />
+        @endif
+
+        @if (hasAnyActiveRole([UserRole::ADMIN->value]))
             <x-theme.menu link="{{ route('app.kunjungan.validasi') }}" text="Validasi Kunjungan"
                 icon="ki-outline ki-check-circle" :active="$pageData->activeMenu == 'validasi-kunjungan'" />
             <x-theme.menu link="{{ route('app.user.index') }}" text="Pengguna" icon="ki-outline ki-setting-3"

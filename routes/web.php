@@ -33,7 +33,7 @@ Route::prefix('app')
         Route::post('kunjungan/bulk-validasi', [KunjunganController::class, 'bulkValidasi'])
             ->name('app.kunjungan.bulk-validasi');
         Route::post('kunjungan/detail-data', function (\Illuminate\Http\Request $request) {
-            return app(\App\Http\Controllers\Admin\KunjunganController::class)->data($request, 'detail');
+            return app(KunjunganController::class)->data($request, 'detail');
         })->name('app.kunjungan.detail-data');
 
         Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifSecurityRoles()))->group(function () {
