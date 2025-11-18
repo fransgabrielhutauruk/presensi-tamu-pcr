@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Kunjungan;
-use App\Jobs\SendWhatsAppReminder;
+use App\Jobs\SendCheckoutReminderEmail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +22,7 @@ class ProcessScheduledReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Process scheduled WhatsApp reminders for checkout';
+    protected $description = 'Process scheduled email reminders for checkout';
 
     /**
      * Execute the console command.
@@ -34,21 +34,25 @@ class ProcessScheduledReminders extends Command
 
         $kunjungans = Kunjungan::with('tamu')
             ->where('is_checkout', false)
-            ->where('waktu_keluar', '>=', $currentTime)
+            ->where('waktu_keluar', '<=', $currentTime)
             ->whereDate('created_at', $now->toDateString())
             ->whereNull('reminder_sent_at')
             ->get();
 
         $count = 0;
         foreach ($kunjungans as $kunjungan) {
-            SendWhatsAppReminder::dispatch($kunjungan->kunjungan_id);
-
-            $kunjungan->update(['reminder_sent_at' => $now]);
+            SendCheckoutReminderEmail::dispatch($kunjungan->kunjungan_id);
 
             $count++;
+            
+        $this->line("Reminder sent for kunjungan ID {$kunjungan->kunjungan_id} - Waktu keluar: {$kunjungan->waktu_keluar}");
         }
 
-        $this->info("Processed {$count} reminders at {$now->format('Y-m-d H:i:s')}");
+        if ($count > 0) {
+            $this->info("Processed {$count} email reminders at {$now->format('Y-m-d H:i')}");
+        } else {
+            $this->comment("No reminders to process at {$now->format('Y-m-d H:i')}");
+        }
 
         return 0;
     }

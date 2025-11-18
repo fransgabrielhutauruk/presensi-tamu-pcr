@@ -19,7 +19,6 @@
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.19",
-        "twilio/sdk": "^8.8",
         "vinkla/hashids": "^13.0",
         "yajra/laravel-datatables": "^12.0"
     },
