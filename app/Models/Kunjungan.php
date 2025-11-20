@@ -4,16 +4,21 @@ namespace App\Models;
 
 use App\Models\Tamu;
 use App\Models\Event;
+use App\Models\Feedback;
 use App\Models\KunjunganDetail;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Enums\KategoriTujuanEnum;
+use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\Facades\CauserResolver;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Kunjungan extends Model
 {
     use HasFactory;
     use SoftDeletes;
+    use LogsActivity;
 
     protected $table = 'kunjungan';
     protected $primaryKey = 'kunjungan_id';
@@ -98,5 +103,51 @@ class Kunjungan extends Model
         } else {
             return '<span class="badge badge-warning">Belum Checkout</span>';
         }
+    }
+
+    /**
+     * fungsi yang di panggil saat event crud dijalankan
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->created_by = userId();
+        });
+
+        static::updating(function ($model) {
+            $model->updated_by = userId();
+        });
+
+        static::deleting(function ($model) {
+            $model->deleted_by = userId();
+            $model->update();
+        });
+
+        static::restoring(function ($model) {
+            $model->deleted_by = NULL;
+        });
+    }
+
+    /**
+     * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
+     * pencatatan log menggunakan spatie/activitylogging
+     *
+     * @return LogOptions
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        CauserResolver::setCauser(causerActivityLog());
+        return LogOptions::defaults()
+            ->logOnly($this->fillable)
+            ->logOnlyDirty()
+            ->useLogName(env('APP_NAME'))
+            ->setDescriptionForEvent(function ($eventName) {
+                $aksi = eventActivityLogBahasa($eventName);
+                return "{$aksi} kunjungan";
+            });
     }
 }

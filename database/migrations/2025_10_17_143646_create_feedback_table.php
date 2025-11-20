@@ -16,9 +16,9 @@ return new class extends Migration
             $table->unsignedInteger('kunjungan_id');
             $table->integer('rating');
             $table->text('komentar')->nullable();
-            $table->string('created_by', 10)->nullable();
-            $table->string('updated_by', 10)->nullable();
-            $table->string('deleted_by', 10)->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedInteger('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

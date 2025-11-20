@@ -12,9 +12,9 @@ class CreateEventKategoriTable extends Migration
             $table->increments('eventkategori_id');
             $table->string('nama_kategori');
             $table->text('deskripsi_kategori')->nullable();
-            $table->string('created_by', 10)->nullable();
-            $table->string('updated_by', 10)->nullable();
-            $table->string('deleted_by', 10)->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedInteger('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

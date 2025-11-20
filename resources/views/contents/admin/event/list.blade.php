@@ -16,6 +16,7 @@
                 <x-btn type="primary" class="act-add" jf-add="event">
                     <i class="bi bi-plus fs-2"></i> Tambah Event
                 </x-btn>
+                <x-btn.refresh-datatable />
             @endslot
         </x-table.dttable>
     </div>

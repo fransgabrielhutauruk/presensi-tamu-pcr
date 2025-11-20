@@ -8,7 +8,6 @@
 namespace App\Models;
 
 
-use App\Models\User;
 use App\Models\EventKategori;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
@@ -121,7 +120,7 @@ class Event extends Model
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
-                return userInisial() . " {$aksi} table :subject.{{tableSubject}}";
+                return "{$aksi} event: {$this->nama_event}";
             });
     }
 

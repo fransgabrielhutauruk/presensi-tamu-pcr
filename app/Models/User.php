@@ -3,15 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Facades\CauserResolver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, Notifiable, HasRoles, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -58,5 +61,44 @@ class User extends Authenticatable
             ->where(notRaw($where))
             ->whereRaw(withRaw($where), $whereBinding);
         return $get ? $query->get() : $query;
+    }
+
+    /**
+     * fungsi yang di panggil saat event crud dijalankan
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->created_by = userId();
+        });
+
+        static::deleting(function ($model) {
+            $model->deleted_by = userId();
+            $model->update();
+        });
+    }
+
+
+    /**
+     * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
+     * pencatatan log menggunakan spatie/activitylogging
+     *
+     * @return LogOptions
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        CauserResolver::setCauser(causerActivityLog());
+        return LogOptions::defaults()
+            ->logOnly($this->fillable)
+            ->logOnlyDirty()
+            ->useLogName(env('APP_NAME'))
+            ->setDescriptionForEvent(function ($eventName) {
+                $aksi = eventActivityLogBahasa($eventName);
+                return "{$aksi} pengguan: {$this->name}";
+            });
     }
 }

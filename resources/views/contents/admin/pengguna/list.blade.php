@@ -8,7 +8,6 @@
 @endsection
 
 @section('content')
-<!--begin::Content container-->
 <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
     data-delay="0">
     <div class="row">

@@ -132,13 +132,13 @@ function clean_script($key = '')
 function eventActivityLogBahasa($eventName)
 {
     $ev = [
-        'created'      => 'menambahkan data ',
-        'updated'      => 'merubah data',
-        'deleted'      => 'menghapus data',
-        'restored'     => 'mengembalikan data',
-        'forceDeleted' => 'menghapus permanen data',
+        'created'      => 'Menambahkan data ',
+        'updated'      => 'Merubah data',
+        'deleted'      => 'Menghapus data',
+        'restored'     => 'Mengembalikan data',
+        'forceDeleted' => 'Menghapus permanen data',
     ];
-    return isset($ev[$eventName]) ? $ev[$eventName] : 'melakukan aksi pada data';
+    return isset($ev[$eventName]) ? $ev[$eventName] : 'Melakukan aksi pada data';
 }
 
 function echo_array($dt)

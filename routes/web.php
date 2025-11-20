@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KunjunganController;
+use App\Http\Controllers\Admin\ActivityLogController;
 
 include_once __DIR__ . "/web-frontend.php";
 
@@ -44,6 +45,8 @@ Route::prefix('app')
         Route::middleware('active-role:' . UserRole::ADMIN->value)->group(function () {
             Route::get('kunjungan/validasi', [KunjunganController::class, 'validasi'])->name('app.kunjungan.validasi');
             generalRoute(UserController::class, 'user', 'app');
+            generalRoute(DashboardController::class, 'dashboard', 'app');
+            generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
         });
 
         // -----------------

@@ -19,6 +19,7 @@ return [
     'phone_pattern_error' => 'Phone number must be numeric',
     'nim_pattern_error' => 'Student ID must be numeric',
     'rating_required' => 'Please select a rating first',
+    'purpose_required' => 'Visit purpose is required',
 
     // Feedback
     'suggestions_optional' => 'Suggestions and Input (Optional)',

@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Enums\UserRole;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use Yajra\DataTables\Html\Column;
-use App\Models\User;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Http\JsonResponse;
+use Yajra\DataTables\Html\Column;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Blade;
 
 class UserController extends Controller
 {
@@ -26,7 +27,7 @@ class UserController extends Controller
         $this->activeMenu = 'pengguna';
         $this->breadCrump[] = ['title' => 'Pengguna', 'link' => url()->current()];
 
-        $roles = Role::whereIn('name', ['Admin', 'Eksekutif'])->get();
+        $roles = Role::whereIn('name', UserRole::getAdminEksekutifSecurityRoles())->get();
 
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)->ajax(route('app.user.data') . '/list')->columns([

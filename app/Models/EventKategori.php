@@ -71,15 +71,15 @@ class EventKategori extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = userInisial();
+            $model->created_by = userId();
         });
 
         static::updating(function ($model) {
-            $model->updated_by = userInisial();
+            $model->updated_by = userId();
         });
 
         static::deleting(function ($model) {
-            $model->deleted_by = userInisial();
+            $model->deleted_by = userId();
             $model->update();
         });
 
@@ -105,9 +105,8 @@ class EventKategori extends Model
             ->logOnlyDirty()
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
-                $aksi = function_exists('eventActivityLogBahasa') ? eventActivityLogBahasa($eventName) : $eventName;
-                $user = function_exists('userInisial') ? userInisial() : 'System';
-                return $user . " {$aksi} kategori event: {$this->nama_kategori}";
+                $aksi = eventActivityLogBahasa($eventName);
+                return "{$aksi} kategori event: {$this->nama_kategori}";
             });
     }
 

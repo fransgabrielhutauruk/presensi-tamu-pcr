@@ -34,6 +34,7 @@
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-validasi"
             jf-list="datatable">
             @slot('action')
+                <x-btn.refresh-datatable />
             @endslot
         </x-table.dttable>
     </div>

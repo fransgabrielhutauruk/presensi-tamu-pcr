@@ -31,6 +31,22 @@
             {{ $title != '' ? $title : 'Detail data' }}
         </a>
     </div>
+@elseif ($action == 'qrcode')
+    <div class="menu-item px-3">
+        <a href="{{ $link != '' ? $link : '#' }}" class="menu-link align-items-start px-3 text-gray-700 act-{{ str_replace(' ', '_', $action) }} {{ $class }}" {{ $attributes }} title="{{ $title != '' ? $title : 'qr code' }}">
+            <i class="{{ $icon != '' ? $icon : 'ki-outline ki-scan-barcode' }} fs-3 me-2"></i>
+
+            {{ $title != '' ? $title : 'QR Code' }}
+        </a>
+    </div>
+@elseif ($action == 'check')
+    <div class="menu-item px-3">
+        <a href="{{ $link != '' ? $link : '#' }}" class="menu-link align-items-start px-3 text-gray-700 act-{{ str_replace(' ', '_', $action) }} {{ $class }}" {{ $attributes }} title="{{ $title != '' ? $title : 'qr code' }}">
+            <i class="{{ $icon != '' ? $icon : 'ki-outline ki-security-check' }} fs-3 me-2"></i>
+
+            {{ $title != '' ? $title : 'Check' }}
+        </a>
+    </div>
 @else
     <div class="menu-item px-3">
         <a href="{{ $link != '' ? $link : '#' }}" class="menu-link align-items-start px-3 text-gray-700 act-{{ str_replace(' ', '_', $action) }} {{ $class }}" {{ $attributes }} title="{{ $title != '' ? $title : 'lainnya' }}">

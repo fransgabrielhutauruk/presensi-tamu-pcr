@@ -55,6 +55,16 @@ class AuthController extends Controller
 
             Auth::login($user, true);
 
+            activity()
+                ->causedBy($user)
+                ->withProperties([
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->header('User-Agent')
+                ])
+                ->log('Login ke sistem');
+
+            request()->session()->regenerate();
+
             return redirect()->intended('/app/event');
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Google login failed!');

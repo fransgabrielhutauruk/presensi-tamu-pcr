@@ -16,7 +16,6 @@
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
-
         <div class="row g-5 g-xl-10">
             <div class="col-md-6 col-lg-6 col-xl-3">
                 <div class="card card-flush mb-5">
@@ -50,6 +49,7 @@
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-monitoring"
             jf-list="datatable">
             @slot('action')
+                <x-btn.refresh-datatable />
             @endslot
         </x-table.dttable>
     </div>

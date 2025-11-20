@@ -19,6 +19,7 @@ return [
     'phone_pattern_error' => 'Nomor telepon harus berupa angka',
     'nim_pattern_error' => 'NIM harus berupa angka',
     'rating_required' => 'Silakan pilih rating terlebih dahulu',
+    'purpose_required' => 'Tujuan kunjungan wajib diisi',
 
     // Feedback
     'suggestions_optional' => 'Saran dan Masukan (Opsional)',

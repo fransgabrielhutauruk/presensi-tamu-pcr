@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\MstOpsiKunjungan;
-use Illuminate\Support\Facades\DB;
 
 class MstOpsiKunjunganSeeder extends Seeder
 {

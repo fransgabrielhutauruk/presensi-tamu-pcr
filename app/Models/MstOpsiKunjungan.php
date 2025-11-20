@@ -66,15 +66,15 @@ class MstOpsiKunjungan extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->created_by = userInisial();
+            $model->created_by = userId();
         });
 
         static::updating(function ($model) {
-            $model->updated_by = userInisial();
+            $model->updated_by = userId();
         });
 
         static::deleting(function ($model) {
-            $model->deleted_by = userInisial();
+            $model->deleted_by = userId();
             $model->update();
         });
 
@@ -100,9 +100,8 @@ class MstOpsiKunjungan extends Model
             ->logOnlyDirty()
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
-                $aksi = function_exists('eventActivityLogBahasa') ? eventActivityLogBahasa($eventName) : $eventName;
-                $user = function_exists('userInisial') ? userInisial() : 'System';
-                return $user . " {$aksi} opsi kunjungan: {$this->nama_opsi}";
+                $aksi = eventActivityLogBahasa($eventName);
+                return "{$aksi} opsi kunjungan: {$this->nama_opsi}";
             });
     }
 }
