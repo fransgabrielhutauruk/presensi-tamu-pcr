@@ -8,12 +8,17 @@
     {{-- @include('contents.frontend.partials.common.preloader') --}}
 
     <div class="position-fixed top-0 end-0 p-2 pe-3" style="z-index: 20;">
-        <x-language-switcher />
+        <x-tamu.language-switcher />
     </div>
 
-    <main class="flex-grow-1">
-        @yield('content')
-    </main>
+    <div class="d-flex flex-column min-vh-100">
+        <main class="flex-grow-1">
+            <div class="container">
+                @yield('content')
+            </div>
+        </main>
+        @include('contents.tamu.partials.common.footer')
+    </div>
 
     <x-alert.swal-session />
 
@@ -38,7 +43,6 @@
         'buttons' => env('APP_ENV') !== 'production',
     ]) --}}
 
-    @include('contents.tamu.partials.common.footer')
     @include('contents.tamu.partials.common.scroll-to-top')
     @include('contents.tamu.partials.common.script-data')
 @endsection

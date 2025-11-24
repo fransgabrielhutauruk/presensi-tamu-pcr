@@ -1,42 +1,83 @@
 @extends('layouts.tamu.main')
 
 @section('content')
-    <div class="container">
-        <div class="row min-vh-100 align-items-center">
-            <div class="col-md-5 justify-content-center mx-auto">
-                <div class="shapes position-fixed" style="pointer-events: none; user-select: none; inset: 0; z-index: 1;"
-                    aria-hidden="true" id="shapes-container">
-                </div>
+    <div class="row d-flex align-items-center pt-5" style="min-height: 90vh">
+        <div class="col-md-5 justify-content-center mx-auto">
+            <div class="shapes position-fixed" style="pointer-events: none; user-select: none; inset: 0; z-index: 1;"
+                aria-hidden="true" id="shapes-container">
+            </div>
 
-                <div class="position-relative text-center" style="z-index: 10;">
-                    <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"
-                        class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
+            <div class="position-relative text-center" style="z-index: 10;">
+                <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"
+                    class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
 
-                    <h1 class="wow fadeInOut" data-wow-delay="0.5s">
-                        {{ __('visitor.welcome_message') }}
-                    </h1>
-                    <h5 class="wow fadeInOut" data-wow-delay="1s">
-                        {{ __('visitor.at_institution') }}
-                    </h5>
-                    <p class="text-muted mb-4 fs-6 lh-base" id="typewriter-text">
-                    </p>
-                    <div class="mx-auto">
-                        <img src="{{ asset('theme/images/pcr-depan.webp') }}" alt="Gedung utama kampus PCR"
-                            class="img-fluid rounded shadow-sm mb-4" />
-                        <a id="route" href="{{ route('tamu.event-or-non-event') }}" class="btn-default w-100 mt-2">
-                            <span id="beforeSubmit">{{ __('visitor.fill_guest_book') }}</span>
-                            <span id="loadingIndicator" style="display: none;">
-                                <i class="fas fa-spinner fa-spin me-2"></i>{{ __('common.processing') }}
-                            </span>
-                        </a>
+                <h1 class="wow fadeInOut" data-wow-delay="0.5s">
+                    {{ __('visitor.welcome_message') }}
+                </h1>
+                <h5 class="wow fadeInOut" data-wow-delay="1s">
+                    {{ __('visitor.at_institution') }}
+                </h5>
+                <p class="text-muted mb-4 fs-6 lh-base" id="typewriter-text">
+                </p>
+                <div class="mx-auto">
+                    <div class="swiper campusSwiper mb-4 rounded shadow-sm overflow-hidden" style="height: 250px;">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <img src="{{ asset('theme/images/pcr-depan.webp') }}" alt="Gedung utama kampus PCR"
+                                    class="w-100 h-100 object-fit-cover" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="{{ asset('theme/images/main-hall.webp') }}" alt="Main Hall PCR"
+                                    class="w-100 h-100 object-fit-cover" />
+                            </div>
+                            <div class="swiper-slide">
+                                <img src="{{ asset('theme/images/gsg.webp') }}" alt="GSG PCR"
+                                    class="w-100 h-100 object-fit-cover" />
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
                     </div>
+
+                    <a id="route" href="{{ route('tamu.event-or-non-event') }}" class="btn-default w-100 mt-2">
+                        <span id="beforeSubmit">{{ __('visitor.fill_guest_book') }}</span>
+                        <span id="loadingIndicator" style="display: none;">
+                            <i class="fas fa-spinner fa-spin me-2"></i>{{ __('common.processing') }}
+                        </span>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
+    <style>
+        .campusSwiper .swiper-pagination-bullet {
+            background: rgb(0, 174, 201);
+        }
+
+        .campusSwiper .swiper-pagination-bullet-active {
+            background: rgb(12, 90, 109);
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const swiper = new Swiper('.campusSwiper', {
+                loop: true,
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                effect: 'fade',
+                fadeEffect: {
+                    crossFade: true
+                },
+                speed: 2000,
+            });
+
             const routeLink = document.querySelector('#route');
 
             const beforeSubmit = document.querySelector('#beforeSubmit');

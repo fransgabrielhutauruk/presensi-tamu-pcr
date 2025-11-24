@@ -217,7 +217,8 @@ class Event extends Model
                     $query->whereRaw(withRaw($where), $whereBinding);
                 }
             })
-            ->whereNull('a.deleted_at');
+            ->whereNull('a.deleted_at')
+            ->orderBy('a.created_at', 'desc');
 
         return $get ? $query->get() : $query;
     }

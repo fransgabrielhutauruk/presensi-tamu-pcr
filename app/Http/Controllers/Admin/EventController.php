@@ -40,17 +40,19 @@ class EventController extends Controller
         $this->title = 'Kelola Event';
         $this->activeMenu = 'event';
         $builder = app('datatables.html');
-        $dataTable = $builder->serverSide(true)->ajax(route('app.event.data') . '/list')->columns([
-            Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
-            Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
-            Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
-            Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
-            Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
-            Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true, 'className' => 'text-center']),
-            Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true, 'className' => 'text-center']),
-            Column::make(['width' => '10%', 'title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
-            Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
-        ]);
+        $dataTable = $builder->serverSide(true)
+            ->ajax(route('app.event.data') . '/list')
+            ->columns([
+                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
+                Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
+                Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
+                Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
+                Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true, 'className' => 'text-center']),
+                Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true, 'className' => 'text-center']),
+                Column::make(['width' => '10%', 'title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+            ]);
 
         $this->dataView([
             'dataTable' => $dataTable,
@@ -371,7 +373,7 @@ class EventController extends Controller
                 $filter['a.created_by'] = userId();
             }
 
-            $data = DataTables::of(Event::getDataDetail($filter, get: false))->toArray();
+            $data = DataTables::of(Event::getDataDetail($filter, get: true))->toArray();
 
             $start = $req->input('start');
             $resp = [];

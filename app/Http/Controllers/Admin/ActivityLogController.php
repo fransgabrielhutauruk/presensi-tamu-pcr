@@ -21,7 +21,6 @@ class ActivityLogController extends Controller
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)
             ->ajax(route('app.log-aktivitas.data') . '/list')
-            ->orderBy(1, 'desc')
             ->columns([
                 Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Waktu', 'data' => 'created_at', 'orderable' => true, 'className' => 'text-nowrap']),
@@ -43,12 +42,10 @@ class ActivityLogController extends Controller
         if ($param1 == 'list') {
             $query = Activity::with('causer');
 
-            $data = DataTables::of($query)
-                ->orderColumn('created_at', function ($query, $order) {
-                    $query->orderBy('created_at', $order);
-                })
+            $data = DataTables::of($query->latest()->get())
                 ->toArray();
 
+            $total = Activity::count();
             $start = $req->input('start');
             $resp = [];
             foreach ($data['data'] as $key => $value) {
@@ -58,7 +55,6 @@ class ActivityLogController extends Controller
                 $dt['created_at'] = Carbon::parse($value['created_at'])->format('d M Y H:i');
                 $dt['user'] = $value['causer']['name'] ?? 'System';
                 $dt['description'] = $value['description'] ?? '-';
-                
                 $subjectType = $value['subject_type'] ?? '-';
                 if ($subjectType !== '-') {
                     $parts = explode('\\', $subjectType);

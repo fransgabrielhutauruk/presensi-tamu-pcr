@@ -11,68 +11,64 @@
         ];
     @endphp
 
-    <div class="container">
-        <div class="row min-vh-100">
-            <div class="col-md-5 justify-content-center mx-auto">
-                <div class="text-center mt-5">
-                    <x-tamu.page-header :title="$tujuanMap[$tujuan] ?? 'Kunjungan'" />
+    <div class="row">
+        <div class="col-md-5 justify-content-center mx-auto">
+            <div class="text-center mt-5">
+                <x-tamu.page-header :title="$tujuanMap[$tujuan] ?? 'Kunjungan'" />
 
-                    <div class="text-start mt-4">
-                        <a href="{{ route('tamu.non-event.tujuan') }}"
-                            class="btn btn-link p-0 mb-4 gap-2 text-decoration-none"
-                            style="color: var(--dark-color);">
-                            <i class="fas fa-arrow-left"></i>
-                            <span>{{ __('visitor.back') }}</span>
-                        </a>
-                    </div>
+                <div class="text-start mt-4">
+                    <a href="{{ route('tamu.non-event.tujuan') }}" class="btn btn-link p-0 mb-4 gap-2 text-decoration-none"
+                        style="color: var(--dark-color);">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>{{ __('visitor.back') }}</span>
+                    </a>
+                </div>
 
-                    <form id="tamu-form" class="text-start wow fadeInUp"
-                        action="{{ route('tamu.non-event.store-presensi') }}" method="POST" data-toggle="validator"
-                        novalidate>
-                        @csrf
-                        <input type="hidden" name="kategori_tujuan" value="{{ $tujuan }}">
+                <form id="tamu-form" class="text-start wow fadeInUp" action="{{ route('tamu.non-event.store-presensi') }}"
+                    method="POST" data-toggle="validator" novalidate>
+                    @csrf
+                    <input type="hidden" name="kategori_tujuan" value="{{ $tujuan }}">
 
-                        @if (app()->environment('local'))
-                            <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
-                                <small><i class="fas fa-info-circle"></i> {{ __('visitor.development_mode') }}</small>
-                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
-                                    <i class="fas fa-magic"></i> {{ __('visitor.auto_fill') }}
-                                </button>
-                            </div>
-                        @endif
-
-                        @switch($tujuan)
-                            @case('instansi')
-                                @include('components.tamu.partials.instansi')
-                            @break
-
-                            @case('bisnis')
-                                @include('components.tamu.partials.bisnis')
-                            @break
-
-                            @case('ortu')
-                                @include('components.tamu.partials.ortu')
-                            @break
-
-                            @case('informasi_kampus')
-                                @include('components.tamu.partials.calon-ortu')
-                            @break
-
-                            @case('lainnya')
-                                @include('components.tamu.partials.lainnya')
-                            @break
-                        @endswitch
-
-                        <div class="mt-5 mb-4">
-                            <button type="submit" id="submitBtn" class="btn-default w-100">
-                                <span id="btn-text">{{ __('visitor.submit') }}</span>
-                                <span id="btn-loading" style="display: none;">
-                                    <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}
-                                </span>
+                    @if (app()->environment('local'))
+                        <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
+                            <small><i class="fas fa-info-circle"></i> {{ __('visitor.development_mode') }}</small>
+                            <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
+                                <i class="fas fa-magic"></i> {{ __('visitor.auto_fill') }}
                             </button>
                         </div>
-                    </form>
-                </div>
+                    @endif
+
+                    @switch($tujuan)
+                        @case('instansi')
+                            @include('components.tamu.partials.instansi')
+                        @break
+
+                        @case('bisnis')
+                            @include('components.tamu.partials.bisnis')
+                        @break
+
+                        @case('ortu')
+                            @include('components.tamu.partials.ortu')
+                        @break
+
+                        @case('informasi_kampus')
+                            @include('components.tamu.partials.calon-ortu')
+                        @break
+
+                        @case('lainnya')
+                            @include('components.tamu.partials.lainnya')
+                        @break
+                    @endswitch
+
+                    <div class="mt-5 mb-4">
+                        <button type="submit" id="submitBtn" class="btn-default w-100">
+                            <span id="btn-text">{{ __('visitor.submit') }}</span>
+                            <span id="btn-loading" style="display: none;">
+                                <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}
+                            </span>
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -168,57 +168,59 @@ class KunjunganController extends Controller
             $this->breadCrump[] = ['title' => 'Validasi Kunjungan', 'link' => route('app.kunjungan.validasi')];
 
             $builder = app('datatables.html');
-            $dataTable = $builder->serverSide(true)->ajax(route('app.kunjungan.data') . '/validasi-list')->columns([
-                Column::make([
-                    'width' => '3%',
-                    'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
+            $dataTable = $builder->serverSide(true)
+                ->ajax(route('app.kunjungan.data') . '/validasi-list')
+                ->columns([
+                    Column::make([
+                        'width' => '3%',
+                        'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="checkAllValidasi"></div>',
-                    'data' => 'checkbox',
-                    'orderable' => false,
-                    'className' => 'text-center',
-                    'searchable' => false
-                ]),
-                Column::make([
-                    'width' => '5%',
-                    'title' => 'No',
-                    'data' => 'no',
-                    'orderable' => false,
-                    'className' => 'text-center'
-                ]),
-                Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
-                Column::make([
-                    'title' => 'Jenis Kelamin',
-                    'data' => 'jenis_kelamin',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
-                Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
-                Column::make([
-                    'title' => 'Identitas',
-                    'data' => 'identitas',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Jenis Kunjungan',
-                    'data' => 'jenis_kunjungan',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Waktu Kunjungan',
-                    'data' => 'waktu_kunjungan',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'width' => '12%',
-                    'title' => 'Aksi',
-                    'data' => 'action',
-                    'orderable' => false,
-                    'className' => 'text-nowrap text-center'
-                ]),
-            ]);
+                        'data' => 'checkbox',
+                        'orderable' => false,
+                        'className' => 'text-center',
+                        'searchable' => false
+                    ]),
+                    Column::make([
+                        'width' => '5%',
+                        'title' => 'No',
+                        'data' => 'no',
+                        'orderable' => false,
+                        'className' => 'text-center'
+                    ]),
+                    Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
+                    Column::make([
+                        'title' => 'Jenis Kelamin',
+                        'data' => 'jenis_kelamin',
+                        'orderable' => true,
+                        'className' => 'text-center'
+                    ]),
+                    Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
+                    Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
+                    Column::make([
+                        'title' => 'Identitas',
+                        'data' => 'identitas',
+                        'orderable' => true,
+                    ]),
+                    Column::make([
+                        'title' => 'Jenis Kunjungan',
+                        'data' => 'jenis_kunjungan',
+                        'orderable' => true,
+                        'className' => 'text-center'
+                    ]),
+                    Column::make([
+                        'title' => 'Waktu Kunjungan',
+                        'data' => 'waktu_kunjungan',
+                        'orderable' => true,
+                        'className' => 'text-center'
+                    ]),
+                    Column::make([
+                        'width' => '12%',
+                        'title' => 'Aksi',
+                        'data' => 'action',
+                        'orderable' => false,
+                        'className' => 'text-nowrap text-center'
+                    ]),
+                ]);
 
             $this->dataView([
                 'dataTable' => $dataTable,
@@ -404,8 +406,11 @@ class KunjunganController extends Controller
     {
         if ($param1 == 'list') {
             $filter = ['status_validasi' => true];
-            $data = DataTables::of(Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
-                ->where($filter))->toArray();
+            $query = Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
+                ->where($filter)
+                ->latest()
+                ->get();
+            $data = DataTables::of($query)->toArray();
 
             $start = $req->input('start');
             $resp = [];
@@ -502,7 +507,11 @@ class KunjunganController extends Controller
             return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $detailData]);
         } else if ($param1 == 'validasi-list') {
             $filter = ['status_validasi' => false];
-            $data = DataTables::of(Kunjungan::with(['tamu', 'details', 'event'])->where($filter))->toArray();
+            $query = Kunjungan::with(['tamu', 'details', 'event'])
+                ->where($filter)
+                ->latest()
+                ->get();
+            $data = DataTables::of($query)->toArray();
 
             $start = $req->input('start');
             $resp = [];
@@ -609,9 +618,12 @@ class KunjunganController extends Controller
         } else if ($param1 == 'monitoring-hari-ini') {
             $today = \Carbon\Carbon::today();
             $filter = [];
-            $data = DataTables::of(Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
+            $query = Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
                 ->whereDate('created_at', $today)
-                ->where($filter))->toArray();
+                ->where($filter)
+                ->latest()
+                ->get();
+            $data = DataTables::of($query)->toArray();
 
             $start = $req->input('start');
             $resp = [];
