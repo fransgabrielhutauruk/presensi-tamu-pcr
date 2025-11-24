@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\EventController;
+use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KunjunganController;
 use App\Http\Controllers\Admin\ActivityLogController;
@@ -47,6 +48,7 @@ Route::prefix('app')
             generalRoute(UserController::class, 'user', 'app');
             generalRoute(DashboardController::class, 'dashboard', 'app');
             generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
+            generalRoute(FeedbackController::class, 'feedback', 'app');
         });
 
         // -----------------
