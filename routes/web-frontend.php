@@ -1,9 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Frontend\DEV;
 use App\Http\Controllers\LanguageController;
-use App\Http\Controllers\Frontend\MainController;
 use App\Http\Controllers\Tamu\KunjunganController;
 use App\Http\Controllers\Tamu\KunjunganEventController;
 use App\Http\Controllers\Tamu\KunjunganNonEventController;

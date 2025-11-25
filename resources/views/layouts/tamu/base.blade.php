@@ -49,7 +49,7 @@
         @hasSection('title')
             {{ config('app.name') }} | @yield('title')
         @else
-            {{ config('app.name') }} | Politeknik Caltex Riau
+            {{ config('app.name') }}
         @endif
     </title>
     

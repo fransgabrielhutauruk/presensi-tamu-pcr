@@ -1,4 +1,4 @@
-@props(['name', 'id', 'value', 'icon' => '📋', 'label', 'delay' => '0.2s', 'required' => false, 'checked' => false])
+@props(['name', 'id', 'value', 'icon' => 'fa-clipboard', 'label', 'delay' => '0.2s', 'required' => false, 'checked' => false])
 
 <label for="{{ $id }}"
     class="tujuan-option d-flex align-items-center gap-3 rounded border bg-white px-3 py-3 wow fadeInUp"
@@ -14,6 +14,6 @@
             style="inset: 0; pointer-events: none; background-color: white; width: 0.5rem; height: 0.5rem; transform: scale(0); transition: transform 0.3s ease; top: 50%; left: 50%; translate: -50% -50%;"></span>
     </span>
 
-    <span class="user-select-none" style="font-size: 1.125rem; line-height: 1;">{{ $icon }}</span>
+    <span class="user-select-none" style="font-size: 1.125rem; line-height: 1; color: var(--primary-main);"><i class="fas {{ $icon }}"></i></span>
     <span class="fw-medium user-select-none text-dark text-start" style="font-size: 0.875rem;">{{ $label }}</span>
 </label>

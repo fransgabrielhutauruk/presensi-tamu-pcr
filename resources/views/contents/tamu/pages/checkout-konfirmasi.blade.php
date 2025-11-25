@@ -1,5 +1,7 @@
 @extends('layouts.tamu.main')
 
+@section('title', __('visitor.checkout_confirmation'))
+
 @section('content')
     <div class="row align-items-center" style="min-height: 90vh">
         <div class="col-md-5 justify-content-center mx-auto">

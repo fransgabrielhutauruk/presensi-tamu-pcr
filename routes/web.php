@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\UserRole;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\AuthController;
@@ -32,7 +33,7 @@ Route::prefix('app')
             ->name('app.kunjungan.reject-single');
         Route::post('kunjungan/bulk-validasi', [KunjunganController::class, 'bulkValidasi'])
             ->name('app.kunjungan.bulk-validasi');
-        Route::post('kunjungan/detail-data', function (\Illuminate\Http\Request $request) {
+        Route::post('kunjungan/detail-data', function (Request $request) {
             return app(KunjunganController::class)->data($request, 'detail');
         })->name('app.kunjungan.detail-data');
 
@@ -50,49 +51,4 @@ Route::prefix('app')
             generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
             generalRoute(FeedbackController::class, 'feedback', 'app');
         });
-
-        // -----------------
-        Route::get('icons', function () {
-            if (!config('app.debug')) {
-                abort(403, 'Icon gallery is only available in debug mode.');
-            }
-
-            $cssFile = public_path('theme/plugins/global/plugins.bundle.css');
-            if (!file_exists($cssFile)) {
-                abort(500, 'Keen Icons CSS not found at ' . $cssFile);
-            }
-
-            $css = @file_get_contents($cssFile) ?: '';
-
-            $outline = [];
-            $solid = [];
-            $duotone = [];
-
-            if ($css) {
-                if (preg_match_all('/\.ki-([a-z0-9\-]+)\.ki-outline:before/', $css, $m)) {
-                    $outline = array_values(array_unique($m[1]));
-                    sort($outline);
-                }
-
-                if (preg_match_all('/\.ki-([a-z0-9\-]+)\.ki-solid:before/', $css, $m2)) {
-                    $solid = array_values(array_unique($m2[1]));
-                    sort($solid);
-                }
-
-                if (preg_match_all('/\.ki-([a-z0-9\-]+)\s*\.path1:before/', $css, $m3)) {
-                    $duotone = array_values(array_unique($m3[1]));
-                    sort($duotone);
-                }
-            }
-
-            $pageData = (object) [
-                'activeMenu' => 'icons',
-                'activeRoot' => 'dev',
-                'title' => 'Keen Icons Gallery',
-                'breadCrump' => [],
-            ];
-
-            return view('dev.icons', compact('outline', 'solid', 'duotone', 'pageData'));
-        })->name('app.icons');
-        // ---------------------
     });

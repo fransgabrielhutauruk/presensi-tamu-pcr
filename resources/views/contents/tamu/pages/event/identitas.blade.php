@@ -1,5 +1,7 @@
 @extends('layouts.tamu.main')
 
+@section('title', $event->nama_event)
+
 @section('content')
     <div class="row align-items-center" style="min-height: 90vh">
         <div class="col-md-6 justify-content-center mx-auto">

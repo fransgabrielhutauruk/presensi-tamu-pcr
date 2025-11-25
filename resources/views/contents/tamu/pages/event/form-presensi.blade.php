@@ -1,5 +1,7 @@
 @extends('layouts.tamu.main')
 
+@section('title', __('visitor.event_attendance_form'))
+
 @section('content')
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">

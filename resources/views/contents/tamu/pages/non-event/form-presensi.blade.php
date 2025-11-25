@@ -1,15 +1,18 @@
 @extends('layouts.tamu.main')
 
+@php
+    $tujuanMap = [
+        'instansi' => __('visitor.institutional_official'),
+        'bisnis' => __('visitor.business_matters'),
+        'ortu' => __('visitor.parent_guardian_visit'),
+        'informasi_kampus' => __('visitor.campus_information'),
+        'lainnya' => __('visitor.other_purposes'),
+    ];
+@endphp
+
+@section('title', $tujuanMap[$tujuan])
+
 @section('content')
-    @php
-        $tujuanMap = [
-            'instansi' => __('visitor.institutional_official'),
-            'bisnis' => __('visitor.business_matters'),
-            'ortu' => __('visitor.parent_guardian_visit'),
-            'informasi_kampus' => __('visitor.campus_information'),
-            'lainnya' => __('visitor.other_purposes'),
-        ];
-    @endphp
 
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">
@@ -17,7 +20,7 @@
                 <x-tamu.page-header :title="$tujuanMap[$tujuan] ?? 'Kunjungan'" />
 
                 <div class="text-start mt-4">
-                    <a href="{{ route('tamu.non-event.tujuan') }}" class="btn btn-link p-0 mb-4 gap-2 text-decoration-none"
+                    <a href="{{ route('tamu.non-event.tujuan') }}" class="btn btn-link p-0 mb-2 gap-2 text-decoration-none"
                         style="color: var(--dark-color);">
                         <i class="fas fa-arrow-left"></i>
                         <span>{{ __('visitor.back') }}</span>

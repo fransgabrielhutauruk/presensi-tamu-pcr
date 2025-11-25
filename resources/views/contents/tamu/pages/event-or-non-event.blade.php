@@ -1,5 +1,7 @@
 @extends('layouts.tamu.main')
 
+@section('title', Str::title(__('visitor.choose_visit_type')) )
+
 @section('content')
     <div class="row d-flex align-items-center" style="height: 90vh">
         <div class="col-md-10 justify-content-center mx-auto">

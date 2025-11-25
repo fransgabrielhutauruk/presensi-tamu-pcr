@@ -1,5 +1,7 @@
 @extends('layouts.tamu.main')
 
+@section('title', Str::title(__('visitor.welcome_message')) )
+
 @section('content')
     <div class="row d-flex align-items-center pt-5" style="min-height: 90vh">
         <div class="col-md-5 justify-content-center mx-auto">

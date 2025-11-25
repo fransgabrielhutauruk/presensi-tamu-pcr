@@ -17,7 +17,7 @@
                 <span class="bullet bullet-dot"></span>
             </span>
         @endif
-        <span class="menu-title fs-6">{{ $text }}</span>
+        <span class="menu-title fs-6 text-nowrap ">{{ $text }}</span>
         @if ($slot != '')
             <span class="menu-arrow"></span>
         @endif

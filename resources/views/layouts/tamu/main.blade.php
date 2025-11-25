@@ -5,9 +5,7 @@
 @endpush
 
 @section('base-content')
-    {{-- @include('contents.frontend.partials.common.preloader') --}}
-
-    <div class="position-fixed top-0 end-0 p-2 pe-3" style="z-index: 20;">
+    <div class="position-fixed top-0 mt-2 end-0 p-2 pe-3" style="z-index: 20">
         <x-tamu.language-switcher />
     </div>
 
@@ -38,10 +36,6 @@
             }
         </style>
     @endpush
-
-    {{-- @include('contents.frontend.partials.common.prototype-btns', [
-        'buttons' => env('APP_ENV') !== 'production',
-    ]) --}}
 
     @include('contents.tamu.partials.common.scroll-to-top')
     @include('contents.tamu.partials.common.script-data')

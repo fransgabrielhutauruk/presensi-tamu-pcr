@@ -1,5 +1,7 @@
 @extends('layouts.tamu.main')
 
+@section('title', __('visitor.visitor_feedback'))
+
 @section('content')
     <div class="row pt-5 lign-items-center justify-content-center" style="min-height: 90vh">
         <div class="col-md-6 col-lg-5">
