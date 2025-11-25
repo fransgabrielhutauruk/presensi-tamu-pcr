@@ -67,10 +67,14 @@
                         __('visitor.male', [], 'id') => __('visitor.male'),
                         __('visitor.female', [], 'id') => __('visitor.female'),
                     ]" />
-                    <x-form.input-field name="nomor_telepon" :label="__('visitor.phone_number')" :placeholder="__('visitor.enter_phone')" required="true"
-                        type="tel" :validationRules='"pattern=\"[0-9]+\" data-pattern-error=\"" .
-                            __('visitor.phone_pattern_error') .
-                            "\""' />
+
+                    <x-form.input-field
+                        name="nomor_telepon"
+                        :label="__('visitor.phone_number')"
+                        :placeholder="__('visitor.enter_phone')"
+                        required="true"
+                        type="tel"
+                        :validationRules='"pattern=\"[0-9]+\" data-pattern-error=\"" . __("visitor.phone_pattern_error") . "\""' />
                     <x-form.input-field name="email" :label="__('visitor.email_address')" :placeholder="__('visitor.enter_email')" required="true"
                         type="email" />
                     <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true" />
@@ -150,9 +154,7 @@
             document.querySelector('input[name="nomor_telepon"]').value = '081234567890';
             document.querySelector('input[name="email"]').value = 'test.event@example.com';
             document.querySelector('input[name="nim_nip"]').value = '2253';
-
-            const transportasiField = document.querySelector('select[name="transportasi"]');
-            if (transportasiField) transportasiField.value = 'Mobil';
+            document.querySelector('input[name="jabatan"]').value = 'Manajer';
 
             const alertDiv = document.createElement('div');
             alertDiv.className = 'alert alert-success alert-dismissible fade show';

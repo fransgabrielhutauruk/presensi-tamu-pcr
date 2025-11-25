@@ -93,6 +93,20 @@
                 }
                 form.submit();
             });
+
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    resetLinkState();
+                }
+            });
+
+            function resetLinkState() {
+                if (submitBtn && btnText && btnLoading) {
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                    submitBtn.disabled = false;
+                }
+            }
         });
 
         // ==================================================== //

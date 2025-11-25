@@ -25,18 +25,18 @@ Route::name('tamu.')->group(function () {
             Route::prefix('/non-event')->name('non-event.')->group(function () {
                 Route::get('/tujuan', 'tujuan')->name('tujuan');
                 Route::get('/presensi', 'formPresensi')->name('form-presensi');
-                Route::post('/store-presensi', 'storePresensi')->name('store-presensi');
+                Route::post('/store-presensi', 'storePresensi')->name('store-presensi')->middleware('throttle:10,1');
             });
         });
 
         Route::controller(KunjunganEventController::class)->group(function () {
             Route::prefix('/event')->name('event.')->group(function () {
                 Route::get('/presensi/{eventId}', 'formPresensiNonCivitas')->name('form-presensi-non-civitas');
-                Route::post('/store', 'storePresensiNonCivitas')->name('store-presensi-non-civitas');
+                Route::post('/store', 'storePresensiNonCivitas')->name('store-presensi-non-civitas')->middleware('throttle:10,1');
                 Route::get('/list', 'listEvent')->name('list');
                 Route::get('/{eventId}', 'identitas')->name('identitas');
                 Route::get('/presensi-civitas/{eventId}', 'formPresensiCivitas')->name('form-presensi-civitas');
-                Route::post('/civitas-store', 'storePresensiCivitas')->name('store-presensi-civitas');
+                Route::post('/civitas-store', 'storePresensiCivitas')->name('store-presensi-civitas')->middleware('throttle:10,1');
             });
         });
     });
