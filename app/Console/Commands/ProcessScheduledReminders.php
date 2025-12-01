@@ -34,7 +34,7 @@ class ProcessScheduledReminders extends Command
 
         $kunjungans = Kunjungan::with('tamu')
             ->where('is_checkout', false)
-            ->where('waktu_keluar', '<=', $currentTime)
+            ->where('waktu_keluar', '=', $currentTime)
             ->whereDate('created_at', $now->toDateString())
             ->whereNull('reminder_sent_at')
             ->get();
@@ -44,8 +44,8 @@ class ProcessScheduledReminders extends Command
             SendCheckoutReminderEmail::dispatch($kunjungan->kunjungan_id);
 
             $count++;
-            
-        $this->line("Reminder sent for kunjungan ID {$kunjungan->kunjungan_id} - Waktu keluar: {$kunjungan->waktu_keluar}");
+
+            $this->line("Reminder sent for kunjungan ID {$kunjungan->kunjungan_id} - Waktu keluar: {$kunjungan->waktu_keluar}");
         }
 
         if ($count > 0) {

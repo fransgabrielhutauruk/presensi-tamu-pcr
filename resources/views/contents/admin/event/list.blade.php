@@ -55,7 +55,7 @@
                     required></x-form.input>
             </div>
             <div class="mb-4" id="field-link-dokumentasi" style="display: none;">
-                <x-form.input type="url" label="Link Dokumentasi (Google Drive)" name="link_dokumentasi" value=""
+                <x-form.input type="url" label="Link Dokumentasi (Google Drive)" name="link_dokumentasi_event" value=""
                     placeholder="https://drive.google.com/..."></x-form.input>
                 <div class="form-text">Link dokumentasi event. Contoh: https://drive.google.com/drive/folders/tes</div>
             </div>

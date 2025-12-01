@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"> {{-- Added for AJAX forms --}}
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('theme') }}/images/favicon.ico" type="image/x-icon">
 
     @php
         $defaultMetadata = [

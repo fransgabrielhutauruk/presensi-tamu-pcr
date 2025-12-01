@@ -3,7 +3,7 @@
 @section('title', Str::title(__('visitor.choose_visit_type')) )
 
 @section('content')
-    <div class="row d-flex align-items-center" style="height: 90vh">
+    <div class="row d-flex align-items-center" style="min-height: 90vh">
         <div class="col-md-10 justify-content-center mx-auto">
             <div class="text-center mt-5">
                 <x-tamu.page-header title="{{ __('visitor.choose_visit_type') }}"

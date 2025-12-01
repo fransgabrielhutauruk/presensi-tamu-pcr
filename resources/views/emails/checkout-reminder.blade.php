@@ -3,10 +3,10 @@ Halo {{ $jenisKelamin == 'Laki-laki' ? 'Pak' : 'Bu' }} {{ $namaTamu }},
 
 Terima kasih telah berkunjung ke **Politeknik Caltex Riau**.
 
-Jika {{ $jenisKelamin == 'Laki-laki' ? 'Bapak' : 'Ibu'}} sudah selesai berkunjung, silakan lakukan checkout melalui tombol di bawah ini:
+Jika {{ $jenisKelamin == 'Laki-laki' ? 'Bapak' : 'Ibu'}} sudah selesai berkunjung, silakan lakukan checkout atau konfirmasi kepulangan melalui tombol di bawah ini:
 
 <x-mail::button :url="$checkoutUrl" color="success">
-Checkout Sekarang
+Konfirmasi Check-Out
 </x-mail::button>
 
 ---

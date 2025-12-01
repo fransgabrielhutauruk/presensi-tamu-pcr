@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="row justify-content-center align-items-center" style="min-height: 90vh">
-        <div class="col-md-5">
+        <div class="col-md-5 mt-3">
             <div class="text-center">
                 <x-card class="wow fadeInUp py-2">
                     <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"

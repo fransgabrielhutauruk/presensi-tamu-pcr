@@ -46,7 +46,6 @@ class EventController extends Controller
                 Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
                 Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
-                Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
                 Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
                 Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true, 'className' => 'text-center']),
                 Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true, 'className' => 'text-center']),
