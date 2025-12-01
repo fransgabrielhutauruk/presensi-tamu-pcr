@@ -64,26 +64,6 @@ class User extends Authenticatable
     }
 
     /**
-     * fungsi yang di panggil saat event crud dijalankan
-     *
-     * @return void
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($model) {
-            $model->created_by = userId();
-        });
-
-        static::deleting(function ($model) {
-            $model->deleted_by = userId();
-            $model->update();
-        });
-    }
-
-
-    /**
      * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
      * pencatatan log menggunakan spatie/activitylogging
      *
