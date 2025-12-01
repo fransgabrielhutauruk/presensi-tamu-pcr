@@ -111,8 +111,6 @@ return [
     'institution_placeholder' => 'Institution name',
     'transportation_type' => 'Vehicle/Transportation Type',
     'development_mode' => 'Development Mode - Auto Fill for Testing',
-    'auto_fill' => 'Auto Fill',
-    'form_auto_filled' => 'Form has been auto-filled for testing!',
 
     // Event Identity Page
     'non_civitas_or_civitas' => 'Are you Non-Civitas or PCR Civitas?',

@@ -43,6 +43,7 @@
                             disabled>
                             <i class="bi bi-x-circle fs-4"></i> Hapus Terpilih
                         </button>
+                        <x-btn.refresh-datatable />
                     </div>
                 </div>
             </div>

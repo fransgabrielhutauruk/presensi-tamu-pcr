@@ -17,15 +17,6 @@
                     </a>
                 </div>
 
-                @if (app()->environment('local'))
-                    <div class="alert alert-info d-flex justify-content-between align-items-center mb-3">
-                        <small><i class="fas fa-info-circle"></i> {{ __('visitor.development_mode') }}</small>
-                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="autoFillForm()">
-                            <i class="fas fa-magic"></i> {{ __('visitor.auto_fill') }}
-                        </button>
-                    </div>
-                @endif
-
                 <div class="card border-0 shadow-sm my-4 wow fadeInUp">
                     <div class="card-body px-4 py-3">
                         <div class="row align-items-center">
@@ -142,35 +133,5 @@
                 jenisCivitasSelect.dispatchEvent(new Event('change'));
             }
         });
-
-
-
-        // ==================================================
-        // ==================================================== //
-        function autoFillForm() {
-            document.querySelector('input[name="nama"]').value = 'John Doe Event Test';
-
-            const genderMale = document.querySelector('input[name="jenis_kelamin"][value="Laki-laki"]');
-            if (genderMale) genderMale.checked = true;
-
-            document.querySelector('input[name="nomor_telepon"]').value = '081234567890';
-            document.querySelector('input[name="email"]').value = 'test.event@example.com';
-            document.querySelector('input[name="nim_nip"]').value = '2253';
-            document.querySelector('input[name="jabatan"]').value = 'Manajer';
-
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-success alert-dismissible fade show';
-            alertDiv.innerHTML = `
-            <i class="fas fa-check-circle"></i> {{ __('visitor.form_auto_filled') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        `;
-
-            const form = document.getElementById('event-form');
-            form.insertBefore(alertDiv, form.firstChild);
-
-            setTimeout(() => {
-                alertDiv.remove();
-            }, 3000);
-        }
     </script>
 @endsection

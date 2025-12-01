@@ -7,7 +7,7 @@
     'id' => 'btn-refresh'
 ])
 
-<x-btn :type="$type" class="w-100 w-md-auto btn-sm {{ $class }}" :id="$id">
+<x-btn :type="$type" class="btn text-nowrap btn-sm {{ $class }}" :id="$id">
     <i class="{{ $icon }}"></i> {{ $text }}
 </x-btn>
 

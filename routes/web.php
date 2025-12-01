@@ -47,7 +47,6 @@ Route::prefix('app')
         Route::middleware('active-role:' . UserRole::ADMIN->value)->group(function () {
             Route::get('kunjungan/validasi', [KunjunganController::class, 'validasi'])->name('app.kunjungan.validasi');
             generalRoute(UserController::class, 'user', 'app');
-            generalRoute(DashboardController::class, 'dashboard', 'app');
             generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
             generalRoute(FeedbackController::class, 'feedback', 'app');
         });

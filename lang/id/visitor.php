@@ -111,8 +111,6 @@ return [
     'institution_placeholder' => 'Nama institusi',
     'transportation_type' => 'Jenis Kendaraan/Transportasi',
     'development_mode' => 'Mode Development - Auto Fill untuk Testing',
-    'auto_fill' => 'Auto Fill',
-    'form_auto_filled' => 'Form berhasil diisi otomatis untuk testing!',
 
     // Event Identity Page
     'non_civitas_or_civitas' => 'Apakah Non-Civitas atau Civitas PCR?',
