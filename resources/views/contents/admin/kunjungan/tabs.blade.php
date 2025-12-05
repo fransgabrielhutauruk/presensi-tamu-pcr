@@ -3,8 +3,10 @@
         <a class="nav-link {{ $pageData->activeMenu == 'kunjungan' ? 'active' : '' }}"
             href="{{ route('app.kunjungan.index') }}">Kelola Semua Kunjungan</a>
     </li>
+    @if (hasAnyActiveRole([\App\Enums\UserRole::ADMIN->value]))
     <li class="nav-item">
         <a class="nav-link {{ $pageData->activeMenu == 'kelola-opsi' ? 'active' : '' }}"
             href="{{ route('app.kunjungan.show', ['param1' => 'opsi']) }}">Kelola Opsi</a>
     </li>
+    @endif
 </ul>

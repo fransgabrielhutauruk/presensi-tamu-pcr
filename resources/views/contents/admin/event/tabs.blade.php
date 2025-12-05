@@ -3,7 +3,7 @@
         <a class="nav-link {{ $pageData->activeMenu == 'event' ? 'active' : '' }}"
             href="{{ route('app.event.index') }}">Event</a>
     </li>
-    @if (hasAnyActiveRole(\App\Enums\UserRole::getAdminEksekutifSecurityRoles()))
+    @if (hasAnyActiveRole([\App\Enums\UserRole::ADMIN->value]))
         <li class="nav-item">
             <a class="nav-link {{ $pageData->activeMenu == 'event-kategori' ? 'active' : '' }}"
                 href="{{ route('app.event.show', ['param1' => 'kategori']) }}">Kategori</a>

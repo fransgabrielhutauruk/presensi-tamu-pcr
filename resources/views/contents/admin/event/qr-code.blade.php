@@ -30,7 +30,6 @@
                 return;
             }
 
-            // Create print content
             const eventName = @json($pageData->event->nama_event);
             const presensiUrl = @json($pageData->presensiUrl);
             
@@ -41,181 +40,112 @@
                     <title>QR Code - ${eventName}</title>
                     <style>
                         @page {
-                            size: A4;
-                            margin: 1cm;
+                            size: A4 portrait;
+                            margin: 2cm;
+                        }
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
                         }
                         body {
                             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                            margin: 0;
-                            padding: 0;
                             background: white;
-                            color: #333;
+                            color: #000;
+                            width: 21cm;
+                            height: 29.7cm;
+                            margin: 0 auto;
                         }
                         .print-container {
-                            max-width: 100%;
-                            margin: 0 auto;
-                            padding: 1cm;
-                            border-radius: 15px;
-                            background: white;
-                            height: calc(100vh - 2cm);
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                        }
-                        .print-header {
-                            text-align: center;
-                            margin-bottom: 1cm;
-                        }
-                        .main-title {
-                            font-size: 36px;
-                            font-weight: bold;
-                            color: #000;
-                            margin-bottom: 0.3cm;
-                            letter-spacing: 6px;
-                            text-transform: uppercase;
-                        }
-                        .event-title {
-                            font-size: 20px;
-                            font-weight: 600;
-                            color: #333;
-                            margin-bottom: 0.2cm;
-                            line-height: 1.2;
-                        }
-                        .content-middle {
-                            flex: 1;
+                            width: 100%;
+                            height: 100%;
                             display: flex;
                             flex-direction: column;
                             align-items: center;
                             justify-content: center;
+                            padding: 2cm;
+                        }
+                        .main-title {
+                            font-size: 48px;
+                            font-weight: 700;
+                            color: #000;
+                            text-align: center;
+                            letter-spacing: 8px;
+                        }
+                        .event-title {
+                            font-size: 28px;
+                            font-weight: 600;
+                            color: #000;
+                            margin-bottom: 2cm;
+                            line-height: 1.4;
+                            text-align: center;
+                            max-width: 100%;
+                            word-wrap: break-word;
                         }
                         .qr-container {
                             text-align: center;
-                            margin: 0.5cm 0;
+                            margin-bottom: 2cm;
                         }
                         .qr-code {
-                            width: 7cm;
-                            height: 7cm;
+                            width: 12cm;
+                            height: 12cm;
                             margin: 0 auto;
-                            border: 3px solid #000;
-                            border-radius: 10px;
-                            padding: 0.5cm;
                             background: white;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
                         }
                         .qr-code svg {
                             width: 100%;
                             height: 100%;
                         }
                         .url-container {
-                            margin-top: 0.8cm;
                             text-align: center;
+                            width: 100%;
                         }
                         .url-label {
-                            font-size: 16px;
+                            font-size: 18px;
                             font-weight: 600;
-                            color: #333;
+                            color: #000;
                             margin-bottom: 0.3cm;
                         }
-                        .url-box {
-                            background: #f8f9fa;
-                            border: 2px solid #000;
-                            border-radius: 8px;
-                            padding: 10px 15px;
-                            margin: 0 auto;
-                            max-width: 14cm;
+                        .url-text {
+                            font-size: 20px;
+                            font-weight: 500;
+                            color: #000;
                             word-break: break-all;
-                            font-family: 'Courier New', monospace;
-                            font-size: 12px;
-                            color: #333;
-                        }
-                        .instructions {
-                            padding: 0.8cm;
-                            border-radius: 10px;
+                            line-height: 1.5;
                             border: 2px solid #000;
-                        }
-                        .instructions-title {
-                            font-size: 16px;
-                            font-weight: 600;
-                            color: #333;
-                            text-align: center;
-                            margin-bottom: 0.6cm;
-                        }
-                        .instruction-grid {
-                            display: grid;
-                            grid-template-columns: 1fr 1fr;
-                            gap: 0.6cm;
-                        }
-                        .instruction-item {
-                            display: flex;
-                            align-items: flex-start;
-                            margin-bottom: 0.4cm;
-                        }
-                        .instruction-number {
-                            background: #000;
-                            color: white;
-                            width: 24px;
-                            height: 24px;
-                            border-radius: 50%;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-weight: bold;
-                            font-size: 12px;
-                            margin-right: 10px;
-                            flex-shrink: 0;
-                        }
-                        .instruction-text {
-                            font-size: 12px;
-                            line-height: 1.3;
-                            color: #555;
+                            border-radius: 10px;
+                            padding: 15px 20px;
+                            display: inline-block;
+                            max-width: 90%;
                         }
                         @media print {
                             body { 
                                 -webkit-print-color-adjust: exact;
                                 print-color-adjust: exact;
                             }
+                            .print-container {
+                                page-break-after: avoid;
+                            }
                         }
                     </style>
                 </head>
                 <body>
                     <div class="print-container">
-                        <div class="print-header">
-                            <div class="main-title">PRESENSI</div>
-                            <div class="event-title">{nama_event}</div>
-                        </div>
+                        <div class="main-title">PRESENSI</div>
+                        <div class="event-title">{nama_event}</div>
                         
-                        <div class="content-middle">
-                            <div class="qr-container">
-                                <div class="qr-code">
-                                    ${svg.outerHTML}
-                                </div>
-                            </div>
-                            
-                            <div class="url-container">
-                                <div class="url-label">Link Presensi</div>
-                                <div class="url-box">{url}</div>
+                        <div class="qr-container">
+                            <div class="qr-code">
+                                ${svg.outerHTML}
                             </div>
                         </div>
                         
-                        <div class="instructions">
-                            <div class="instructions-title">Instruksi Penggunaan:</div>
-                            <div class="instruction-grid">
-                                <div class="instruction-item">
-                                    <div class="instruction-number">1</div>
-                                    <div class="instruction-text">Scan QR Code menggunakan kamera HP</div>
-                                </div>
-                                <div class="instruction-item">
-                                    <div class="instruction-number">2</div>
-                                    <div class="instruction-text">Atau buka link presensi secara manual</div>
-                                </div>
-                                <div class="instruction-item">
-                                    <div class="instruction-number">3</div>
-                                    <div class="instruction-text">Isi form presensi</div>
-                                </div>
-                                <div class="instruction-item">
-                                    <div class="instruction-number">4</div>
-                                    <div class="instruction-text">Data presensi tersimpan di sistem</div>
-                                </div>
-                            </div>
+                        <div class="url-container">
+                            <div class="url-label">atau akses URL berikut:</div>
+                            <div class="url-text">{url}</div>
                         </div>
                     </div>
                 </body>
