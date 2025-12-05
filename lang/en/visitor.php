@@ -24,11 +24,11 @@ return [
     // Feedback
     'suggestions_optional' => 'Suggestions and Input (Optional)',
     'service_rating' => 'How would you rate our service?',
-    'very_bad' => 'Very Bad',
-    'bad' => 'Bad',
-    'fair' => 'Fair',
-    'good' => 'Good',
-    'very_good' => 'Very Good',
+    'very_unsatisfied' => 'Very Unsatisfied',
+    'unsatisfied' => 'Unsatisfied',
+    'neutral' => 'Fairly Satisfied',
+    'satisfied' => 'Satisfied',
+    'very_satisfied' => 'Very Satisfied',
     'select_rating' => 'Select rating to give your assessment',
     'share_experience' => 'Share your experience or suggestions to help us improve our service...',
 
@@ -140,7 +140,8 @@ return [
     'visit_purpose_placeholder' => 'Describe visit purpose',
     'group_size_label' => 'Group Size',
     'group_size_placeholder' => 'Enter \'1\' if alone',
-    'estimated_finish_time' => 'Estimated Finish Time',
+    'estimated_duration' => 'Estimated Visit Duration (Hours)',
+    'estimated_duration_placeholder' => 'Example: 2 (for 2 hours)',
     'transportation_label' => 'Vehicle/Transportation Type',
 
     // Institution Data

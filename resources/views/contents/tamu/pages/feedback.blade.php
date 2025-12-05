@@ -147,11 +147,11 @@
 
             let currentRating = 0;
             const ratingDescriptions = {
-                1: "{{ __('visitor.very_bad') }}",
-                2: "{{ __('visitor.bad') }}",
-                3: "{{ __('visitor.fair') }}",
-                4: "{{ __('visitor.good') }}",
-                5: "{{ __('visitor.very_good') }}"
+                1: "{{ __('visitor.very_unsatisfied') }}",
+                2: "{{ __('visitor.unsatisfied') }}",
+                3: "{{ __('visitor.neutral') }}",
+                4: "{{ __('visitor.satisfied') }}",
+                5: "{{ __('visitor.very_satisfied') }}"
             };
 
             starBtns.forEach((btn, index) => {

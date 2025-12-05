@@ -49,12 +49,17 @@ class KunjunganNonEventController extends Controller
         DB::beginTransaction();
         try {
             $tamu = Tamu::create($data);
+            
+            $waktuMasuk = now();
+            $estimasiDurasi = (int) $request->estimasi_durasi;
+            $waktuKeluar = $waktuMasuk->copy()->addHours($estimasiDurasi);
+            
             $kunjunganData = [
                 'tamu_id' => $tamu->tamu_id,
                 'kategori_tujuan' => $request->kategori_tujuan,
                 'identitas' => 'non-civitas',
                 'jumlah_rombongan' => $request->jumlah_rombongan,
-                'waktu_keluar' => $request->waktu_keluar,
+                'waktu_keluar' => $waktuKeluar->format('H:i:s'),
                 'transportasi' => $request->transportasi,
                 'status_validasi' => false,
                 'is_checkout' => false,

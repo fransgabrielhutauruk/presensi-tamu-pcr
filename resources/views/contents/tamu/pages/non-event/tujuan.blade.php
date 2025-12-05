@@ -10,33 +10,49 @@
                     <div class="position-relative" style="z-index: 10;">
                         <x-tamu.page-header title="{{ __('visitor.visit_purpose_title') }}"
                             question="{{ __('visitor.select_purpose') }}" />
-                        <form id="tujuan-form" class="d-flex flex-column flex-fill mt-4 mx-auto">
-                            <fieldset class="d-flex flex-column" style="gap: 1rem;">
-                                <x-form.radio-option name="tujuan" id="opt-instansi" value="instansi" icon="fa-building"
-                                    label="{{ __('visitor.institutional_visit') }}" delay="0.2s" :required="true" />
+                        <div class="d-flex flex-column flex-fill mt-4 mx-auto">
+                            <div class="d-flex flex-column" style="gap: 1rem;">
+                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'instansi']) }}"
+                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.2s">
+                                    <div class="tujuan-icon">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <span class="tujuan-label">{{ __('visitor.institutional_visit') }}</span>
+                                </a>
 
-                                <x-form.radio-option name="tujuan" id="opt-bisnis" value="bisnis" icon="fa-handshake"
-                                    label="{{ __('visitor.business_partnership') }}" delay="0.3s" :required="true" />
+                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'bisnis']) }}"
+                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.3s">
+                                    <div class="tujuan-icon">
+                                        <i class="fas fa-handshake"></i>
+                                    </div>
+                                    <span class="tujuan-label">{{ __('visitor.business_partnership') }}</span>
+                                </a>
 
-                                <x-form.radio-option name="tujuan" id="opt-ortu" value="ortu" icon="fa-users"
-                                    label="{{ __('visitor.parent_student') }}" delay="0.4s" :required="true" />
+                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'ortu']) }}"
+                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.4s">
+                                    <div class="tujuan-icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <span class="tujuan-label">{{ __('visitor.parent_student') }}</span>
+                                </a>
 
-                                <x-form.radio-option name="tujuan" id="opt-calon-ortu" value="informasi_kampus"
-                                    icon="fa-graduation-cap" label="{{ __('visitor.campus_info_pmb') }}" delay="0.5s"
-                                    :required="true" />
+                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'informasi_kampus']) }}"
+                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.5s">
+                                    <div class="tujuan-icon">
+                                        <i class="fas fa-graduation-cap"></i>
+                                    </div>
+                                    <span class="tujuan-label">{{ __('visitor.campus_info_pmb') }}</span>
+                                </a>
 
-                                <x-form.radio-option name="tujuan" id="opt-lainnya" value="lainnya" icon="fa-calendar-alt"
-                                    label="{{ __('visitor.other') }}" delay="0.6s" :required="true" />
-                            </fieldset>
-
-                            <div id="error-message" class="alert alert-danger mt-3" role="alert" style="display: none;">
+                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'lainnya']) }}"
+                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.6s">
+                                    <div class="tujuan-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <span class="tujuan-label">{{ __('visitor.other') }}</span>
+                                </a>
                             </div>
-
-                            <button type="submit" id="submit-btn" class="btn-default w-100 mt-4 wow fadeInUp"
-                                data-wow-delay="0.7s">
-                                {{ __('visitor.continue') }}
-                            </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -44,62 +60,66 @@
     </div>
 
     <style>
-        .tujuan-option:hover {
-            border-color: #22d3ee !important;
-            background-color: var(--gray-200) !important;
+        .tujuan-card {
+            display: flex;
+            align-items: center;
+            padding: 0.7rem 1.5rem;
+            background: var(--white-color);
+            border: 2px solid #e5e7eb;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            gap: 1rem;
         }
 
-        .tujuan-option.selected {
-            border-color: var(--primary-color) !important;
+        .tujuan-card:hover {
+            border-color: var(--primary-color);
+            background-color: var(--gray-200);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .tujuan-option.selected .radio-input {
-            border-color: var(--primary-color) !important;
-            background-color: var(--primary-color) !important;
+        .tujuan-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: rgba(0, 75, 95, 0.1);
+            border-radius: 0.5rem;
+            flex-shrink: 0;
         }
 
-        .tujuan-option.selected .radio-dot {
-            transform: scale(1) !important;
+        .tujuan-icon i {
+            font-size: 1.2rem;
+            color: rgb(0, 75, 95);
+        }
+
+        .tujuan-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex-grow: 1;
+            text-align: start;
+        }
+
+        @media (max-width: 576px) {
+            .tujuan-card {
+                padding: 1rem;
+            }
+
+            .tujuan-icon {
+                width: 40px;
+                height: 40px;
+            }
+
+            .tujuan-icon i {
+                font-size: 1.25rem;
+            }
+
+            .tujuan-label {
+                font-size: 0.9rem;
+            }
         }
     </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('tujuan-form');
-            const radioInputs = document.querySelectorAll('input[name="tujuan"]');
-            const submitBtn = document.getElementById('submit-btn');
-            const btnText = document.getElementById('btn-text');
-            const btnLoading = document.getElementById('btn-loading');
-            const errorMessage = document.getElementById('error-message');
-
-            radioInputs.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    document.querySelectorAll('.tujuan-option').forEach(option => {
-                        option.classList.remove('selected');
-                    });
-
-                    if (this.checked) {
-                        this.closest('.tujuan-option').classList.add('selected');
-                    }
-
-                    errorMessage.style.display = 'none';
-                });
-            });
-
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-
-                const selectedValue = document.querySelector('input[name="tujuan"]:checked');
-
-                if (!selectedValue) {
-                    errorMessage.textContent = '{{ __('visitor.purpose_required') }}';
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-
-                window.location.href =
-                    `{{ route('tamu.non-event.form-presensi') }}?tujuan=${selectedValue.value}`;
-            });
-        });
-    </script>
 @endsection

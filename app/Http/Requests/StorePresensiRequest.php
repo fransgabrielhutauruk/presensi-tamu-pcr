@@ -20,7 +20,7 @@ class StorePresensiRequest extends FormRequest
             'email' => 'required|email',
 
             'kategori_tujuan' => 'required|in:instansi,bisnis,ortu,informasi_kampus,lainnya',
-            'waktu_keluar' => 'required|date_format:H:i',
+            'estimasi_durasi' => 'required|integer|min:1|max:24',
             'transportasi' => 'required|string|max:255',
             'jumlah_rombongan' => 'required|integer|min:1'
         ];
@@ -91,7 +91,7 @@ class StorePresensiRequest extends FormRequest
             'email' => 'Email',
             'kategori_tujuan' => 'Kategori Tujuan',
             'waktu_masuk' => 'Waktu Masuk',
-            'waktu_keluar' => 'Waktu Keluar',
+            'estimasi_durasi' => 'Estimasi Durasi',
             'transportasi' => 'Transportasi',
             'instansi' => 'Instansi',
             'jenis_instansi' => 'Jenis Instansi',

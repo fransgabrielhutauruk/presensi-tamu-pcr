@@ -1,6 +1,6 @@
 @props(['link' => ''])
 <x-btn :link="$link" type="secondary" class="{{ $link == '' ? 'act-back' : '' }}">
-    <i class="bi bi-arrow-left fs-3 me-2"></i> Back
+    <i class="bi bi-arrow-left fs-3 me-2"></i> Kembali
 </x-btn>
 
 @push('scripts')

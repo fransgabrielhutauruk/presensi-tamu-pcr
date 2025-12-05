@@ -24,11 +24,11 @@ return [
     // Feedback
     'suggestions_optional' => 'Saran dan Masukan (Opsional)',
     'service_rating' => 'Bagaimana penilaian Anda terhadap pelayanan kami?',
-    'very_bad' => 'Sangat Tidak Baik',
-    'bad' => 'Tidak Baik',
-    'fair' => 'Cukup',
-    'good' => 'Baik',
-    'very_good' => 'Sangat Baik',
+    'very_unsatisfied' => 'Sangat Tidak Puas',
+    'unsatisfied' => 'Tidak Puas',
+    'neutral' => 'Cukup Puas',
+    'satisfied' => 'Puas',
+    'very_satisfied' => 'Sangat Puas',
     'select_rating' => 'Pilih rating untuk memberikan penilaian',
     'share_experience' => 'Bagikan pengalaman atau saran Anda untuk membantu kami meningkatkan pelayanan...',
 
@@ -140,7 +140,8 @@ return [
     'visit_purpose_placeholder' => 'Jelaskan keperluan kunjungan',
     'group_size_label' => 'Jumlah Rombongan',
     'group_size_placeholder' => 'Isi \'1\' jika sendiri',
-    'estimated_finish_time' => 'Jam Selesai (Estimasi)',
+    'estimated_duration' => 'Estimasi Durasi Kunjungan (Jam)',
+    'estimated_duration_placeholder' => 'Contoh: 2 (untuk 2 jam)',
     'transportation_label' => 'Jenis Kendaraan/Transportasi',
 
     // Institution Data

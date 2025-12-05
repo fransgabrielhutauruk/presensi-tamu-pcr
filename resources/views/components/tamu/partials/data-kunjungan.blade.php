@@ -3,7 +3,8 @@
 <x-form.input-field name="jumlah_rombongan" :label="__('visitor.group_size_label')" type="number" min="1" max="50" required="true"
     :placeholder="__('visitor.group_size_placeholder')" />
 
-<x-form.input-field name="waktu_keluar" :label="__('visitor.estimated_finish_time')" type="time" required="true" />
+<x-form.input-field name="estimasi_durasi" :label="__('visitor.estimated_duration')" type="number" min="1" required="true"
+    :placeholder="__('visitor.estimated_duration_placeholder')" />
 
 <x-form.select-field name="transportasi" :label="__('visitor.transportation_label')" required="true" :options="[
     __('visitor.car_option', [], 'id') => __('visitor.car_option'),

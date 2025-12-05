@@ -7,6 +7,8 @@
     'required' => false,
     'value' => null,
     'validationRules' => null,
+    'min' => null,
+    'max' => null,
 ])
 
 @php
@@ -53,7 +55,11 @@
     </label>
     <input type="{{ $type }}" class="form-control @if ($hasBackendError) is-invalid @endif"
         name="{{ $name }}" id="{{ $fieldId }}" placeholder="{{ $placeholder }}"
-        value="{{ old($name, $value) }}" {!! $validationAttrs !!} data-error="{{ $requiredErrorMessage }}">
+        value="{{ old($name, $value) }}"
+        @if($min !== null) min="{{ $min }}" @endif
+        @if($max !== null) max="{{ $max }}" @endif
+        {!! $validationAttrs !!} data-error="{{ $requiredErrorMessage }}"
+        @if($type === 'number' && $min !== null) oninput="if(this.value < {{ $min }}) this.value = {{ $min }};" @endif>
 
     @if ($hasBackendError)
         <div class="invalid-feedback">
