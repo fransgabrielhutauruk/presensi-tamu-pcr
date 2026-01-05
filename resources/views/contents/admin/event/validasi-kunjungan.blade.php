@@ -31,10 +31,8 @@
         <div class="card mb-5">
             <div class="p-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap">
-                    <div class="d-flex align-items-center">
-                        <span id="selectedCount" class="badge badge-light fs-7">0 dipilih</span>
-                    </div>
-                    <div class="d-flex gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="selectedCount" class="badge badge-light fs-7 me-2">0 dipilih</span>
                         <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
                             disabled>
                             <i class="bi bi-check2-circle fs-4"></i> Validasi Terpilih
@@ -43,6 +41,9 @@
                             disabled>
                             <i class="bi bi-x-circle fs-4"></i> Hapus Terpilih
                         </button>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <x-btn.form action="save" text="Tambah Tamu VIP" icon="bi bi-star-fill" class="d-flex align-items-center act-save" id="addVipGuestBtn" />
                         <x-btn.refresh-datatable />
                     </div>
                 </div>
@@ -137,6 +138,36 @@
         @slot('action')
             <x-btn.form action="save" id="validateSingleBtn" text="Validasi" title="Validasi" />
             <x-btn.form action="cancle" id="rejectSingleBtn" text="Hapus" title="Hapus" />
+        @endslot
+    </x-modal>
+
+    <x-modal id="modalVipGuest" type="centered" :static="true" size="md" title="Tambah Tamu VIP">
+        <form id="vipGuestForm" class="needs-validation">
+            @csrf
+            <input type="hidden" name="event_id" value="{{ $pageData->eventIdEnc }}">
+
+            <div class="mb-3">
+                <x-form.input type="text" label="Nama" name="nama" value="" required></x-form.input>
+            </div>
+
+            <div class="mb-3">
+                <x-form.select name="jenis_kelamin" label="Jenis Kelamin" required>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </x-form.select>
+            </div>
+
+            <div class="mb-3">
+                <x-form.input type="text" label="Institusi" name="institusi" value="" required></x-form.input>
+            </div>
+
+            <div class="mb-3">
+                <x-form.input type="text" label="Jabatan" name="jabatan" value="" required></x-form.input>
+            </div>
+        </form>
+
+        @slot('action')
+            <x-btn.form action="save" class="act-save" id="submitVipBtn" />
         @endslot
     </x-modal>
 @endsection
@@ -236,6 +267,13 @@
 
             $(document).on('click', '#validateSingleBtn', validateSingle);
             $(document).on('click', '#rejectSingleBtn', rejectSingle);
+
+            $(document).on('click', '#addVipGuestBtn', function() {
+                $('#vipGuestForm')[0].reset();
+                $('#modalVipGuest').modal('show');
+            });
+
+            $(document).on('click', '#submitVipBtn', submitVipGuest);
         });
 
         function formatLabel(str) {
@@ -264,7 +302,7 @@
             var statusBadge = $('[data-field="status_badge"]');
             if (data.status_validasi) {
                 statusBadge.removeClass('badge-warning').addClass('badge-success').text('Tervalidasi');
-                $('#validateSingleBtn, #rejectSingleBtn').hide();
+                $('#validateSingleBtn').hide();
             } else {
                 statusBadge.removeClass('badge-success').addClass('badge-warning').text('Menunggu Validasi');
                 $('#validateSingleBtn, #rejectSingleBtn').show();
@@ -434,6 +472,46 @@
                     }).fail(function() {
                         Swal.fire('Gagal!', 'Terjadi kesalahan saat menolak kunjungan.', 'error');
                     });
+                }
+            });
+        }
+
+        function submitVipGuest() {
+            const form = $('#vipGuestForm')[0];
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            const submitBtn = $('#submitVipBtn');
+            const submitText = submitBtn.find('.submit-text');
+            const submitLoading = submitBtn.find('.submit-loading');
+
+            submitText.addClass('d-none');
+            submitLoading.removeClass('d-none');
+            submitBtn.prop('disabled', true);
+
+            $.ajax({
+                url: '{{ route('app.event.store-vip-guest') }}',
+                method: 'POST',
+                data: $('#vipGuestForm').serialize(),
+                success: function(response) {
+                    if (response.status) {
+                        Swal.fire('Berhasil!', response.message, 'success');
+                        $('#modalVipGuest').modal('hide');
+                        $('table[jf-data="kunjungan-event-validasi"]').DataTable().ajax.reload(null, false);
+                    } else {
+                        Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
+                    }
+                },
+                error: function(xhr) {
+                    const message = xhr.responseJSON?.message || 'Terjadi kesalahan saat menambahkan tamu VIP';
+                    Swal.fire('Gagal!', message, 'error');
+                },
+                complete: function() {
+                    submitText.removeClass('d-none');
+                    submitLoading.addClass('d-none');
+                    submitBtn.prop('disabled', false);
                 }
             });
         }

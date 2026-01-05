@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use Carbon\Carbon;
+use App\Models\Tamu;
 use App\Models\Event;
 use App\Enums\UserRole;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use App\Models\EventKategori;
+use App\Models\KunjunganDetail;
 use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
 use Yajra\DataTables\Html\Column;
@@ -480,7 +482,7 @@ class EventController extends Controller
                 $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? '-';
                 $dt['email'] = $value['tamu']['email_tamu'] ?? '-';
                 $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? '-';
-                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas']);
+                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
 
                 $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .
                     Carbon::parse($value['created_at'])->setTimezone(config('app.timezone'))->format('H:i') : '-';
@@ -540,5 +542,60 @@ class EventController extends Controller
         ]);
 
         return $this->view('admin.event.qr-code');
+    }
+
+    public function storeVipGuest(Request $request): JsonResponse
+    {
+        validate_and_response([
+            'event_id' => ['Event ID', 'required'],
+            'nama' => ['Nama', 'required|string|max:255'],
+            'jenis_kelamin' => ['Jenis Kelamin', 'required|in:Laki-laki,Perempuan'],
+            'institusi' => ['Institusi', 'required|string|max:255'],
+            'jabatan' => ['Jabatan', 'required|string|max:255'],
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $eventId = decid($request->post('event_id'));
+            $event = Event::findOrFail($eventId);
+
+            $tamu = Tamu::create([
+                'nama_tamu' => clean_post('nama'),
+                'jenis_kelamin_tamu' => $request->post('jenis_kelamin'),
+            ]);
+
+            $kunjungan = Kunjungan::create([
+                'tamu_id' => $tamu->tamu_id,
+                'event_id' => $eventId,
+                'identitas' => 'non-civitas',
+                'waktu_keluar' => $event->waktu_selesai_event,
+                'status_validasi' => true,
+                'is_vip' => true,
+            ]);
+
+            KunjunganDetail::create([
+                'kunjungan_id' => $kunjungan->kunjungan_id,
+                'kunci' => 'institusi',
+                'nilai' => clean_post('institusi'),
+                'urutan' => 1,
+            ]);
+
+            KunjunganDetail::create([
+                'kunjungan_id' => $kunjungan->kunjungan_id,
+                'kunci' => 'jabatan',
+                'nilai' => clean_post('jabatan'),
+                'urutan' => 2,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Tamu VIP berhasil ditambahkan'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Tambah data gagal, kesalahan database');
+        }
     }
 }

@@ -86,51 +86,37 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const jenisCivitasSelect = document.getElementById('jenis_civitas');
-            const nimNipLabel = document.getElementById('nim_nip_label');
-            const prodiUnitLabel = document.getElementById('prodi_unit_label');
-            const prodiUnitSection = document.getElementById('prodi_unit_section');
+            const form = document.getElementById('event-form');
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btn-text');
+            const btnLoading = document.getElementById('btn-loading');
 
-            const phoneInput = document.getElementById('phone_number');
-            phoneInput.addEventListener('input', function(e) {
-                let value = e.target.value.replace(/\D/g, '');
-                if (value.startsWith('08')) {
-                    e.target.value = value;
-                } else if (value.startsWith('8')) {
-                    e.target.value = '0' + value;
-                } else {
-                    e.target.value = value;
+            form.addEventListener('submit', function(e) {
+                const isValid = form.checkValidity();
+                if (!isValid) {
+                    return;
+                }
+                e.preventDefault();
+                if (btnText && btnLoading && submitBtn) {
+                    btnText.style.display = 'none';
+                    btnLoading.style.display = 'inline';
+                    submitBtn.disabled = true;
+                }
+                form.submit();
+            });
+
+            window.addEventListener('pageshow', function(event) {
+                if (event.persisted) {
+                    resetLinkState();
                 }
             });
 
-            jenisCivitasSelect.addEventListener('change', function() {
-                const selectedValue = this.value;
-
-                switch (selectedValue) {
-                    case 'dosen':
-                        nimNipLabel.textContent = 'NIP';
-                        prodiUnitLabel.textContent = 'Program Studi';
-                        prodiUnitSection.style.display = 'block';
-                        break;
-                    case 'staff':
-                        nimNipLabel.textContent = 'NIP';
-                        prodiUnitLabel.textContent = 'Unit Kerja';
-                        prodiUnitSection.style.display = 'block';
-                        break;
-                    case 'mahasiswa':
-                        nimNipLabel.textContent = 'NIM';
-                        prodiUnitLabel.textContent = 'Program Studi';
-                        prodiUnitSection.style.display = 'block';
-                        break;
-                    default:
-                        nimNipLabel.textContent = 'NIM/NIP';
-                        prodiUnitLabel.textContent = 'Prodi/Unit Kerja';
-                        prodiUnitSection.style.display = 'block';
+            function resetLinkState() {
+                if (submitBtn && btnText && btnLoading) {
+                    btnText.style.display = 'inline';
+                    btnLoading.style.display = 'none';
+                    submitBtn.disabled = false;
                 }
-            });
-
-            if (jenisCivitasSelect.value) {
-                jenisCivitasSelect.dispatchEvent(new Event('change'));
             }
         });
     </script>

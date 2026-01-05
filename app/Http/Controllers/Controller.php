@@ -29,6 +29,6 @@ abstract class Controller
         $this->pageData['breadCrump'] = $this->breadCrump;
 
         $pageData = (object) $this->pageData;
-        return view('contents.' . $param1, compact('pageData'));
+        return view('contents.' . $param1, array_merge(compact('pageData'), $this->pageData));
     }
 }

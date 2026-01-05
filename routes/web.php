@@ -26,6 +26,7 @@ require __DIR__ . '/auth.php';
 Route::prefix('app')
     ->middleware(['auth', 'active-role:' . implode(',', UserRole::getAllRoles())])->group(function () {
         Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
+        Route::post('event/store-vip-guest', [EventController::class, 'storeVipGuest'])->name('app.event.store-vip-guest');
         generalRoute(EventController::class, 'event', 'app');
         Route::post('kunjungan/validate/{id}', [KunjunganController::class, 'validateSingle'])
             ->name('app.kunjungan.validate-single');

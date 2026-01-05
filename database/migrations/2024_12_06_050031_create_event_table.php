@@ -23,6 +23,7 @@ class CreateEventTable extends Migration
             $table->unsignedInteger('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('eventkategori_id')->references('eventkategori_id')->on('event_kategori')->onDelete('cascade');
         });
     }
 

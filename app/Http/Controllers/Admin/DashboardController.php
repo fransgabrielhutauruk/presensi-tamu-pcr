@@ -1,207 +1,218 @@
 <?php
 
-/*
- * Author: @wahyudibinsaid
- * Created At: 2024-06-24 10:12:11
- */
-
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
-use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\Blade;
-use App\Models\Master\KaryaJenis;
 
 class DashboardController extends Controller
 {
-    function __construct()
-    {
-        /**
-         * use this if needed
-         */
-        $this->activeRoot   = '';
-        // $this->breadCrump[] = ['title' => 'Dashboard', 'link' => url('')];
-    }
-
     function index()
     {
         $this->title        = 'Dashboard';
         $this->activeMenu   = 'dashboard';
         $this->breadCrump[] = ['title' => 'Dashboard', 'link' => url()->current()];
 
-        // $builder   = app('datatables.html');
-        // $dataTable = $builder->serverSide(true)->ajax(route('app.karya-jenis.data') . '/list')->columns([
-        //     Column::make(['width' => '', 'title' => '', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-end']),
-        //     Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
-        //     Column::make(['width' => '', 'title' => 'Kode Karya', 'data' => 'alias', 'orderable' => true]),
-        //     Column::make(['width' => '', 'title' => 'Jenis Karya', 'data' => 'jenis_karya', 'orderable' => true]),
-        //     Column::make(['width' => '', 'title' => 'Jenjang Pendidikan', 'data' => 'jenjang_pendidikan', 'orderable' => true]),
+        $userRole = session('active_role');
 
-        // ]);
+        $dashboardData = $this->getDashboardDataByRole($userRole);
 
         $this->dataView([
-            // 'dataTable' => $dataTable
+            'userRole' => $userRole,
+            'dashboardData' => $dashboardData
         ]);
 
         return $this->view('admin.dashboard');
     }
 
-    public function show($param1 = '', $param2 = '')
+    private function getDashboardDataByRole($role)
     {
-        abort(404, 'Halaman tidak ditemukan');
+        $data = [];
+
+        switch ($role) {
+            case 'Admin':
+                $data = $this->getAdminDashboardData();
+                break;
+            case 'Eksekutif':
+                $data = $this->getEksekutifDashboardData();
+                break;
+            case 'Security':
+                $data = $this->getSecurityDashboardData();
+                break;
+            default:
+                $data = [];
+        }
+
+        return $data;
     }
 
-    function store(Request $req, $param1 = ''): JsonResponse
+    private function getAdminDashboardData()
     {
-        if ($param1 == '') {
-            validate_and_response([
-                'alias'              => ['Kode Karya', 'required'],
-                'jenis_karya'        => ['Jenis Karya', 'required'],
-                'jenjang_pendidikan' => ['Jenjang Pendidikan', 'required'],
-
-            ]);
-
-            // insert data
-            $data['alias']              = clean_post('alias');
-            $data['jenis_karya']        = clean_post('jenis_karya');
-            $data['jenjang_pendidikan'] = clean_post('jenjang_pendidikan');
-            $data['created_by']         = clean_post('created_by');
-            $data['updated_by']         = clean_post('updated_by');
-            $data['deleted_by']         = clean_post('deleted_by');
-
-
-            // Simpan data
-            if (KaryaJenis::create($data)) {
-                return response()->json([
-                    'status'  => true,
-                    'message' => 'Tambah data berhasil.'
-                ]);
-            } else {
-                abort(500, 'Tambah data gagal, kesalahan database');
-            }
-        }
-
-        // default
-        else {
-            abort(404, 'Halaman tidak ditemukan');
-        }
+        return [
+            'title' => 'Dashboard Admin',
+            'widgets' => [
+                [
+                    'title' => 'Total Kunjungan',
+                    'value' => \App\Models\Kunjungan::get()->count(),
+                    'icon' => 'ki-people',
+                    'color' => 'success',
+                    'link' => route('app.kunjungan.index')
+                ],
+                [
+                    'title' => 'Kunjungan Event',
+                    'value' => \App\Models\Kunjungan::whereNotNull('event_id')->count(),
+                    'icon' => 'ki-calendar-tick',
+                    'color' => 'info',
+                    'link' => route('app.kunjungan.index')
+                ],
+                [
+                    'title' => 'Kunjungan Non-Event',
+                    'value' => \App\Models\Kunjungan::whereNull('event_id')->count(),
+                    'icon' => 'ki-user',
+                    'color' => 'primary',
+                    'link' => route('app.kunjungan.index')
+                ],
+                [
+                    'title' => 'Validasi Kunjungan',
+                    'value' => \App\Models\Kunjungan::where('status_validasi', false)->count(),
+                    'icon' => 'ki-notification-status',
+                    'color' => 'warning',
+                    'link' => route('app.kunjungan.validasi')
+                ],
+                [
+                    'title' => 'Total Event',
+                    'value' => \App\Models\Event::count(),
+                    'icon' => 'ki-calendar',
+                    'color' => 'success',
+                    'link' => route('app.event.index')
+                ],
+                [
+                    'title' => 'Event Mendatang',
+                    'value' => \App\Models\Event::whereDate('tanggal_event', '>=', today())->count(),
+                    'icon' => 'ki-calendar-add',
+                    'color' => 'warning',
+                    'link' => route('app.event.index')
+                ],
+                [
+                    'title' => 'Total Feedback',
+                    'value' => \App\Models\Feedback::count(),
+                    'icon' => 'ki-message-text',
+                    'color' => 'danger',
+                    'link' => route('app.feedback.index')
+                ],
+                [
+                    'title' => 'Total Pengguna',
+                    'value' => \App\Models\User::count(),
+                    'icon' => 'ki-profile-user',
+                    'color' => 'dark',
+                    'link' => route('app.user.index')
+                ],
+            ],
+            'charts' => [
+                'kunjunganPerBulan' => $this->getKunjunganPerBulan(),
+                'eventAktifHariIni' => $this->getEventAktifHariIni(),
+            ]
+        ];
     }
 
-    function update(Request $req, $param1 = '', $param2 = ''): JsonResponse
+    private function getEksekutifDashboardData()
     {
-        if ($param1 == '') {
-            validate_and_response([
-                'id'                 => ['Param Data', 'required'],
-                'alias'              => ['Kode Karya', 'required'],
-                'jenis_karya'        => ['Jenis Karya', 'required'],
-                'jenjang_pendidikan' => ['Jenjang Pendidikan', 'required'],
-
-            ]);
-
-            $currData = KaryaJenis::findOrFail(decid($req->input('id')));
-
-            // Perbarui data
-            $data['alias']              = clean_post('alias');
-            $data['jenis_karya']        = clean_post('jenis_karya');
-            $data['jenjang_pendidikan'] = clean_post('jenjang_pendidikan');
-            $data['created_by']         = clean_post('created_by');
-            $data['updated_by']         = clean_post('updated_by');
-            $data['deleted_by']         = clean_post('deleted_by');
-
-
-            // Simpan perubahan
-            if ($currData->update($data)) {
-                return response()->json([
-                    'status'  => true,
-                    'message' => 'Update data berhasil.',
-                    'data'    => null,
-                ]);
-            } else {
-                abort(500, 'Update data gagal, kesalahan database');
-            }
-        }
-
-        // default
-        else {
-            abort(404, 'Halaman tidak ditemukan');
-        }
+        return [
+            'title' => 'Dashboard Eksekutif',
+            'widgets' => [
+                [
+                    'title' => 'Kunjungan Hari Ini',
+                    'value' => \App\Models\Kunjungan::whereDate('created_at', today())->count(),
+                    'icon' => 'ki-calendar-tick',
+                    'color' => 'primary'
+                ],
+                [
+                    'title' => 'Kunjungan Bulan Ini',
+                    'value' => \App\Models\Kunjungan::whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year)
+                        ->count(),
+                    'icon' => 'ki-chart-line',
+                    'color' => 'success'
+                ],
+                [
+                    'title' => 'Total Event',
+                    'value' => \App\Models\Event::count(),
+                    'icon' => 'ki-calendar-add',
+                    'color' => 'warning'
+                ],
+            ],
+            'charts' => [
+                'statistikKunjungan' => $this->getStatistikKunjungan(),
+                'trendKunjungan' => $this->getTrendKunjungan(),
+            ]
+        ];
     }
 
-    function destroy(Request $req, $param1 = ''): JsonResponse
+    private function getSecurityDashboardData()
     {
-        if ($param1 == '') {
-            validate_and_response([
-                'id' => ['Parameter data', 'required'],
-            ]);
-
-            $currData = KaryaJenis::findOrFail(decid($req->input('id')));
-
-            $currData->delete();
-            return response()->json(['status' => true, 'message' => 'Data berhasil dihapus']);
-        }
-
-        // default
-        else {
-            abort(404, 'Halaman tidak ditemukan');
-        }
+        return [
+            'title' => 'Dashboard Security',
+            'widgets' => [
+                [
+                    'title' => 'Kunjungan Hari Ini',
+                    'value' => \App\Models\Kunjungan::whereDate('created_at', today())->count(),
+                    'icon' => 'ki-shield-tick',
+                    'color' => 'primary'
+                ],
+                [
+                    'title' => 'Menunggu Validasi',
+                    'value' => \App\Models\Kunjungan::where('status_validasi', false)->count(),
+                    'icon' => 'ki-time',
+                    'color' => 'warning'
+                ],
+                [
+                    'title' => 'Sudah Divalidasi',
+                    'value' => \App\Models\Kunjungan::where('status_validasi', true)
+                        ->whereDate('created_at', today())
+                        ->count(),
+                    'icon' => 'ki-check-circle',
+                    'color' => 'success'
+                ],
+            ],
+        ];
     }
 
-    function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
+    private function getKunjunganPerBulan()
     {
-        if ($param1 == 'detail') {
-            validate_and_response([
-                'id' => ['Parameter data', 'required'],
-            ]);
+        $data = \App\Models\Kunjungan::selectRaw('MONTH(created_at) as bulan, COUNT(*) as total')
+            ->whereYear('created_at', now()->year)
+            ->groupBy(DB::raw('MONTH(created_at)'))
+            ->orderBy('bulan')
+            ->get();
 
-            $currData = KaryaJenis::findOrFail(decid($req->input('id')))->makeHidden(KaryaJenis::$exceptEdit);
+        return $data;
+    }
 
-            $currData->id = $req->input('id');
+    private function getEventAktifHariIni()
+    {
+        return \App\Models\Event::whereDate('tanggal_event', today())
+            ->orderBy('waktu_mulai_event', 'asc')
+            ->get();
+    }
 
-            return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $currData]);
-        } else if ($param1 == 'list') {
-            // custom filter
-            $filter = [];
+    private function getStatistikKunjungan()
+    {
+        return [
+            'total' => \App\Models\Kunjungan::count(),
+            'validated' => \App\Models\Kunjungan::where('status_validasi', true)->count(),
+            'pending' => \App\Models\Kunjungan::where('status_validasi', false)->count(),
+            'rejected' => 0,
+        ];
+    }
 
-            $data = DataTables::of(KaryaJenis::getDataDetail($filter, mode: 'datatable'))->toArray();
+    private function getTrendKunjungan()
+    {
+        $data = \App\Models\Kunjungan::selectRaw('CAST(created_at AS DATE) as tanggal, COUNT(*) as total')
+            ->whereDate('created_at', '>=', now()->subDays(7))
+            ->groupBy(DB::raw('CAST(created_at AS DATE)'))
+            ->orderBy('tanggal')
+            ->get();
 
-            $start = $req->input('start');
-            $resp  = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-
-                $dt['no']                 = ++$start;
-                $dt['alias']              = $value['alias'];
-                $dt['jenis_karya']        = $value['jenis_karya'];
-                $dt['jenjang_pendidikan'] = $value['jenjang_pendidikan'];
-
-
-                $id = encid($value['']);
-
-                $dataAction = [
-                    'id'  => $id,
-                    'btn' => [
-                        ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
-                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-
-                $resp[] = $dt;
-            }
-            $data['data'] = $resp;
-
-
-            return response()->json($data);
-        }
-
-        // default
-        else {
-            abort(404, 'Halaman tidak ditemukan');
-        }
+        return $data;
     }
 }
-/* This controller generate by @wahyudibinsaid laravel best practices snippets */

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Tamu;
 
 use App\Models\Tamu;
 use App\Models\Event;
+use App\Models\Civitas;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use App\Models\KunjunganDetail;
@@ -69,6 +70,7 @@ class KunjunganEventController extends Controller
             'email' => 'required|email',
             'institusi' => 'required',
             'jabatan' => 'required',
+            'jumlah_rombongan' => 'required|integer|min:1|max:50',
             'transportasi' => 'required',
         ]);
         if ($validator->fails()) {
@@ -102,6 +104,7 @@ class KunjunganEventController extends Controller
             $detailData = [
                 'institusi' => $request->institusi,
                 'jabatan' => $request->jabatan,
+                'jumlah_rombongan' => $request->jumlah_rombongan,
             ];
             $urutan = 1;
             foreach ($detailData as $key => $value) {
@@ -163,15 +166,22 @@ class KunjunganEventController extends Controller
         try {
             $event = Event::findOrFail(decid($request->event_id));
             DB::beginTransaction();
-            $tamuData = [
-                'nama_tamu' => $request->nama,
-                'jenis_kelamin_tamu' => $request->jenis_kelamin,
-                'email_tamu' => $request->email,
-                'nomor_telepon_tamu' => $request->nomor_telepon,
+            
+            $nimNip = $request->nim_nip;
+            $length = strlen($nimNip);
+            
+            $civitasData = [
+                'nama_civitas' => $request->nama,
+                'nim' => $length == 10 ? $nimNip : null,
+                'nip' => $length == 6 ? $nimNip : null,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'nomor_telepon' => $request->nomor_telepon,
+                'email' => $request->email,
             ];
-            $tamu = Tamu::create($tamuData);
+            $civitas = Civitas::create($civitasData);
+            
             $kunjunganData = [
-                'tamu_id' => $tamu->tamu_id,
+                'civitas_id' => $civitas->civitas_id,
                 'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
                 'identitas' => 'civitas',
                 'event_id' => $event->event_id,
@@ -180,21 +190,14 @@ class KunjunganEventController extends Controller
                 'is_checkout' => false,
             ];
             $kunjungan = Kunjungan::create($kunjunganData);
-            $detailData = [
-                'nim_nip' => $request->nim_nip,
-                'jabatan' => $request->jabatan
-            ];
-            $urutan = 1;
-            foreach ($detailData as $key => $value) {
-                if (!empty($value)) {
-                    KunjunganDetail::create([
-                        'kunjungan_id' => $kunjungan->kunjungan_id,
-                        'kunci' => $key,
-                        'nilai' => $value,
-                        'urutan' => $urutan++,
-                    ]);
-                }
-            }
+            
+            KunjunganDetail::create([
+                'kunjungan_id' => $kunjungan->kunjungan_id,
+                'kunci' => 'jabatan',
+                'nilai' => $request->jabatan,
+                'urutan' => 1,
+            ]);
+            
             $kunjunganIdHashed = encid($kunjungan->kunjungan_id);
             DB::commit();
             return redirect()->route('tamu.sukses', $kunjunganIdHashed);

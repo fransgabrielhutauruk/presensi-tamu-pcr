@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tamu', function (Blueprint $table) {
-            $table->increments('tamu_id');
-            $table->string('nama_tamu');
-            $table->enum('jenis_kelamin_tamu', ['Laki-laki', 'Perempuan']);
-            $table->string('email_tamu')->nullable();
-            $table->string('nomor_telepon_tamu')->nullable();
+        Schema::create('civitas', function (Blueprint $table) {
+            $table->increments('civitas_id');
+            $table->string('nama_civitas');
+            $table->string('nip')->nullable();
+            $table->string('nim')->nullable();
+            $table->enum('jenis_kelamin', ['Laki-laki', 'Perempuan']);
+            $table->string('nomor_telepon', 20)->nullable();
+            $table->string('email')->nullable();
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
             $table->unsignedInteger('deleted_by')->nullable();
@@ -30,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tamu');
+        Schema::dropIfExists('civitas_pcr');
     }
 };

@@ -21,6 +21,7 @@ return new class extends Migration
             $table->unsignedInteger('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('kunjungan_id')->references('kunjungan_id')->on('kunjungan')->onDelete('cascade');
         });
     }
 

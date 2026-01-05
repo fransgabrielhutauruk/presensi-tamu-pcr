@@ -36,11 +36,13 @@ class Kunjungan extends Model
         'is_checkout',
         'checkout_time',
         'reminder_sent_at',
+        'is_vip',
     ];
 
     protected $casts = [
         'status_validasi' => 'boolean',
         'is_checkout' => 'boolean',
+        'is_vip' => 'boolean',
         'waktu_presensi' => 'datetime',
         'checkout_time' => 'datetime',
         'reminder_sent_at' => 'datetime',
@@ -67,10 +69,12 @@ class Kunjungan extends Model
         return $this->hasOne(Feedback::class, 'kunjungan_id', 'kunjungan_id');
     }
 
-    public static function getIdentitasBadge($identitas): string
+    public static function getIdentitasBadge($identitas, $is_vip=false): string
     {
-        if ($identitas == 'non-civitas') {
+        if ($identitas == 'non-civitas' && $is_vip == false) {
             return '<span class="badge badge-warning">Non-Civitas</span>';
+        } elseif ($identitas == 'non-civitas' && $is_vip == true) {
+            return '<span class="badge badge-info">VIP Non-Civitas</span>';
         } elseif ($identitas == 'civitas') {
             return '<span class="badge badge-primary">Civitas PCR</span>';
         } else {

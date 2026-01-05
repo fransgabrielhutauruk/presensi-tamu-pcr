@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('kunjungan', function (Blueprint $table) {
             $table->increments('kunjungan_id');
-            $table->unsignedInteger('tamu_id');
+            $table->unsignedInteger('tamu_id')->nullable();
+            $table->unsignedInteger('civitas_id')->nullable();
             $table->unsignedInteger('event_id')->nullable();
             $table->enum('identitas', ['non-civitas', 'civitas']);
+            $table->boolean('is_vip')->default(false);
             $table->string('kategori_tujuan')->nullable();
             $table->integer('jumlah_rombongan')->nullable();
             $table->time('waktu_keluar');
@@ -29,6 +31,9 @@ return new class extends Migration
             $table->unsignedInteger('deleted_by')->nullable();
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('tamu_id')->references('tamu_id')->on('tamu')->onDelete('cascade');
+            $table->foreign('civitas_id')->references('civitas_id')->on('civitas')->onDelete('cascade');
+            $table->foreign('event_id')->references('event_id')->on('event')->onDelete('cascade');
         });
     }
 

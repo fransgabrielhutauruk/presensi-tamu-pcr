@@ -108,7 +108,7 @@ class UserController extends Controller
                 'name' => ['Nama', 'required'],
                 'email' => ['Email', 'required|email|unique:users,email'],
                 'roles' => ['Role', 'required|array'],
-                'roles.*' => ['Role', 'required|in:Admin,Eksekutif'],
+                'roles.*' => ['Role', 'required|in:Admin,Eksekutif,Security'],
             ]);
 
             $data['name'] = clean_post('name');
@@ -121,7 +121,7 @@ class UserController extends Controller
                 
                 $roles = $req->input('roles', []);
                 if (!empty($roles)) {
-                    $validRoles = array_intersect($roles, ['Admin', 'Eksekutif']);
+                    $validRoles = array_intersect($roles, ['Admin', 'Eksekutif', 'Security']);
                     if (!empty($validRoles)) {
                         $inserted->assignRole($validRoles);
                     }
@@ -176,7 +176,7 @@ class UserController extends Controller
                 'name' => ['Nama', 'required'],
                 'email' => ['Email', 'required|email'],
                 'roles' => ['Role', 'array|required'],
-                'roles.*' => ['Role', 'required|in:Admin,Eksekutif'],
+                'roles.*' => ['Role', 'required|in:Admin,Eksekutif,Security'],
             ]);
 
             $id = $req->input('id');
@@ -192,7 +192,7 @@ class UserController extends Controller
                 
                 $baseRoles = $currData->roles()->whereIn('name', ['Mahasiswa', 'Staf'])->pluck('name')->toArray();
                 
-                $validAdminRoles = array_intersect($newRoles, ['Admin', 'Eksekutif']);
+                $validAdminRoles = array_intersect($newRoles, ['Admin', 'Eksekutif', 'Security']);
                 $allRoles = array_merge($baseRoles, $validAdminRoles);
                 
                 $currData->syncRoles($allRoles);

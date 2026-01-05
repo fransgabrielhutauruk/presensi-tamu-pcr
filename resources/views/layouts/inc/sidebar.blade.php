@@ -9,11 +9,12 @@
     <div id="#kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false"
         class="app-sidebar-menu-primary menu menu-column menu-rounded menu-sub-indention menu-state-bullet-primary
             px-6 mb-5">
+        @if (hasAnyActiveRole(UserRole::getAdminEksekutifSecurityRoles()))
+            <x-theme.menu link="{{ route('app.dashboard.index') }}" text="Dashboard"
+                icon="ki-outline ki-graph-up" :active="$pageData->activeMenu == 'dashboard'" />
+        @endif
+
         @if (hasAnyActiveRole(UserRole::getAllRoles()))
-            @if (hasAnyActiveRole([UserRole::EKSEKUTIF->value]))
-                <x-theme.menu link="{{ route('app.dashboard.index') }}" text="Dashboard BI"
-                    icon="ki-outline ki-graph-up" :active="$pageData->activeMenu == 'dashboard'" />
-            @endif
             <x-theme.menu link="{{ route('app.event.index') }}" text="Event" icon="ki-outline ki-calendar-edit"
                 :active="$pageData->activeMenu == 'event' || $pageData->activeMenu == 'event-kategori'" />
         @endif

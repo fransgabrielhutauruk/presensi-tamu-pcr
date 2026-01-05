@@ -7,33 +7,33 @@
 
 namespace App\Models;
 
-use App\Models\Kunjungan;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Facades\CauserResolver;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
-
-class Feedback extends Model
+class CivitasPcr extends Model
 {
     use SoftDeletes;
-    
+    use LogsActivity;
     /**
      * definisi nama table
      *
      * @var string
      */
-    public $table = 'feedback';
+    public $table = 'civitas_pcr';
 
     /**
      * set kolom primary key, default primary key kolom adalah id
      *
      * @var string
      */
-    protected $primaryKey = 'feedback_id';
+    protected $primaryKey = 'civitas_id';
 
 
     /**
@@ -42,9 +42,12 @@ class Feedback extends Model
      * @var array
      */
     public $fillable = [
-        'kunjungan_id',
-        'rating',
-        'komentar',
+        'nama_civitas',
+        'nip',
+        'nim',
+        'jenis_kelamin',
+        'nomor_telepon',
+        'email',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -56,16 +59,10 @@ class Feedback extends Model
      * @var array
      */
     protected $casts = [
-        'created_by' => 'string',
-        'updated_by' => 'string',
-        'deleted_by' => 'string'
+        
     ];
 
     public static array $exceptEdit = [
-        'feedback_id',
-        'created_by',
-        'updated_by',
-        'deleted_by',
         'created_at',
         'updated_at',
         'deleted_at'
@@ -92,6 +89,30 @@ class Feedback extends Model
             $model->deleted_by = userInisial();
             $model->update();
         });
+
+        static::restoring(function ($model) {
+            $model->deleted_by = NULL;
+        });
+    }
+
+    /**
+     * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
+     * pencatatan log menggunakan spatie/activitylogging
+     *
+     * @return LogOptions
+     */
+    public function getActivitylogOptions(): LogOptions
+    {
+        CauserResolver::setCauser(causerActivityLog());
+
+        return LogOptions::defaults()
+            ->logOnly($this->fillable)
+            ->logOnlyDirty()
+            ->useLogName(env('APP_NAME'))
+            ->setDescriptionForEvent(function ($eventName) {
+                $aksi = eventActivityLogBahasa($eventName);
+                return userInisial() . " {$aksi} table Civitas PCR";
+            });
     }
 
     // mutator (setter and getter)
@@ -162,16 +183,11 @@ class Feedback extends Model
     {
         $query = DB::table('')
             ->selectRaw('*')
-            ->from((new self)->table . ' as a')
+            ->from((new self)->table.' as a')
             ->where(notRaw($where))
             ->whereRaw(withRaw($where), $whereBinding)
             ->whereNull('a.deleted_at');
         return $get ? $query->get() : $query;
-    }
-
-    public function kunjungan(): BelongsTo
-    {
-        return $this->belongsTo(Kunjungan::class, 'kunjungan_id', 'kunjungan_id');
     }
 }
 /* This model generate by @wahyudibinsaid laravel best practices snippets */
