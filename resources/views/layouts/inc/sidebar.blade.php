@@ -31,6 +31,12 @@
                 icon="ki-outline ki-check-circle" :active="$pageData->activeMenu == 'validasi-kunjungan'" />
             <x-theme.menu link="{{ route('app.feedback.index') }}" text="Feedback"
                 icon="ki-outline ki-messages" :active="$pageData->activeMenu == 'feedback'" />
+            
+            <x-theme.menu text="Master Data" icon="ki-outline ki-archive" :active="in_array($pageData->activeMenu, ['pegawai'])">
+                <x-theme.menu link="{{ route('app.master.show', 'pegawai') }}" text="Pegawai"
+                    :active="$pageData->activeMenu == 'pegawai'" />
+            </x-theme.menu>
+            
             <x-theme.menu link="{{ route('app.user.index') }}" text="Pengguna" icon="ki-outline ki-setting-3"
                 :active="$pageData->activeMenu == 'pengguna'" />
             <x-theme.menu link="{{ route('app.log-aktivitas.index') }}" text="Log Aktivitas" icon="ki-outline ki-document"

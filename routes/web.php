@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KunjunganController;
 use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\MasterController;
 
 include_once __DIR__ . "/web-frontend.php";
 
@@ -50,5 +51,6 @@ Route::prefix('app')
             generalRoute(UserController::class, 'user', 'app');
             generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
             generalRoute(FeedbackController::class, 'feedback', 'app');
+            generalRoute(MasterController::class, 'master', 'app');
         });
     });

@@ -40,4 +40,17 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
+
+    'pegawai_api' => [
+        'url' => env('PEGAWAI_API_URL'),
+        'key' => env('PEGAWAI_API_KEY'),
+        'timeout' => env('PEGAWAI_API_TIMEOUT', 30),
+    ],
+
+    'mahasiswa_api' => [
+        'url' => env('MAHASISWA_API_URL'),
+        'collection' => env('MAHASISWA_API_COLLECTION'),
+        'key' => env('MAHASISWA_API_KEY'),
+        'timeout' => env('MAHASISWA_API_TIMEOUT', 60),
+    ],
 ];

@@ -15,7 +15,7 @@ class LanguageController extends Controller
             abort(404, 'Language not supported');
         }
         Session::put('locale', $locale);
-        $previousUrl = $request->header('Referer') ?? route('tamu.index');
+        $previousUrl = $request->header('Referer') ?? route('tamu.home');
         $previousUrl = preg_replace('/[?&]lang=[^&]*/', '', $previousUrl);
         return redirect($previousUrl);
     }
