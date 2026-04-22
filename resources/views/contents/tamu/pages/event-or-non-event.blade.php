@@ -20,7 +20,7 @@
                                     {{ __('visitor.non_event_visit_desc') }}
                                 </p>
                                 <a href="{{ route('tamu.non-event.tujuan') }}"
-                                    class="btn-default w-100 mt- fs-6">{{ __('visitor.non_event_visit_title') }}</a>
+                                    class="btn-default w-100 mt-1 fs-6">{{ __('visitor.non_event_visit_title') }}</a>
                             </div>
                         </div>
                     </div>

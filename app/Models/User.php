@@ -78,7 +78,7 @@ class User extends Authenticatable
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
-                return "{$aksi} pengguan: {$this->name}";
+                return "{$aksi} pengguna: {$this->name}";
             });
     }
 }
