@@ -226,14 +226,15 @@
         let currentDetailId = null;
 
         $(document).ready(function() {
+            $(document).off('click', '[jf-data="kunjungan-validasi"] [jf-detail]');
+            $(document).on('click', '[jf-data="kunjungan-validasi"] [jf-detail]', function() {
+                currentDetailId = $(this).attr('jf-detail');
+            });
+
             jForm.init({
                 name: "kunjungan-validasi",
                 base_url: `{{ route('app.kunjungan.index') }}`,
                 onDetail: function(data) {
-                    const clickedElement = $('[jf-detail]:last');
-                    if (clickedElement.length > 0) {
-                        currentDetailId = clickedElement.attr('jf-detail');
-                    }
                     showDetailModal(data);
                 }
             });

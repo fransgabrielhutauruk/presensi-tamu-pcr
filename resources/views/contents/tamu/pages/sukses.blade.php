@@ -14,7 +14,7 @@
 
                     <div class="alert alert-light mt-3 mb-3 text-start">
                         <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong>
-                            {{ $kunjungan->tamu->nama_tamu }}</p>
+                            {{ $kunjungan->tamu->nama_tamu ?? $kunjungan->civitas->nama_civitas }}</p>
                         <p class="mb-0"><strong>{{ __('visitor.visit_time') }}:</strong>
                             {{ $kunjungan->created_at->format('d/m/Y H:i') }}</p>
                         @if ($kunjungan->kategori_tujuan?->value != 'event')

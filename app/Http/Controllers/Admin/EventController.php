@@ -460,7 +460,7 @@ class EventController extends Controller
             $eventId = decid($param2);
             $filter = ['event_id' => $eventId];
 
-            $data = DataTables::of(Kunjungan::with(['tamu', 'details', 'event'])->where($filter))->toArray();
+            $data = DataTables::of(Kunjungan::with(['tamu', 'civitas', 'details', 'event'])->where($filter))->toArray();
 
             $start = $req->input('start');
             $resp = [];
@@ -478,10 +478,10 @@ class EventController extends Controller
                 }
 
                 $dt['no'] = ++$start;
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? '-';
-                $dt['email'] = $value['tamu']['email_tamu'] ?? '-';
-                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? '-';
+                $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
+                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
+                $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
+                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
                 $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
 
                 $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .

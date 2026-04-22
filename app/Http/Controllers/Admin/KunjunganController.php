@@ -406,7 +406,7 @@ class KunjunganController extends Controller
     {
         if ($param1 == 'list') {
             $filter = ['status_validasi' => true];
-            $query = Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
+            $query = Kunjungan::with(['tamu', 'civitas', 'details', 'event', 'event.eventKategori'])
                 ->where($filter)
                 ->latest()
                 ->get();
@@ -418,10 +418,10 @@ class KunjunganController extends Controller
                 $dt = [];
 
                 $dt['no'] = ++$start;
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? '-';
-                $dt['email'] = $value['tamu']['email_tamu'] ?? '-';
-                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? '-';
+                $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
+                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-' ;
+                $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
+                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
 
                 $dt['kategori_tujuan'] = KategoriTujuanEnum::getDescription($value['kategori_tujuan']) ?? '-';
                 $dt['jumlah_rombongan'] = $value['jumlah_rombongan'] ?? '-';
@@ -464,17 +464,17 @@ class KunjunganController extends Controller
                 'id' => ['Parameter data', 'required'],
             ]);
 
-            $currData = Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
+            $currData = Kunjungan::with(['tamu', 'civitas', 'details', 'event', 'event.eventKategori'])
                 ->findOrFail(decid($req->input('id')));
 
             $detailData = [
                 'kunjungan_id' => $currData->kunjungan_id,
                 'id' => $req->input('id'),
 
-                'nama' => $currData->tamu->nama_tamu ?? '',
-                'jenis_kelamin' => $currData->tamu->jenis_kelamin_tamu ?? '',
-                'email' => $currData->tamu->email_tamu ?? '',
-                'nomor_telepon' => $currData->tamu->nomor_telepon_tamu ?? '',
+                'nama' => $currData->tamu->nama_tamu ?? $currData->civitas->nama_civitas ?? '',
+                'jenis_kelamin' => $currData->tamu->jenis_kelamin_tamu ?? $currData->civitas->jenis_kelamin ?? '',
+                'email' => $currData->tamu->email_tamu ?? $currData->civitas->email ?? '',
+                'nomor_telepon' => $currData->tamu->nomor_telepon_tamu ?? $currData->civitas->nomor_telepon ?? '',
 
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
@@ -507,7 +507,7 @@ class KunjunganController extends Controller
             return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $detailData]);
         } else if ($param1 == 'validasi-list') {
             $filter = ['status_validasi' => false];
-            $query = Kunjungan::with(['tamu', 'details', 'event'])
+            $query = Kunjungan::with(['tamu', 'civitas', 'details', 'event'])
                 ->where($filter)
                 ->latest()
                 ->get();
@@ -526,10 +526,10 @@ class KunjunganController extends Controller
                 </div>';
 
                 $dt['no'] = ++$start;
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? '-';
-                $dt['email'] = $value['tamu']['email_tamu'] ?? '-';
-                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? '-';
+                $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
+                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
+                $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
+                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
                 $dt['kategori_tujuan'] = $value['kategori_tujuan'] ?? '-';
                 $dt['transportasi'] = $value['transportasi'] ?? '-';
                 $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas']);

@@ -227,7 +227,7 @@
                     },
                     success: function(resp) {
                         if (resp.status) {
-                            showDetailModal(resp.data);
+                            showDetailModal(resp.data, detailId);
                         } else {
                             Swal.fire('Error!', resp.message || 'Gagal memuat detail', 'error');
                         }
@@ -283,8 +283,8 @@
                 .join(' ');
         }
 
-        function showDetailModal(data) {
-            currentDetailId = data.id;
+        function showDetailModal(data, detailId) {
+            currentDetailId = detailId;
 
             $('[data-field="nama"]').text(data.nama || '-');
             $('[data-field="jenis_kelamin"]').text(data.jenis_kelamin || '-');

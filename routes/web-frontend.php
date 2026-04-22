@@ -35,6 +35,8 @@ Route::name('tamu.')->group(function () {
                 Route::get('/{eventId}', 'identitas')->name('identitas');
                 Route::get('/presensi-civitas/{eventId}', 'formPresensiCivitas')->name('form-presensi-civitas');
                 Route::post('/civitas-store', 'storePresensiCivitas')->name('store-presensi-civitas')->middleware('throttle:10,1');
+                Route::post('/check-civitas', 'checkCivitasData')->name('check-civitas')->middleware('throttle:20,1');
+                Route::post('/fetch-external-data', 'fetchExternalData')->name('fetch-external-data')->middleware('throttle:20,1');
             });
         });
     });
