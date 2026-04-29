@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Tamu;
 
+use App\Http\Controllers\Controller;
 use App\Models\Feedback;
 use App\Models\Kunjungan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class KunjunganController extends Controller
 {
@@ -24,10 +25,12 @@ class KunjunganController extends Controller
     public function sukses($kunjunganId)
     {
         try {
-            $kunjungan = Kunjungan::with(['tamu', 'details'])->findOrFail(decid($kunjunganId));
+            $kunjungan = $this->findKunjunganOrFail($kunjunganId, ['tamu', 'details']);
+
             return view('contents.tamu.pages.sukses', compact('kunjungan'));
-        } catch (\Throwable $th) {
-            Log::error('Gagal memuat halaman sukses kunjungan' . $th->getMessage());
+        } catch (Throwable $exception) {
+            $this->logException('Gagal memuat halaman sukses kunjungan', $exception);
+
             return redirect()->route('tamu.home')->with('error', 'Kunjungan tidak ditemukan');
         }
     }
@@ -35,7 +38,7 @@ class KunjunganController extends Controller
     public function Checkout($kunjunganId)
     {
         try {
-            $kunjungan = Kunjungan::with(['tamu', 'feedback'])->findOrFail(decid($kunjunganId));
+            $kunjungan = $this->findKunjunganOrFail($kunjunganId, ['tamu', 'feedback']);
 
             if ($kunjungan->is_checkout) {
                 if ($kunjungan->feedback === null) {
@@ -45,9 +48,11 @@ class KunjunganController extends Controller
                 return redirect()->route('tamu.home')
                     ->with('info', 'Anda telah menyelesaikan seluruh proses kunjungan.');
             }
+
             return view('contents.tamu.pages.checkout-konfirmasi', compact('kunjungan'));
-        } catch (\Exception $e) {
-            Log::error('Gagal memuat halaman checkout' . $e->getMessage());
+        } catch (Throwable $exception) {
+            $this->logException('Gagal memuat halaman checkout', $exception);
+
             return redirect()->route('tamu.home')->with('error', 'Maaf, terjadi kesalahan saat memproses checkout');
         }
     }
@@ -55,14 +60,17 @@ class KunjunganController extends Controller
     public function storeCheckout($kunjunganId)
     {
         try {
-            $kunjungan = Kunjungan::with('tamu')->findOrFail(decid($kunjunganId));
+            $kunjungan = $this->findKunjunganOrFail($kunjunganId);
+
             $kunjungan->update([
                 'is_checkout' => true,
                 'checkout_time' => now()
             ]);
+
             return redirect()->route('tamu.feedback', $kunjunganId);
-        } catch (\Exception $e) {
-            Log::error('Gagal menyimpan checkout kunjungan' . $e->getMessage());
+        } catch (Throwable $exception) {
+            $this->logException('Gagal menyimpan checkout kunjungan', $exception);
+
             return redirect()->back()
                 ->with('error', 'Terjadi kesalahan. Silahkan coba lagi');
         }
@@ -70,7 +78,8 @@ class KunjunganController extends Controller
 
     public function feedback($kunjunganId)
     {
-        $kunjungan = Kunjungan::with(['tamu', 'feedback'])->findOrFail(decid($kunjunganId));
+        $kunjungan = $this->findKunjunganOrFail($kunjunganId, ['tamu', 'feedback']);
+
         if ($kunjungan->feedback === null) {
             return view(
                 'contents.tamu.pages.feedback',
@@ -78,10 +87,10 @@ class KunjunganController extends Controller
                     'kunjunganId' => $kunjunganId
                 ]
             );
-        } else {
-            return redirect()->route('tamu.home')
-                ->with('info', 'Anda telah menyelesaikan mengisi feedback.');
         }
+
+        return redirect()->route('tamu.home')
+            ->with('info', 'Anda telah menyelesaikan mengisi feedback.');
     }
 
     public function storeFeedback(Request $request, $kunjunganId)
@@ -95,18 +104,39 @@ class KunjunganController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data');
         }
 
-        $kunjunganId = decid($kunjunganId);
-
         try {
             Feedback::create([
-                'kunjungan_id' => $kunjunganId,
-                'rating' => $request->rating,
-                'komentar' => $request->komentar,
+                'kunjungan_id' => $this->decodeKunjunganId($kunjunganId),
+                'rating' => $validator->validated()['rating'],
+                'komentar' => $validator->validated()['komentar'] ?? null,
             ]);
+
             return redirect()->route('tamu.home')->with('success', 'Terima kasih atas penilaian Anda!');
-        } catch (\Exception $e) {
-            Log::error('Gagal menyimpan feedback ' . $e->getMessage());
+        } catch (Throwable $exception) {
+            $this->logException('Gagal menyimpan feedback', $exception);
+
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyimpan data.');
         }
+    }
+
+    private function findKunjunganOrFail(string $encodedKunjunganId, array $relations = []): Kunjungan
+    {
+        $query = Kunjungan::query();
+
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        return $query->findOrFail($this->decodeKunjunganId($encodedKunjunganId));
+    }
+
+    private function decodeKunjunganId(string $encodedKunjunganId): int
+    {
+        return (int) decid($encodedKunjunganId);
+    }
+
+    private function logException(string $message, Throwable $exception): void
+    {
+        Log::error($message . ': ' . $exception->getMessage());
     }
 }

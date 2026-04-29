@@ -3,6 +3,41 @@
 @section('title', __('visitor.visit_purpose_title'))
 
 @section('content')
+    @php
+        $tujuanCards = [
+            [
+                'tujuan' => 'instansi',
+                'icon' => 'fa-building',
+                'label' => __('visitor.institutional_visit'),
+                'delay' => '0.2s',
+            ],
+            [
+                'tujuan' => 'bisnis',
+                'icon' => 'fa-handshake',
+                'label' => __('visitor.business_partnership'),
+                'delay' => '0.3s',
+            ],
+            [
+                'tujuan' => 'ortu',
+                'icon' => 'fa-users',
+                'label' => __('visitor.parent_student'),
+                'delay' => '0.4s',
+            ],
+            [
+                'tujuan' => 'informasi_kampus',
+                'icon' => 'fa-graduation-cap',
+                'label' => __('visitor.campus_info_pmb'),
+                'delay' => '0.5s',
+            ],
+            [
+                'tujuan' => 'lainnya',
+                'icon' => 'fa-calendar-alt',
+                'label' => __('visitor.other'),
+                'delay' => '0.6s',
+            ],
+        ];
+    @endphp
+
     <div class="row pt-5 d-flex align-items-center" style="min-height: 90vh">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="text-center">
@@ -12,45 +47,15 @@
                             question="{{ __('visitor.select_purpose') }}" />
                         <div class="d-flex flex-column flex-fill mt-4 mx-auto">
                             <div class="d-flex flex-column" style="gap: 1rem;">
-                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'instansi']) }}"
-                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.2s">
-                                    <div class="tujuan-icon">
-                                        <i class="fas fa-building"></i>
-                                    </div>
-                                    <span class="tujuan-label">{{ __('visitor.institutional_visit') }}</span>
-                                </a>
-
-                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'bisnis']) }}"
-                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.3s">
-                                    <div class="tujuan-icon">
-                                        <i class="fas fa-handshake"></i>
-                                    </div>
-                                    <span class="tujuan-label">{{ __('visitor.business_partnership') }}</span>
-                                </a>
-
-                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'ortu']) }}"
-                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.4s">
-                                    <div class="tujuan-icon">
-                                        <i class="fas fa-users"></i>
-                                    </div>
-                                    <span class="tujuan-label">{{ __('visitor.parent_student') }}</span>
-                                </a>
-
-                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'informasi_kampus']) }}"
-                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.5s">
-                                    <div class="tujuan-icon">
-                                        <i class="fas fa-graduation-cap"></i>
-                                    </div>
-                                    <span class="tujuan-label">{{ __('visitor.campus_info_pmb') }}</span>
-                                </a>
-
-                                <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => 'lainnya']) }}"
-                                    class="tujuan-card wow fadeInUp" data-wow-delay="0.6s">
-                                    <div class="tujuan-icon">
-                                        <i class="fas fa-calendar-alt"></i>
-                                    </div>
-                                    <span class="tujuan-label">{{ __('visitor.other') }}</span>
-                                </a>
+                                @foreach ($tujuanCards as $card)
+                                    <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => $card['tujuan']]) }}"
+                                        class="tujuan-card wow fadeInUp" data-wow-delay="{{ $card['delay'] }}">
+                                        <div class="tujuan-icon">
+                                            <i class="fas {{ $card['icon'] }}"></i>
+                                        </div>
+                                        <span class="tujuan-label">{{ $card['label'] }}</span>
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
                     </div>

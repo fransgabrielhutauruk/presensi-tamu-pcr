@@ -3,6 +3,11 @@
 @section('title', __('visitor.select_event'))
 
 @section('content')
+    @php
+        $eventCount = $events->count();
+        $hasEvents = $eventCount > 0;
+    @endphp
+
     <div class="row">
         <div class="col-md-6 justify-content-center mx-auto">
             <div class="text-center">
@@ -28,12 +33,12 @@
 
                 <div class="text-start mb-2" id="search-info">
                     <small class="text-muted">
-                        <span id="event-count">{{ $events->count() }}</span> {{ __('visitor.events_available') }}
+                        <span id="event-count">{{ $eventCount }}</span> {{ __('visitor.events_available') }}
                     </small>
                 </div>
 
                 <div class="text-start">
-                    @if ($events->count() > 0)
+                    @if ($hasEvents)
                         <div class="row g-3" id="events-container">
                             @foreach ($events as $event)
                                 <div class="col-12 event-item mb-2" data-name="{{ strtolower($event->nama_event) }}">
@@ -101,8 +106,8 @@
                             </div>
                             <h5 class="text-muted mb-2">{{ __('visitor.no_events_today') }}</h5>
                             <p class="text-muted">{{ __('visitor.check_back_later') }}</p>
+                        </div>
                     @endif
-                    </p>
                 </div>
             </div>
         </div>
@@ -131,6 +136,10 @@
             const noResults = document.getElementById('no-results');
             const eventsContainer = document.getElementById('events-container');
 
+            if (!searchInput || !eventCount) {
+                return;
+            }
+
             function performSearch() {
                 const searchTerm = searchInput.value.toLowerCase().trim();
                 let visibleCount = 0;
@@ -150,12 +159,14 @@
 
                 eventCount.textContent = visibleCount;
 
-                if (visibleCount === 0 && searchTerm !== '') {
-                    noResults.style.display = 'block';
-                    eventsContainer.style.display = 'none';
-                } else {
-                    noResults.style.display = 'none';
-                    eventsContainer.style.display = 'block';
+                if (noResults && eventsContainer) {
+                    if (visibleCount === 0 && searchTerm !== '') {
+                        noResults.style.display = 'block';
+                        eventsContainer.style.display = 'none';
+                    } else {
+                        noResults.style.display = 'none';
+                        eventsContainer.style.display = 'block';
+                    }
                 }
             }
 

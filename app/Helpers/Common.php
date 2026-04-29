@@ -245,7 +245,7 @@ function duration($start = "", $end = "")
     return $TotalMinutes;
 }
 
-function tanggal($date, $sparator = '-', $time = false)
+function tanggal($date, $sparator = ' ', $time = false)
 {
     $dayDate  = date('Y-m-d', strtotime($date));
     $timeDate = date('H:i', strtotime($date));

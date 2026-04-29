@@ -1,12 +1,16 @@
-<x-tamu.partials.data-pengunjung />
-
-<div>
-    <x-form.select-field name="hubungan_dengan_mahasiswa" :label="__('visitor.relation_student')" required="true" :options="[
+@php
+    $relationOptions = [
         __('visitor.parent', [], 'id') => __('visitor.parent'),
         __('visitor.guardian', [], 'id') => __('visitor.guardian'),
         __('visitor.sibling', [], 'id') => __('visitor.sibling'),
         __('visitor.others', [], 'id') => __('visitor.others'),
-    ]" />
+    ];
+@endphp
+
+<x-tamu.partials.data-pengunjung />
+
+<div>
+    <x-form.select-field name="hubungan_dengan_mahasiswa" :label="__('visitor.relation_student')" required="true" :options="$relationOptions" />
 </div>
 
 <div>

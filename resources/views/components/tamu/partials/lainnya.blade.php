@@ -1,8 +1,12 @@
+@php
+    $visitSectionTitle = __('visitor.visit_data');
+@endphp
+
 <x-tamu.partials.data-pengunjung />
 
 <div>
     <x-tamu.section-header
-        :title="__('visitor.visit_data')"
+        :title="$visitSectionTitle"
         icon="📋" />
     <x-form.input-field
         name="pihak_dituju"

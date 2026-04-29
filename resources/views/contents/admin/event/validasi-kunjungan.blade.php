@@ -283,28 +283,53 @@
                 .join(' ');
         }
 
+        function setDetailField(field, value) {
+            const element = $(`[data-field="${field}"]`);
+            if (!element.length) {
+                return;
+            }
+
+            const hasValue = value !== undefined && value !== null && value !== '';
+            const wrapper = element.closest('.mb-3, .mb-4');
+
+            if (hasValue) {
+                element.text(value);
+                if (wrapper.length) {
+                    wrapper.show();
+                } else {
+                    element.show();
+                }
+            } else {
+                if (wrapper.length) {
+                    wrapper.hide();
+                } else {
+                    element.hide();
+                }
+            }
+        }
+
         function showDetailModal(data, detailId) {
             currentDetailId = detailId;
 
-            $('[data-field="nama"]').text(data.nama || '-');
-            $('[data-field="jenis_kelamin"]').text(data.jenis_kelamin || '-');
-            $('[data-field="email"]').text(data.email || '-');
-            $('[data-field="nomor_telepon"]').text(data.nomor_telepon || '-');
+            setDetailField('nama', data.nama);
+            setDetailField('jenis_kelamin', data.jenis_kelamin);
+            setDetailField('email', data.email);
+            setDetailField('nomor_telepon', data.nomor_telepon);
 
-            $('[data-field="kategori_tujuan"]').text(data.kategori_tujuan || '-');
-            $('[data-field="transportasi"]').text(data.transportasi || '-');
-            $('[data-field="identitas"]').text(data.identitas || '-');
-            $('[data-field="tanggal_kunjungan"]').text(data.tanggal_kunjungan || '-');
-            $('[data-field="waktu_kunjungan"]').text(data.waktu_kunjungan || '-');
-            $('[data-field="waktu_keluar"]').text(data.waktu_keluar || '-');
-            $('[data-field="jumlah_rombongan"]').text(data.jumlah_rombongan || '-');
+            setDetailField('kategori_tujuan', data.kategori_tujuan);
+            setDetailField('transportasi', data.transportasi);
+            setDetailField('identitas', data.identitas);
+            setDetailField('tanggal_kunjungan', data.tanggal_kunjungan);
+            setDetailField('waktu_kunjungan', data.waktu_kunjungan);
+            setDetailField('waktu_keluar', data.waktu_keluar);
+            setDetailField('jumlah_rombongan', data.jumlah_rombongan);
 
             var statusBadge = $('[data-field="status_badge"]');
             if (data.status_validasi) {
                 statusBadge.removeClass('badge-warning').addClass('badge-success').text('Tervalidasi');
                 $('#validateSingleBtn').hide();
             } else {
-                statusBadge.removeClass('badge-success').addClass('badge-warning').text('Menunggu Validasi');
+                statusBadge.removeClass('badge-success').addClass('badge-warning').text('Belum Validasi');
                 $('#validateSingleBtn, #rejectSingleBtn').show();
             }
 
@@ -315,8 +340,8 @@
                     data.details.forEach(function(detail) {
                         var formattedLabel = formatLabel(detail.kunci);
                         var detailHtml = '<div class="row mb-2">' +
-                            '<div class="col-4 fw-bold text-muted">' + formattedLabel + ':</div>' +
-                            '<div class="col-8 fw-bold">' + detail.nilai + '</div>' +
+                            '<div class="col-auto fw-bold text-muted">' + formattedLabel + ':</div>' +
+                            '<div class="col-auto fw-bold">' + detail.nilai + '</div>' +
                             '</div>';
                         detailContainer.append(detailHtml);
                     });

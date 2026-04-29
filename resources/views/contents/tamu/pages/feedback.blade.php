@@ -3,7 +3,17 @@
 @section('title', __('visitor.visitor_feedback'))
 
 @section('content')
-    <div class="row pt-5 lign-items-center justify-content-center" style="min-height: 90vh">
+    @php
+        $ratingDescriptions = [
+            1 => __('visitor.very_unsatisfied'),
+            2 => __('visitor.unsatisfied'),
+            3 => __('visitor.neutral'),
+            4 => __('visitor.satisfied'),
+            5 => __('visitor.very_satisfied'),
+        ];
+    @endphp
+
+    <div class="row pt-5 align-items-center justify-content-center" style="min-height: 90vh">
         <div class="col-md-6 col-lg-5">
             <div class="checkout-success-container">
                 <x-tamu.page-header title="{{ __('visitor.visitor_feedback') }}" img=true />
@@ -133,9 +143,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            initFeedbackForm();
+        });
+
+        function initFeedbackForm() {
             const starBtns = document.querySelectorAll('.star-btn');
             const ratingInput = document.getElementById('ratingInput');
-            const submitBtn = document.getElementById('submitBtn');
             const form = document.getElementById('feedbackForm');
             const submitText = document.querySelector('.submit-text');
             const submitLoading = document.querySelector('.submit-loading');
@@ -145,16 +158,15 @@
             const ratingDescription = document.getElementById('ratingDescription');
             const ratingLabel = document.querySelector('.rating-label');
 
-            let currentRating = 0;
-            const ratingDescriptions = {
-                1: "{{ __('visitor.very_unsatisfied') }}",
-                2: "{{ __('visitor.unsatisfied') }}",
-                3: "{{ __('visitor.neutral') }}",
-                4: "{{ __('visitor.satisfied') }}",
-                5: "{{ __('visitor.very_satisfied') }}"
-            };
+            if (!starBtns.length || !ratingInput || !form || !submitText || !submitLoading || !ratingError || !starRating ||
+                !defaultHelpText || !ratingDescription || !ratingLabel) {
+                return;
+            }
 
-            starBtns.forEach((btn, index) => {
+            let currentRating = 0;
+            const ratingDescriptions = @json($ratingDescriptions);
+
+            starBtns.forEach((btn) => {
                 btn.addEventListener('click', function() {
                     const rating = parseInt(this.dataset.rating);
                     setRating(rating);
@@ -166,7 +178,7 @@
                 });
             });
 
-            document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+            starRating.addEventListener('mouseleave', function() {
                 highlightStars(currentRating);
             });
 
@@ -209,18 +221,21 @@
 
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+
                 if (currentRating === 0) {
                     showRatingError();
                     starRating.scrollIntoView({
                         behavior: 'smooth',
                         block: 'center'
                     });
+
                     return;
                 }
+
                 submitText.classList.add('d-none');
                 submitLoading.classList.remove('d-none');
                 this.submit();
             });
-        });
+        }
     </script>
 @endsection

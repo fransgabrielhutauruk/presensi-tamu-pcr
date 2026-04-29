@@ -1,8 +1,13 @@
+@php
+    $studentSectionTitle = __('visitor.prospective_student_data');
+    $visitSectionTitle = __('visitor.visit_data');
+@endphp
+
 <x-tamu.partials.data-pengunjung />
 
 <div>
     <x-tamu.section-header
-        :title="__('visitor.prospective_student_data')"
+        :title="$studentSectionTitle"
         icon="🎓" />
     <x-form.input-field
         name="asal_sekolah"
@@ -18,7 +23,7 @@
 
 <div>
     <x-tamu.section-header
-        :title="__('visitor.visit_data')"
+        :title="$visitSectionTitle"
         icon="🎯" />
     <x-tamu.partials.data-kunjungan />
 </div>

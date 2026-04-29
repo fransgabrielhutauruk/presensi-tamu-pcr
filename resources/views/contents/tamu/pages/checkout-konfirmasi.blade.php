@@ -3,6 +3,14 @@
 @section('title', __('visitor.checkout_confirmation'))
 
 @section('content')
+    @php
+        $isEventVisit = $kunjungan->kategori_tujuan?->value === 'event';
+        $visitorName = $kunjungan->tamu->nama_tamu ?? $kunjungan->civitas->nama_civitas;
+        $visitTime = $kunjungan->created_at->format('d/m/Y H:i');
+        $visitingParty = collect($kunjungan->details)->where('kunci', 'pihak_dituju')->first()['nilai'] ?? '-';
+        $checkoutRoute = route('tamu.checkout-store', encid($kunjungan->kunjungan_id));
+    @endphp
+
     <div class="row align-items-center" style="min-height: 90vh">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="card py-5 px-4 text-center wow fadeInUp">
@@ -16,12 +24,12 @@
 
                 <div class="alert alert-light text-start mb-4">
                     <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong>
-                        {{ $kunjungan->tamu->nama_tamu }}</p>
+                        {{ $visitorName }}</p>
                     <p class="mb-0"><strong>{{ __('visitor.visit_time') }}:</strong>
-                        {{ $kunjungan->created_at->format('d/m/Y H:i') }}</p>
-                    @if ($kunjungan->kategori_tujuan?->value != 'event')
+                        {{ $visitTime }}</p>
+                    @if (!$isEventVisit)
                         <p class="mb-0"><strong>{{ __('visitor.visiting_party') }}:</strong>
-                            {{ collect($kunjungan->details)->where('kunci', 'pihak_dituju')->first()['nilai'] ?? '-' }}
+                            {{ $visitingParty }}
                         </p>
                     @else
                         <p class="mb-0"><strong>Event:</strong>
@@ -30,8 +38,7 @@
                     @endif
                 </div>
 
-                <form method="POST" id="formCheckout"
-                    action="{{ route('tamu.checkout-store', encid($kunjungan->kunjungan_id)) }}">
+                <form method="POST" id="formCheckout" action="{{ $checkoutRoute }}">
                     @csrf
                     <button type="submit" id="submitBtn" class="btn btn-default w-100 mt-2">
                         <span id="beforeSubmit">{{ __('visitor.confirm_checkout') }}</span>
@@ -46,19 +53,25 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const formCheckout = document.querySelector('#formCheckout');
-            const submitBtn = document.querySelector('#submitBtn');
-            const beforeSubmit = document.querySelector('#beforeSubmit');
-            const loadingIndicator = document.querySelector('#loadingIndicator');
-
-            if (formCheckout) {
-                formCheckout.addEventListener('submit', function(e) {
-                    beforeSubmit.style.display = 'none';
-                    loadingIndicator.style.display = 'inline';
-                    submitBtn.disabled = true;
-                });
-
-            }
+            initCheckoutSubmitLoadingState();
         });
+
+        function initCheckoutSubmitLoadingState() {
+            const formCheckout = document.getElementById('formCheckout');
+            const submitBtn = document.getElementById('submitBtn');
+            const beforeSubmit = document.getElementById('beforeSubmit');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+
+            if (!formCheckout || !submitBtn || !beforeSubmit || !loadingIndicator) {
+                return;
+            }
+
+            formCheckout.addEventListener('submit', function() {
+                beforeSubmit.style.display = 'none';
+                loadingIndicator.style.display = 'inline';
+                submitBtn.disabled = true;
+            }
+            );
+        }
     </script>
 @endsection

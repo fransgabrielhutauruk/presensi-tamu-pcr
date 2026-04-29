@@ -1,3 +1,10 @@
+@php
+    $genderOptions = [
+        __('visitor.male', [], 'id') => __('visitor.male'),
+        __('visitor.female', [], 'id') => __('visitor.female'),
+    ];
+@endphp
+
 <x-tamu.section-header
     :title="__('visitor.personal_data')"
     icon="👤" />
@@ -12,10 +19,7 @@
     name="jenis_kelamin"
     :label="__('visitor.gender')"
     :required="true"
-    :options="[
-        __('visitor.male', [], 'id') => __('visitor.male'),
-        __('visitor.female', [], 'id') => __('visitor.female') 
-    ]" />
+    :options="$genderOptions" />
 
 <x-form.input-field
     name="nomor_telepon"

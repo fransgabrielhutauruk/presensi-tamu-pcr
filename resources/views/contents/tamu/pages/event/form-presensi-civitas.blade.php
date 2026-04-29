@@ -3,6 +3,33 @@
 @section('title', __('visitor.event_attendance_form'))
 
 @section('content')
+    @php
+        $formattedEventDate = $event->tanggal_event
+            ? \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y')
+            : null;
+
+        $formattedEventTime = $event->waktu_mulai_event
+            ? \Carbon\Carbon::parse($event->waktu_mulai_event)->format('H:i') . ' WIB'
+            : null;
+
+        $genderOptions = [
+            __('visitor.male', [], 'id') => __('visitor.male'),
+            __('visitor.female', [], 'id') => __('visitor.female'),
+        ];
+
+        $lookupEndpoints = [
+            'local' => route('tamu.event.check-civitas'),
+            'external' => route('tamu.event.fetch-external-data'),
+        ];
+
+        $lookupMessages = [
+            'invalidIdentifier' => __('visitor.nim_nip_length_error'),
+            'foundFillRemaining' => __('visitor.lookup_found_fill_remaining'),
+            'notFoundManual' => __('visitor.lookup_not_found_manual'),
+            'errorManual' => __('visitor.lookup_error_manual'),
+        ];
+    @endphp
+
     <div class="row">
         <div class="col-md-6 justify-content-center mx-auto">
             <div class="text-center mt-5">
@@ -23,17 +50,16 @@
                             <div class="col-md-9 text-start">
                                 <h5 class="fw-bold mb-1">{{ $event->nama_event }}</h5>
                                 <div class="row">
-                                    @if ($event->tanggal_event)
+                                    @if ($formattedEventDate)
                                         <small class="text-muted d-flex align-items-center gap-1">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
+                                            <span>{{ $formattedEventDate }}</span>
                                         </small>
                                     @endif
-                                    @if ($event->waktu_mulai_event)
+                                    @if ($formattedEventTime)
                                         <small class="text-muted d-flex align-items-center gap-1">
                                             <i class="fas fa-clock"></i>
-                                            <span>{{ \Carbon\Carbon::parse($event->waktu_mulai_event)->format('H:i') }}
-                                                WIB</span>
+                                            <span>{{ $formattedEventTime }}</span>
                                         </small>
                                     @endif
                                 </div>
@@ -82,10 +108,7 @@
 
                         <x-form.input-field name="nama" :label="__('visitor.full_name')" :placeholder="__('visitor.enter_visitor_name')" required="true"
                             id="nama-input" />
-                        <x-form.radio-group name="jenis_kelamin" :label="__('visitor.gender')" :required="true" :options="[
-                            __('visitor.male', [], 'id') => __('visitor.male'),
-                            __('visitor.female', [], 'id') => __('visitor.female'),
-                        ]"
+                        <x-form.radio-group name="jenis_kelamin" :label="__('visitor.gender')" :required="true" :options="$genderOptions"
                             id="jenis-kelamin-input" />
 
                         @php
@@ -129,13 +152,20 @@
             const lookupBtnLoading = document.getElementById('lookup-btn-loading');
             const btnChangeIdentifier = document.getElementById('btn-change-identifier');
             const lookupFeedback = document.getElementById('lookup-feedback');
-            const step2Fields = Array.from(step2.querySelectorAll('input, select, textarea'));
 
             const namaInput = document.getElementById('nama-input');
             const emailInput = document.getElementById('email-input');
             const nomorTeleponInput = document.getElementById('nomor-telepon-input');
             const jabatanInput = document.getElementById('jabatan-input');
             const genderRadios = Array.from(document.querySelectorAll('input[name="jenis_kelamin"]'));
+
+            if (!form || !submitBtn || !btnText || !btnLoading || !step2 || !nimNipInput || !btnLookup ||
+                !lookupBtnText || !lookupBtnLoading || !btnChangeIdentifier || !lookupFeedback || !namaInput ||
+                !emailInput || !nomorTeleponInput || !jabatanInput) {
+                return;
+            }
+
+            const step2Fields = Array.from(step2.querySelectorAll('input, select, textarea'));
 
             const fieldInputs = {
                 nama: namaInput,
@@ -144,16 +174,8 @@
             };
 
             const readOnlyFields = new Set();
-            const lookupEndpoints = {
-                local: '{{ route('tamu.event.check-civitas') }}',
-                external: '{{ route('tamu.event.fetch-external-data') }}',
-            };
-            const lookupMessages = {
-                invalidIdentifier: @json(__('visitor.nim_nip_length_error')),
-                foundFillRemaining: @json(__('visitor.lookup_found_fill_remaining')),
-                notFoundManual: @json(__('visitor.lookup_not_found_manual')),
-                errorManual: @json(__('visitor.lookup_error_manual')),
-            };
+            const lookupEndpoints = @json($lookupEndpoints);
+            const lookupMessages = @json($lookupMessages);
 
             btnLookup.addEventListener('click', function() {
                 const nimNip = nimNipInput.value.trim();
@@ -216,8 +238,8 @@
             }
 
             function handleLookupSuccess(result) {
-                applyLookupData(result.data, result.autofilled_fields || []);
                 revealStep2();
+                applyLookupData(result.data, result.autofilled_fields || []);
                 btnLookup.style.display = 'none';
                 showLookupFeedback('success', lookupMessages.foundFillRemaining);
             }
@@ -389,7 +411,6 @@
                 emailInput.value = '';
                 nomorTeleponInput.value = '';
                 jabatanInput.value = '';
-                const genderRadios = document.querySelectorAll('input[name="jenis_kelamin"]');
                 genderRadios.forEach(radio => radio.checked = false);
                 unlockAllFields();
             }
@@ -427,11 +448,9 @@
                 }
 
                 e.preventDefault();
-                if (btnText && btnLoading && submitBtn) {
-                    btnText.style.display = 'none';
-                    btnLoading.style.display = 'inline';
-                    submitBtn.disabled = true;
-                }
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+                submitBtn.disabled = true;
                 form.submit();
             });
 
@@ -450,11 +469,9 @@
             }
 
             function resetLinkState() {
-                if (submitBtn && btnText && btnLoading) {
-                    btnText.style.display = 'inline';
-                    btnLoading.style.display = 'none';
-                    submitBtn.disabled = false;
-                }
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
             }
         });
     </script>

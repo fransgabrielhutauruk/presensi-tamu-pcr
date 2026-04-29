@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers\Tamu;
 
-use App\Models\Tamu;
-use App\Models\Event;
-use App\Models\Civitas;
-use App\Models\Kunjungan;
-use Illuminate\Http\Request;
-use App\Models\KunjunganDetail;
 use App\Enums\KategoriTujuanEnum;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Civitas;
 use App\Models\Dimension\DmPegawai;
-use Illuminate\Support\Facades\Http;
+use App\Models\Event;
+use App\Models\Kunjungan;
+use App\Models\KunjunganDetail;
+use App\Models\Tamu;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class KunjunganEventController extends Controller
 {
@@ -30,7 +31,7 @@ class KunjunganEventController extends Controller
     {
         $currentDate = now()->format('Y-m-d');
 
-        $events = Event::with('eventKategori')
+        $events = Event::query()
             ->where('tanggal_event', '=', $currentDate)
             ->orderBy('waktu_mulai_event', 'asc')
             ->get();
@@ -41,15 +42,16 @@ class KunjunganEventController extends Controller
     public function identitas(Request $request, $eventId)
     {
         try {
-            $event = Event::with('eventKategori')->findOrFail(decid($eventId));
-            $eventDate = $event->tanggal_event;
-            $currentDate = now()->format('Y-m-d');
-            if ($eventDate && $eventDate < $currentDate) {
+            $event = $this->findEventOrFail($eventId);
+
+            if ($this->isEventExpired($event)) {
                 return redirect()->route('tamu.home')->with('error', 'Event ini sudah berakhir.');
             }
+
             return view('contents.tamu.pages.event.identitas', compact('event', 'eventId'));
-        } catch (\Exception $e) {
-            Log::error('Gagal memuat halaman identitas' . $e->getMessage());
+        } catch (Throwable $exception) {
+            Log::error('Gagal memuat halaman identitas: ' . $exception->getMessage());
+
             return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
         }
     }
@@ -57,15 +59,14 @@ class KunjunganEventController extends Controller
     public function formPresensiNonCivitas(Request $request, $eventId)
     {
         try {
-            $event = Event::with('eventKategori')->findOrFail(decid($eventId));
-            $eventDate = $event->tanggal_event;
-            $currentDate = now()->format('Y-m-d');
-            if ($eventDate && $eventDate < $currentDate) {
+            $event = $this->findEventOrFail($eventId);
+
+            if ($this->isEventExpired($event)) {
                 return redirect()->route('tamu.home')->with('warning', 'Event ini sudah berakhir.');
             }
 
             return view('contents.tamu.pages.event.form-presensi', compact('event', 'eventId'));
-        } catch (\Exception $e) {
+        } catch (Throwable $exception) {
             return redirect()->route('tamu.home')->with('warning', 'Event tidak ditemukan.');
         }
     }
@@ -80,7 +81,7 @@ class KunjunganEventController extends Controller
             'email' => 'required|email',
             'institusi' => 'required',
             'jabatan' => 'required',
-            'jumlah_rombongan' => 'required|integer|min:1|max:50',
+            'jumlah_rombongan' => 'required|integer|min:1',
             'transportasi' => 'required',
         ]);
         if ($validator->fails()) {
@@ -91,49 +92,24 @@ class KunjunganEventController extends Controller
         }
 
         try {
-            $event = Event::findOrFail(decid($request->event_id));
-            DB::beginTransaction();
-            $tamuData = [
-                'nama_tamu' => $request->nama,
-                'jenis_kelamin_tamu' => $request->jenis_kelamin,
-                'nomor_telepon_tamu' => $request->nomor_telepon,
-                'email_tamu' => $request->email,
-            ];
-            $tamu = Tamu::create($tamuData);
-            $kunjunganData = [
-                'tamu_id' => $tamu->tamu_id,
-                'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
-                'identitas' => 'non-civitas',
-                'event_id' => $event->event_id,
-                'waktu_keluar' => $event->waktu_selesai_event,
-                'transportasi' => $request->transportasi,
-                'status_validasi' => false,
-                'is_checkout' => false,
-            ];
-            $kunjungan = Kunjungan::create($kunjunganData);
-            $detailData = [
-                'institusi' => $request->institusi,
-                'jabatan' => $request->jabatan,
-                'jumlah_rombongan' => $request->jumlah_rombongan,
-            ];
-            $urutan = 1;
-            foreach ($detailData as $key => $value) {
-                if (!empty($value)) {
-                    KunjunganDetail::create([
-                        'kunjungan_id' => $kunjungan->kunjungan_id,
-                        'kunci' => $key,
-                        'nilai' => $value,
-                        'urutan' => $urutan++,
-                    ]);
-                }
-            }
+            $event = $this->findEventByHashedIdOrFail($request->event_id);
+
+            $kunjungan = DB::transaction(function () use ($request, $event) {
+                $tamu = Tamu::create($this->buildTamuData($request));
+
+                $kunjungan = Kunjungan::create($this->buildNonCivitasKunjunganData($request, $event, $tamu->tamu_id));
+
+                $this->storeKunjunganDetails($kunjungan->kunjungan_id, $this->buildNonCivitasDetailData($request));
+
+                return $kunjungan;
+            });
 
             $kunjunganIdHashed = encid($kunjungan->kunjungan_id);
-            DB::commit();
+
             return redirect()->route('tamu.sukses', $kunjunganIdHashed);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Gagal menyimpan presensi luar: ' . $e->getMessage());
+        } catch (Throwable $exception) {
+            Log::error('Gagal menyimpan presensi luar: ' . $exception->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');
@@ -143,14 +119,14 @@ class KunjunganEventController extends Controller
     public function formPresensiCivitas(Request $request, $eventId)
     {
         try {
-            $event = Event::with('eventKategori')->findOrFail(decid($eventId));
-            $eventDate = $event->tanggal_event;
-            $currentDate = now()->format('Y-m-d');
-            if ($eventDate && $eventDate < $currentDate) {
+            $event = $this->findEventOrFail($eventId);
+
+            if ($this->isEventExpired($event)) {
                 return redirect()->route('tamu.home')->with('error', 'Event ini sudah berakhir.');
             }
+
             return view('contents.tamu.pages.event.form-presensi-civitas', compact('event', 'eventId'));
-        } catch (\Exception $e) {
+        } catch (Throwable $exception) {
             return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
         }
     }
@@ -174,8 +150,8 @@ class KunjunganEventController extends Controller
         }
 
         try {
-            $event = Event::findOrFail(decid($request->event_id));
-            $nimNip = $this->normalizeIdentifier((string) $request->nim_nip);
+            $event = $this->findEventByHashedIdOrFail($request->event_id);
+            $nimNip = trim((string) $request->nim_nip);
             $identifierType = $this->resolveIdentifierType($nimNip);
 
             if ($identifierType === null) {
@@ -184,67 +160,38 @@ class KunjunganEventController extends Controller
                     ->with('error', 'Format NIM/NIP tidak valid.');
             }
 
-            DB::beginTransaction();
+            $kunjungan = DB::transaction(function () use ($request, $event, $nimNip, $identifierType) {
+                $civitas = $this->findOrCreateCivitas($request, $nimNip, $identifierType);
 
-            $civitas = $this->findCivitasByIdentifier($nimNip, $identifierType);
+                $kunjungan = Kunjungan::create($this->buildCivitasKunjunganData($event, $civitas->civitas_id));
 
-            if (!$civitas) {
-                $civitasData = [
-                    'nama_civitas' => $request->nama,
-                    'nim' => $identifierType === 'nim' ? $nimNip : null,
-                    'nip' => $identifierType === 'nip' ? $nimNip : null,
-                    'jenis_kelamin' => $request->jenis_kelamin,
-                    'nomor_telepon' => $request->nomor_telepon,
-                    'email' => $request->email,
-                ];
-                $civitas = Civitas::create($civitasData);
-            }
+                $this->storeKunjunganDetails($kunjungan->kunjungan_id, [
+                    'jabatan' => $request->jabatan,
+                ]);
 
-            $kunjunganData = [
-                'civitas_id' => $civitas->civitas_id,
-                'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
-                'identitas' => 'civitas',
-                'event_id' => $event->event_id,
-                'waktu_keluar' => $event->waktu_selesai_event,
-                'status_validasi' => false,
-                'is_checkout' => false,
-            ];
-            $kunjungan = Kunjungan::create($kunjunganData);
-
-            KunjunganDetail::create([
-                'kunjungan_id' => $kunjungan->kunjungan_id,
-                'kunci' => 'jabatan',
-                'nilai' => $request->jabatan,
-                'urutan' => 1,
-            ]);
+                return $kunjungan;
+            });
 
             $kunjunganIdHashed = encid($kunjungan->kunjungan_id);
-            DB::commit();
+
             return redirect()->route('tamu.sukses', $kunjunganIdHashed);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            Log::error('Gagal menyimpan presensi event civitas: ' . $th->getMessage());
+        } catch (Throwable $exception) {
+            Log::error('Gagal menyimpan presensi event civitas: ' . $exception->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan. Silahkan coba lagi.');
         }
     }
 
-    /**
-     * Check civitas data by NIM/NIP
-     */
     public function checkCivitasData(Request $request): JsonResponse
     {
         try {
-            $nimNip = $this->normalizeIdentifier((string) $request->input('nim_nip'));
+            $nimNip = trim($request->input('nim_nip'));
             $identifierType = $this->resolveIdentifierType($nimNip);
 
             if ($identifierType === null) {
-                return response()->json([
-                    'status' => false,
-                    'source' => self::SOURCE_INVALID_IDENTIFIER,
-                    'message' => 'Format NIM/NIP tidak valid. Gunakan 6 digit NIP atau 10 digit NIM.'
-                ], 400);
+                return $this->invalidIdentifierResponse();
             }
 
             $civitas = $this->findCivitasByIdentifier($nimNip, $identifierType);
@@ -271,30 +218,21 @@ class KunjunganEventController extends Controller
                 'message' => 'Data tidak ditemukan di database lokal',
                 'autofilled_fields' => [],
             ]);
-        } catch (\Exception $e) {
-            Log::error('Error checking civitas data: ' . $e->getMessage());
-            return response()->json([
-                'status' => false,
-                'message' => 'Terjadi kesalahan saat memeriksa data'
-            ], 500);
+        } catch (Throwable $exception) {
+            Log::error('Error checking civitas data: ' . $exception->getMessage());
+
+            return $this->jsonServerErrorResponse('Terjadi kesalahan saat memeriksa data');
         }
     }
 
-    /**
-     * Fetch data from DmPegawai or API Mahasiswa
-     */
     public function fetchExternalData(Request $request): JsonResponse
     {
         try {
-            $nimNip = $this->normalizeIdentifier((string) $request->input('nim_nip'));
+            $nimNip = trim((string) $request->input('nim_nip'));
             $identifierType = $this->resolveIdentifierType($nimNip);
 
             if ($identifierType === null) {
-                return response()->json([
-                    'status' => false,
-                    'source' => self::SOURCE_INVALID_IDENTIFIER,
-                    'message' => 'Format NIM/NIP tidak valid. Gunakan 6 digit NIP atau 10 digit NIM.'
-                ], 400);
+                return $this->invalidIdentifierResponse();
             }
 
             $lookupResult = $this->fetchExternalByIdentifier($nimNip, $identifierType);
@@ -303,19 +241,11 @@ class KunjunganEventController extends Controller
             }
 
             return response()->json($lookupResult, $lookupResult['http_code'] ?? 404);
-        } catch (\Exception $e) {
-            Log::error('Error fetching external data: ' . $e->getMessage());
-            return response()->json([
-                'status' => false,
-                'source' => self::SOURCE_EXTERNAL_ERROR,
-                'message' => 'Terjadi kesalahan saat mengambil data'
-            ], 500);
-        }
-    }
+        } catch (Throwable $exception) {
+            Log::error('Error fetching external data: ' . $exception->getMessage());
 
-    private function normalizeIdentifier(string $nimNip): string
-    {
-        return preg_replace('/\D/', '', $nimNip);
+            return $this->jsonServerErrorResponse('Terjadi kesalahan saat mengambil data', self::SOURCE_EXTERNAL_ERROR);
+        }
     }
 
     private function resolveIdentifierType(string $nimNip): ?string
@@ -416,8 +346,10 @@ class KunjunganEventController extends Controller
             ];
         }
 
-        $mahasiswa = $this->extractMahasiswaItem($response->json());
-        if (!$mahasiswa) {
+        $responseData = $response->json();
+        $items = is_array($responseData) ? ($responseData['items'] ?? null) : null;
+
+        if (!is_array($items) || empty($items) || !is_array($items[0] ?? null)) {
             return [
                 'status' => false,
                 'source' => self::SOURCE_NOT_FOUND,
@@ -428,7 +360,14 @@ class KunjunganEventController extends Controller
             ];
         }
 
-        $mappedMahasiswa = $this->mapMahasiswaData($mahasiswa);
+        $mahasiswa = $items[0];
+
+        $nama = $mahasiswa['nama'] ?? null;
+        $email = $mahasiswa['email'] ?? null;
+
+        if (is_string($nama) && $nama !== '') {
+            $nama = mb_convert_case(mb_strtolower(trim($nama), 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
+        }
 
         return [
             'status' => true,
@@ -436,59 +375,134 @@ class KunjunganEventController extends Controller
             'identifier_type' => 'nim',
             'autofilled_fields' => ['nama', 'email'],
             'data' => [
-                'nama' => $mappedMahasiswa['nama'],
-                'email' => $mappedMahasiswa['email'],
+                'nama' => $nama,
+                'email' => $email,
             ],
             'message' => 'Data ditemukan. Lengkapi data yang belum terisi.',
         ];
     }
 
-    private function isValidIdentifier(string $nimNip): bool
+    private function findEventOrFail(string $encodedEventId): Event
     {
-        return $this->resolveIdentifierType($nimNip) !== null;
+        return Event::findOrFail(decid($encodedEventId));
     }
 
-    private function extractMahasiswaItem($responseData): ?array
+    private function findEventByHashedIdOrFail(string $encodedEventId): Event
     {
-        if (!is_array($responseData)) {
-            return null;
+        return Event::findOrFail(decid($encodedEventId));
+    }
+
+    private function isEventExpired(Event $event): bool
+    {
+        $eventDate = $event->tanggal_event;
+        $currentDate = now()->format('Y-m-d');
+
+        return $eventDate && $eventDate < $currentDate;
+    }
+
+    private function buildTamuData(Request $request): array
+    {
+        return [
+            'nama_tamu' => $request->nama,
+            'jenis_kelamin_tamu' => $request->jenis_kelamin,
+            'nomor_telepon_tamu' => $request->nomor_telepon,
+            'email_tamu' => $request->email,
+        ];
+    }
+
+    private function buildNonCivitasKunjunganData(Request $request, Event $event, int $tamuId): array
+    {
+        return [
+            'tamu_id' => $tamuId,
+            'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
+            'identitas' => 'non-civitas',
+            'event_id' => $event->event_id,
+            'waktu_keluar' => $event->waktu_selesai_event,
+            'transportasi' => $request->transportasi,
+            'status_validasi' => false,
+            'is_checkout' => false,
+        ];
+    }
+
+    private function buildNonCivitasDetailData(Request $request): array
+    {
+        return [
+            'institusi' => $request->institusi,
+            'jabatan' => $request->jabatan,
+            'jumlah_rombongan' => $request->jumlah_rombongan,
+        ];
+    }
+
+    private function buildCivitasKunjunganData(Event $event, int $civitasId): array
+    {
+        return [
+            'civitas_id' => $civitasId,
+            'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
+            'identitas' => 'civitas',
+            'event_id' => $event->event_id,
+            'waktu_keluar' => $event->waktu_selesai_event,
+            'status_validasi' => false,
+            'is_checkout' => false,
+        ];
+    }
+
+    private function findOrCreateCivitas(Request $request, string $nimNip, string $identifierType): Civitas
+    {
+        $civitas = $this->findCivitasByIdentifier($nimNip, $identifierType);
+
+        if ($civitas) {
+            return $civitas;
         }
 
-        $candidates = [
-            $responseData,
-            $responseData['data'] ?? null,
-            $responseData['result'] ?? null,
-        ];
+        return Civitas::create([
+            'nama_civitas' => $request->nama,
+            'nim' => $identifierType === 'nim' ? $nimNip : null,
+            'nip' => $identifierType === 'nip' ? $nimNip : null,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'nomor_telepon' => $request->nomor_telepon,
+            'email' => $request->email,
+        ]);
+    }
 
-        foreach ($candidates as $candidate) {
-            if (!is_array($candidate)) {
+    private function storeKunjunganDetails(int $kunjunganId, array $detailData): void
+    {
+        $urutan = 1;
+
+        foreach ($detailData as $key => $value) {
+            if (empty($value)) {
                 continue;
             }
 
-            if (isset($candidate['items']) && is_array($candidate['items']) && !empty($candidate['items'])) {
-                return (array) $candidate['items'][0];
-            }
-
-            if (array_key_exists('nama', $candidate) || array_key_exists('email', $candidate) || array_key_exists('nama_mahasiswa', $candidate)) {
-                return $candidate;
-            }
+            KunjunganDetail::create([
+                'kunjungan_id' => $kunjunganId,
+                'kunci' => $key,
+                'nilai' => $value,
+                'urutan' => $urutan++,
+            ]);
         }
-
-        return null;
     }
 
-    private function mapMahasiswaData(array $data): array
+    private function invalidIdentifierResponse(): JsonResponse
     {
-        $nama = $data['nama'] ?? $data['nama_mahasiswa'] ?? $data['name'] ?? null;
-        $email = $data['email'] ?? $data['email_pcr'] ?? $data['email_mahasiswa'] ?? null;
+        return response()->json([
+            'status' => false,
+            'source' => self::SOURCE_INVALID_IDENTIFIER,
+            'message' => 'Format NIM/NIP tidak valid. Gunakan 6 digit NIP atau 10 digit NIM.'
+        ], 400);
+    }
 
-        if (is_string($nama) && $nama !== '') {
-            $nama = mb_convert_case(mb_strtolower(trim($nama), 'UTF-8'), MB_CASE_TITLE, 'UTF-8');
+    private function jsonServerErrorResponse(string $message, ?string $source = null): JsonResponse
+    {
+        $payload = [
+            'status' => false,
+            'message' => $message,
+        ];
+
+        if ($source) {
+            $payload['source'] = $source;
         }
 
-        return [
-            'nama' => $nama,
-            'email' => $email,
-        ];
+        return response()->json($payload, 500);
     }
+
 }

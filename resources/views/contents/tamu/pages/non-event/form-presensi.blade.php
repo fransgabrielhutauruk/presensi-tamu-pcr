@@ -1,23 +1,45 @@
 @extends('layouts.tamu.main')
 
 @php
-    $tujuanMap = [
-        'instansi' => __('visitor.institutional_official'),
-        'bisnis' => __('visitor.business_matters'),
-        'ortu' => __('visitor.parent_guardian_visit'),
-        'informasi_kampus' => __('visitor.campus_information'),
-        'lainnya' => __('visitor.other_purposes'),
+    $tujuanConfig = [
+        'instansi' => [
+            'title' => __('visitor.institutional_official'),
+            'partial' => 'components.tamu.partials.instansi',
+        ],
+        'bisnis' => [
+            'title' => __('visitor.business_matters'),
+            'partial' => 'components.tamu.partials.bisnis',
+        ],
+        'ortu' => [
+            'title' => __('visitor.parent_guardian_visit'),
+            'partial' => 'components.tamu.partials.ortu',
+        ],
+        'informasi_kampus' => [
+            'title' => __('visitor.campus_information'),
+            'partial' => 'components.tamu.partials.calon-ortu',
+        ],
+        'lainnya' => [
+            'title' => __('visitor.other_purposes'),
+            'partial' => 'components.tamu.partials.lainnya',
+        ],
+    ];
+
+    $tujuanKey = is_string($tujuan) ? $tujuan : '';
+
+    $currentTujuan = $tujuanConfig[$tujuanKey] ?? [
+        'title' => 'Kunjungan',
+        'partial' => null,
     ];
 @endphp
 
-@section('title', $tujuanMap[$tujuan])
+@section('title', $currentTujuan['title'])
 
 @section('content')
 
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="text-center mt-5">
-                <x-tamu.page-header :title="$tujuanMap[$tujuan] ?? 'Kunjungan'" />
+                <x-tamu.page-header :title="$currentTujuan['title']" />
 
                 <div class="text-start mt-4">
                     <a href="{{ route('tamu.non-event.tujuan') }}" class="btn btn-link p-0 mb-2 gap-2 text-decoration-none"
@@ -30,29 +52,11 @@
                 <form id="tamu-form" class="text-start wow fadeInUp" action="{{ route('tamu.non-event.store-presensi') }}"
                     method="POST" data-toggle="validator" novalidate>
                     @csrf
-                    <input type="hidden" name="kategori_tujuan" value="{{ $tujuan }}">
+                    <input type="hidden" name="kategori_tujuan" value="{{ $tujuanKey }}">
 
-                    @switch($tujuan)
-                        @case('instansi')
-                            @include('components.tamu.partials.instansi')
-                        @break
-
-                        @case('bisnis')
-                            @include('components.tamu.partials.bisnis')
-                        @break
-
-                        @case('ortu')
-                            @include('components.tamu.partials.ortu')
-                        @break
-
-                        @case('informasi_kampus')
-                            @include('components.tamu.partials.calon-ortu')
-                        @break
-
-                        @case('lainnya')
-                            @include('components.tamu.partials.lainnya')
-                        @break
-                    @endswitch
+                    @if ($currentTujuan['partial'])
+                        @include($currentTujuan['partial'])
+                    @endif
 
                     <div class="mt-5 mb-4">
                         <button type="submit" id="submitBtn" class="btn-default w-100">
@@ -74,17 +78,22 @@
             const btnText = document.getElementById('btn-text');
             const btnLoading = document.getElementById('btn-loading');
 
+            if (!form || !submitBtn || !btnText || !btnLoading) {
+                return;
+            }
+
             form.addEventListener('submit', function(e) {
                 const isValid = form.checkValidity();
                 if (!isValid) {
                     return;
                 }
+
                 e.preventDefault();
-                if (btnText && btnLoading && submitBtn) {
-                    btnText.style.display = 'none';
-                    btnLoading.style.display = 'inline';
-                    submitBtn.disabled = true;
-                }
+
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+                submitBtn.disabled = true;
+
                 form.submit();
             });
 

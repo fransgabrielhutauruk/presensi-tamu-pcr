@@ -3,6 +3,15 @@
 @section('title', __('visitor.thank_you'))
 
 @section('content')
+    @php
+        $isEventVisit = $kunjungan->kategori_tujuan?->value === 'event';
+        $visitorName = $kunjungan->tamu->nama_tamu ?? $kunjungan->civitas->nama_civitas;
+        $visitTime = $kunjungan->created_at->format('d/m/Y H:i');
+        $visitingParty = collect($kunjungan->details)->where('kunci', 'pihak_dituju')->first()['nilai'] ?? '-';
+        $checkoutLabel = $isEventVisit ? __('visitor.checkout_now_event') : __('visitor.checkout_now');
+        $checkoutRoute = route('tamu.checkout', encid($kunjungan->kunjungan_id));
+    @endphp
+
     <div class="row justify-content-center align-items-center" style="min-height: 90vh">
         <div class="col-md-5 mt-3">
             <div class="text-center">
@@ -14,12 +23,12 @@
 
                     <div class="alert alert-light mt-3 mb-3 text-start">
                         <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong>
-                            {{ $kunjungan->tamu->nama_tamu ?? $kunjungan->civitas->nama_civitas }}</p>
+                            {{ $visitorName }}</p>
                         <p class="mb-0"><strong>{{ __('visitor.visit_time') }}:</strong>
-                            {{ $kunjungan->created_at->format('d/m/Y H:i') }}</p>
-                        @if ($kunjungan->kategori_tujuan?->value != 'event')
+                            {{ $visitTime }}</p>
+                        @if (!$isEventVisit)
                             <p class="mb-0"><strong>{{ __('visitor.visiting_party') }}:</strong>
-                                {{ collect($kunjungan->details)->where('kunci', 'pihak_dituju')->first()['nilai'] ?? '-' }}
+                                {{ $visitingParty }}
                             </p>
                         @else
                             <p class="mb-0"><strong>Event:</strong>
@@ -32,10 +41,8 @@
                         </small>
                     </div>
 
-                    <a href="{{ route('tamu.checkout', encid($kunjungan->kunjungan_id)) }}" class="btn-default w-100 mt-2"
-                        id="route">
-                        <span
-                            id="beforeSubmit">{{ $kunjungan->kategori_tujuan?->value == 'event' ? __('visitor.checkout_now_event') : __('visitor.checkout_now') }}</span>
+                    <a href="{{ $checkoutRoute }}" class="btn-default w-100 mt-2" id="route">
+                        <span id="beforeSubmit">{{ $checkoutLabel }}</span>
                         <span id="loadingIndicator" style="display: none;">
                             <i class="fas fa-spinner fa-spin me-2"></i>{{ __('common.processing') }}
                         </span>
@@ -46,22 +53,27 @@
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                const routeLink = document.querySelector('#route');
-
-                const beforeSubmit = document.querySelector('#beforeSubmit');
-                const loadingIndicator = document.querySelector('#loadingIndicator');
-
-                if (routeLink) {
-                    routeLink.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        beforeSubmit.style.display = 'none';
-                        loadingIndicator.style.display = 'inline';
-
-                        routeLink.style.pointerEvents = 'none';
-
-                        window.location.href = this.getAttribute('href');
-                    });
-                }
+                initRouteLoadingState();
             });
+
+            function initRouteLoadingState() {
+                const routeLink = document.getElementById('route');
+                const beforeSubmit = document.getElementById('beforeSubmit');
+                const loadingIndicator = document.getElementById('loadingIndicator');
+
+                if (!routeLink || !beforeSubmit || !loadingIndicator) {
+                    return;
+                }
+
+                routeLink.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    beforeSubmit.style.display = 'none';
+                    loadingIndicator.style.display = 'inline';
+
+                    routeLink.style.pointerEvents = 'none';
+
+                    window.location.href = this.getAttribute('href');
+                });
+            }
         </script>
     @endsection

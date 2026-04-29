@@ -3,6 +3,26 @@
 @section('title', __('visitor.event_attendance_form'))
 
 @section('content')
+    @php
+        $formattedEventDate = $event->tanggal_event
+            ? \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y')
+            : null;
+
+        $formattedEventTime = $event->waktu_mulai_event
+            ? \Carbon\Carbon::parse($event->waktu_mulai_event)->format('H:i') . ' WIB'
+            : null;
+
+        $transportationOptions = [
+            __('visitor.car_option') => __('visitor.car_option'),
+            __('visitor.motorcycle_option') => __('visitor.motorcycle_option'),
+            __('visitor.bus_option') => __('visitor.bus_option'),
+            __('visitor.travel_option') => __('visitor.travel_option'),
+            __('visitor.online_ride_option') => __('visitor.online_ride_option'),
+            __('visitor.walking_option') => __('visitor.walking_option'),
+            __('visitor.other_option') => __('visitor.other_option'),
+        ];
+    @endphp
+
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="text-center mt-5">
@@ -23,17 +43,16 @@
                             <div class="col-md-9 text-start">
                                 <h5 class="fw-bold mb-1">{{ $event->nama_event }}</h5>
                                 <div class="row">
-                                    @if ($event->tanggal_event)
+                                    @if ($formattedEventDate)
                                         <small class="text-muted d-flex align-items-center gap-1">
                                             <i class="fas fa-calendar"></i>
-                                            <span>{{ \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
+                                            <span>{{ $formattedEventDate }}</span>
                                         </small>
                                     @endif
-                                    @if ($event->waktu_mulai_event)
+                                    @if ($formattedEventTime)
                                         <small class="text-muted d-flex align-items-center gap-1">
                                             <i class="fas fa-clock"></i>
-                                            <span>{{ \Carbon\Carbon::parse($event->waktu_mulai_event)->format('H:i') }}
-                                                WIB</span>
+                                            <span>{{ $formattedEventTime }}</span>
                                         </small>
                                     @endif
                                 </div>
@@ -58,15 +77,7 @@
                     <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true" />
                     <x-form.input-field name="jumlah_rombongan" :label="__('visitor.group_size_label')" type="number" min="1"
                         max="50" required="true" :placeholder="__('visitor.group_size_placeholder')" />
-                    <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="[
-                        __('visitor.car_option') => __('visitor.car_option'),
-                        __('visitor.motorcycle_option') => __('visitor.motorcycle_option'),
-                        __('visitor.bus_option') => __('visitor.bus_option'),
-                        __('visitor.travel_option') => __('visitor.travel_option'),
-                        __('visitor.online_ride_option') => __('visitor.online_ride_option'),
-                        __('visitor.walking_option') => __('visitor.walking_option'),
-                        __('visitor.other_option') => __('visitor.other_option'),
-                    ]" />
+                    <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
 
                     <div class="mt-5 mb-4">
                         <button type="submit" id="submitBtn" class="btn-default w-100">
@@ -88,17 +99,22 @@
             const btnText = document.getElementById('btn-text');
             const btnLoading = document.getElementById('btn-loading');
 
+            if (!form || !submitBtn || !btnText || !btnLoading) {
+                return;
+            }
+
             form.addEventListener('submit', function(e) {
                 const isValid = form.checkValidity();
                 if (!isValid) {
                     return;
                 }
+
                 e.preventDefault();
-                if (btnText && btnLoading && submitBtn) {
-                    btnText.style.display = 'none';
-                    btnLoading.style.display = 'inline';
-                    submitBtn.disabled = true;
-                }
+
+                btnText.style.display = 'none';
+                btnLoading.style.display = 'inline';
+                submitBtn.disabled = true;
+
                 form.submit();
             });
 
@@ -109,11 +125,9 @@
             });
 
             function resetLinkState() {
-                if (submitBtn && btnText && btnLoading) {
-                    btnText.style.display = 'inline';
-                    btnLoading.style.display = 'none';
-                    submitBtn.disabled = false;
-                }
+                btnText.style.display = 'inline';
+                btnLoading.style.display = 'none';
+                submitBtn.disabled = false;
             }
         });
     </script>
