@@ -68,99 +68,75 @@
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan" jf-list="datatable">
             @slot('action')
+                <x-btn.refresh-datatable />
             @endslot
         </x-table.dttable>
     </div>
 
     <x-modal id="modalDetail" type="centered" :static="true" size="lg" jf-detail-modal="kunjungan"
         title="Detail Kunjungan">
-        <div class="mb-7">
-            <h5 class="mb-4">Data Tamu</h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Nama:</label>
-                    <div data-field="nama" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Jenis Kelamin:</label>
-                    <div data-field="jenis_kelamin" class="fw-bold">-</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Email:</label>
-                    <div data-field="email" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Nomor Telepon:</label>
-                    <div data-field="nomor_telepon" class="fw-bold">-</div>
-                </div>
-            </div>
-        </div>
+        @php
+            $detailSections = [
+                [
+                    'title' => 'Data Tamu',
+                    'fields' => ['nama', 'jenis_kelamin', 'email', 'nomor_telepon'],
+                ],
+                [
+                    'title' => 'Data Kunjungan',
+                    'fields' => [
+                        'jenis_kunjungan',
+                        'kategori_tujuan',
+                        'transportasi',
+                        'status_validasi',
+                        'is_checkout',
+                        'identitas',
+                    ],
+                ],
+                [
+                    'title' => 'Data Waktu',
+                    'fields' => [
+                        'tanggal_kunjungan',
+                        'waktu_kunjungan',
+                        'waktu_keluar',
+                        'checkout_time',
+                        'jumlah_rombongan',
+                    ],
+                ],
+            ];
 
-        <div class="mb-7">
-            <h5 class="mb-4">Data Kunjungan</h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Jenis Kunjungan:</label>
-                    <div data-field="jenis_kunjungan" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Kategori Tujuan:</label>
-                    <div data-field="kategori_tujuan" class="fw-bold">-</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Transportasi:</label>
-                    <div data-field="transportasi" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Status Validasi:</label>
-                    <div data-field="status_validasi" class="fw-bold">-</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Status Checkout:</label>
-                    <div data-field="is_checkout" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Identitas:</label>
-                    <div data-field="identitas" class="fw-bold">-</div>
-                </div>
-            </div>
-        </div>
+            $fieldLabels = [
+                'nama' => 'Nama',
+                'jenis_kelamin' => 'Jenis Kelamin',
+                'email' => 'Email',
+                'nomor_telepon' => 'Nomor Telepon',
+                'jenis_kunjungan' => 'Jenis Kunjungan',
+                'kategori_tujuan' => 'Kategori Tujuan',
+                'transportasi' => 'Transportasi',
+                'status_validasi' => 'Status Validasi',
+                'is_checkout' => 'Status Checkout',
+                'identitas' => 'Identitas',
+                'tanggal_kunjungan' => 'Tanggal Kunjungan',
+                'waktu_kunjungan' => 'Waktu Kunjungan',
+                'waktu_keluar' => 'Waktu Keluar (Estimasi)',
+                'checkout_time' => 'Waktu Checkout',
+                'jumlah_rombongan' => 'Jumlah Rombongan',
+            ];
+        @endphp
 
-        <div class="mb-7">
-            <h5 class="mb-4">Data Waktu</h5>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Tanggal Kunjungan:</label>
-                    <div data-field="tanggal_kunjungan" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Waktu Kunjungan:</label>
-                    <div data-field="waktu_kunjungan" class="fw-bold">-</div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Waktu Keluar (Estimasi):</label>
-                    <div data-field="waktu_keluar" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Waktu Checkout:</label>
-                    <div data-field="checkout_time" class="fw-bold">-</div>
+        @foreach ($detailSections as $section)
+            <div class="mb-7">
+                <h5 class="mb-4">{{ $section['title'] }}</h5>
+                <div class="row">
+                    @foreach ($section['fields'] as $fieldKey)
+                        <div class="col-md-6 mb-3">
+                            <label
+                                class="fw-bold text-muted">{{ $fieldLabels[$fieldKey] ?? ucwords(str_replace('_', ' ', $fieldKey)) }}:</label>
+                            <div data-field="{{ $fieldKey }}" class="fw-bold">-</div>
+                        </div>
+                    @endforeach
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Jumlah Rombongan:</label>
-                    <div data-field="jumlah_rombongan" class="fw-bold">-</div>
-                </div>
-            </div>
-        </div>
+        @endforeach
 
         <div class="mb-7" id="dataEventSection" style="display: none;">
             <h5 class="mb-4">Data Event</h5>
@@ -258,11 +234,52 @@
 
 @push('scripts')
     <script>
+        const DEFAULT_COLUMNS = ['nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan', 'waktu_kunjungan',
+            'status_validasi'
+        ];
+
         function formatLabel(str) {
-            return str
-                .split('_')
-                .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-                .join(' ');
+            return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        function setDetailField(field, value) {
+            const element = $(`[data-field="${field}"]`);
+            if (!element.length) return;
+            const hasValue = value !== undefined && value !== null && value !== '';
+            const wrapper = element.closest('.mb-3, .mb-4');
+            if (hasValue) {
+                element.text(value);
+                wrapper.length ? wrapper.show() : element.show();
+            } else {
+                wrapper.length ? wrapper.hide() : element.hide();
+            }
+        }
+
+        function populateDetailFields(data) {
+            const detailFields = ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
+                'kategori_tujuan', 'transportasi', 'status_validasi', 'is_checkout', 'identitas',
+                'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time', 'jumlah_rombongan',
+                'event_nama', 'event_kategori'
+            ];
+            detailFields.forEach(field => setDetailField(field, data[field]));
+        }
+
+        function handleEventSection(data) {
+            const isEvent = data.event_nama && data.event_nama !== '-';
+            $('#dataEventSection').toggle(isEvent);
+        }
+
+        function populateAdditionalDetails(data) {
+            const detailContainer = $('[data-details-container]');
+            if (detailContainer.length === 0) return;
+            detailContainer.empty();
+            if (!data.details || !Array.isArray(data.details)) return;
+            data.details.forEach(detail => {
+                const formattedLabel = formatLabel(detail.kunci);
+                detailContainer.append(
+                    `<div class="row mb-2"><div class="col-auto fw-bold"><span class="text-muted">${formattedLabel}: </span><span class="fw-bold">${detail.nilai}</span></div></div>`
+                );
+            });
         }
 
         $(document).ready(function() {
@@ -270,33 +287,10 @@
                 name: "kunjungan",
                 base_url: `{{ route('app.kunjungan.index') }}`,
                 onDetail: function(data) {
-                    console.log('Detail data received:', data);
-
-                    const isEvent = data.event_nama && data.event_nama !== '-';
-
-                    if (isEvent) {
-                        $('#dataEventSection').show();
-                    } else {
-                        $('#dataEventSection').hide();
-                    }
-
-                    if (data.details && Array.isArray(data.details)) {
-                        var detailContainer = $('[data-details-container]');
-                        if (detailContainer.length > 0) {
-                            detailContainer.empty();
-                            data.details.forEach(function(detail) {
-                                var formattedLabel = formatLabel(detail.kunci);
-                                var detailHtml = '<div class="row mb-2">' +
-                                    '<div class="col-4 fw-bold text-muted">' + formattedLabel +
-                                    ':</div>' +
-                                    '<div class="col-8 fw-bold">' + detail.nilai + '</div>' +
-                                    '</div>';
-                                detailContainer.append(detailHtml);
-                            });
-                        }
-                    }
+                    handleEventSection(data);
+                    populateDetailFields(data);
+                    populateAdditionalDetails(data);
                 },
-
             });
 
             @if (request()->has('columns'))
@@ -305,8 +299,7 @@
         });
 
         $('#checkAll').on('change', function() {
-            const isChecked = $(this).is(':checked');
-            $('.column-checkbox').prop('checked', isChecked);
+            $('.column-checkbox').prop('checked', $(this).is(':checked'));
             updateCheckAllState();
         });
 
@@ -330,11 +323,8 @@
         updateCheckAllState();
 
         function resetColumns() {
-            const defaultColumns = ['nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan', 'waktu_kunjungan',
-                'status_validasi'
-            ];
             $('.column-checkbox').prop('checked', false);
-            defaultColumns.forEach(function(column) {
+            DEFAULT_COLUMNS.forEach(function(column) {
                 $('input[value="' + column + '"]').prop('checked', true);
             });
             updateCheckAllState();

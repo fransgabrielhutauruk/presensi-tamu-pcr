@@ -51,8 +51,6 @@
                     <label class="fw-bold text-muted">Jenis Kelamin:</label>
                     <div data-field="jenis_kelamin" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Email:</label>
                     <div data-field="email" class="fw-bold">-</div>
@@ -75,8 +73,6 @@
                     <label class="fw-bold text-muted">Kategori Tujuan:</label>
                     <div data-field="kategori_tujuan" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Transportasi:</label>
                     <div data-field="transportasi" class="fw-bold">-</div>
@@ -85,8 +81,6 @@
                     <label class="fw-bold text-muted">Status Validasi:</label>
                     <div data-field="status_validasi" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Status Checkout:</label>
                     <div data-field="is_checkout" class="fw-bold">-</div>
@@ -109,8 +103,6 @@
                     <label class="fw-bold text-muted">Waktu Kunjungan:</label>
                     <div data-field="waktu_kunjungan" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Waktu Keluar (Estimasi):</label>
                     <div data-field="waktu_keluar" class="fw-bold">-</div>
@@ -119,8 +111,6 @@
                     <label class="fw-bold text-muted">Waktu Checkout:</label>
                     <div data-field="checkout_time" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Jumlah Rombongan:</label>
                     <div data-field="jumlah_rombongan" class="fw-bold">-</div>
@@ -267,47 +257,76 @@
                 .join(' ');
         }
 
-        function showDetailModal(data) {
-            const isEvent = data.event_nama && data.event_nama !== '-';
+        function setDetailField(field, value) {
+            const element = $(`[data-field="${field}"]`);
+            if (!element.length) return;
 
-            if (isEvent) {
-                $('#dataEventSection').show();
+            const hasValue = value !== undefined && value !== null && value !== '';
+            const wrapper = element.closest('.mb-3, .mb-4');
+
+            if (hasValue) {
+                element.text(value);
+                wrapper.length ? wrapper.show() : element.show();
             } else {
-                $('#dataEventSection').hide();
+                wrapper.length ? wrapper.hide() : element.hide();
             }
+        }
 
-            $('[data-field="nama"]').text(data.nama || '-');
-            $('[data-field="jenis_kelamin"]').text(data.jenis_kelamin || '-');
-            $('[data-field="email"]').text(data.email || '-');
-            $('[data-field="nomor_telepon"]').text(data.nomor_telepon || '-');
-            $('[data-field="jenis_kunjungan"]').text(data.jenis_kunjungan || '-');
-            $('[data-field="kategori_tujuan"]').text(data.kategori_tujuan || '-');
-            $('[data-field="transportasi"]').text(data.transportasi || '-');
-            $('[data-field="status_validasi"]').text(data.status_validasi || '-');
-            $('[data-field="is_checkout"]').text(data.is_checkout || '-');
-            $('[data-field="identitas"]').text(data.identitas || '-');
-            $('[data-field="tanggal_kunjungan"]').text(data.tanggal_kunjungan || '-');
-            $('[data-field="waktu_kunjungan"]').text(data.waktu_kunjungan || '-');
-            $('[data-field="waktu_keluar"]').text(data.waktu_keluar || '-');
-            $('[data-field="checkout_time"]').text(data.checkout_time || '-');
-            $('[data-field="jumlah_rombongan"]').text(data.jumlah_rombongan || '-');
-            $('[data-field="event_nama"]').text(data.event_nama || '-');
-            $('[data-field="event_kategori"]').text(data.event_kategori || '-');
+        function populateDetailFields(data) {
+            const detailFields = [
+                'nama',
+                'jenis_kelamin',
+                'email',
+                'nomor_telepon',
+                'jenis_kunjungan',
+                'kategori_tujuan',
+                'transportasi',
+                'status_validasi',
+                'is_checkout',
+                'identitas',
+                'tanggal_kunjungan',
+                'waktu_kunjungan',
+                'waktu_keluar',
+                'checkout_time',
+                'jumlah_rombongan',
+                'event_nama',
+                'event_kategori'
+            ];
 
-            if (data.details && Array.isArray(data.details)) {
-                var detailContainer = $('[data-details-container]');
-                if (detailContainer.length > 0) {
-                    detailContainer.empty();
-                    data.details.forEach(function(detail) {
-                        var formattedLabel = formatLabel(detail.kunci);
-                        var detailHtml = '<div class="row mb-2">' +
-                            '<div class="col-4 fw-bold text-muted">' + formattedLabel + ':</div>' +
-                            '<div class="col-8 fw-bold">' + detail.nilai + '</div>' +
-                            '</div>';
-                        detailContainer.append(detailHtml);
-                    });
-                }
-            }
+            detailFields.forEach(field => {
+                setDetailField(field, data[field]);
+            });
+        }
+
+        function handleEventSection(data) {
+            const isEvent = data.event_nama && data.event_nama !== '-';
+            $('#dataEventSection').toggle(isEvent);
+        }
+
+        function populateAdditionalDetails(data) {
+            const detailContainer = $('[data-details-container]');
+            if (detailContainer.length === 0) return;
+
+            detailContainer.empty();
+
+            if (!data.details || !Array.isArray(data.details)) return;
+
+            data.details.forEach(detail => {
+                const formattedLabel = formatLabel(detail.kunci);
+                const detailHtml = `<div class="row mb-2">
+                    <div class="col-auto fw-bold">
+                        <span class="text-muted">${formattedLabel}: </span>
+                        <span class="fw-bold">${detail.nilai}</span>
+                    </div>
+                </div>`;
+                detailContainer.append(detailHtml);
+            });
+        }
+
+        function showDetailModal(data) {
+            handleEventSection(data);
+            populateDetailFields(data);
+            populateAdditionalDetails(data);
 
             $('#modalDetailValidasi').modal('show');
         }
@@ -346,6 +365,52 @@
             updateBulkActionPanel();
         }
 
+        const _csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        function reloadValidationTable() {
+            $('table[jf-data="kunjungan-validasi"]').DataTable().ajax.reload(null, false);
+        }
+
+        function confirmAndPost(opts) {
+            // opts: { title, text, icon, confirmText, postUrl, postData, onSuccessReload, failMessage }
+            return Swal.fire({
+                title: opts.title || 'Konfirmasi',
+                text: opts.text || '',
+                icon: opts.icon || 'question',
+                showCancelButton: true,
+                confirmButtonText: opts.confirmText || 'Ya',
+                cancelButtonText: 'Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (!result.isConfirmed) return;
+
+                const data = Object.assign({
+                    _token: _csrfToken
+                }, opts.postData || {});
+
+                return $.post(opts.postUrl, data)
+                    .done(function(response) {
+                        if (response.status) {
+                            Swal.fire('Berhasil!', response.message || opts.successMessage ||
+                                'Operasi berhasil.', 'success');
+                            if (opts.onSuccessHideModal) {
+                                $('#modalDetailValidasi').modal('hide');
+                            }
+                            if (opts.onSuccessReload) {
+                                reloadValidationTable();
+                            }
+                            if (typeof opts.onSuccess === 'function') opts.onSuccess(response);
+                            clearSelection();
+                        } else {
+                            Swal.fire('Gagal!', response.message || opts.failMessage || 'Terjadi kesalahan',
+                                'error');
+                        }
+                    }).fail(function() {
+                        Swal.fire('Gagal!', opts.failMessage || 'Terjadi kesalahan', 'error');
+                    });
+            });
+        }
+
         function bulkAction(action) {
             const checkedBoxes = $('.row-checkbox:checked');
             const ids = [];
@@ -362,32 +427,18 @@
             const actionText = action === 'validate' ? 'memvalidasi' : 'menghapus';
             const actionTitle = action === 'validate' ? 'Validasi Massal' : 'Hapus Massal';
 
-            Swal.fire({
+            confirmAndPost({
                 title: actionTitle,
                 text: `Apakah Anda yakin ingin ${actionText} ${ids.length} kunjungan yang dipilih?`,
                 icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: action === 'validate' ? 'Ya, Validasi' : 'Ya, Hapus',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post(`{{ route('app.kunjungan.index') }}/bulk-validasi`, {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        ids: ids,
-                        action: action
-                    }).done(function(response) {
-                        if (response.status) {
-                            Swal.fire('Berhasil!', response.message, 'success');
-                            $('table[jf-data="kunjungan-validasi"]').DataTable().ajax.reload(null, false);
-                            clearSelection();
-                        } else {
-                            Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
-                        }
-                    }).fail(function() {
-                        Swal.fire('Gagal!', `Terjadi kesalahan saat ${actionText} kunjungan.`, 'error');
-                    });
-                }
+                confirmText: action === 'validate' ? 'Ya, Validasi' : 'Ya, Hapus',
+                postUrl: `{{ route('app.kunjungan.index') }}/bulk-validasi`,
+                postData: {
+                    ids: ids,
+                    action: action
+                },
+                onSuccessReload: true,
+                failMessage: `Terjadi kesalahan saat ${actionText} kunjungan.`
             });
         }
 
@@ -397,31 +448,16 @@
                 return;
             }
 
-            Swal.fire({
+            confirmAndPost({
                 title: 'Konfirmasi Validasi',
                 text: 'Apakah Anda yakin ingin memvalidasi kunjungan ini?',
                 icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Validasi',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post(`{{ route('app.kunjungan.index') }}/validate/${currentDetailId}`, {
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    }).done(function(response) {
-                        if (response.status) {
-                            Swal.fire('Berhasil!', 'Kunjungan berhasil divalidasi.', 'success');
-                            $('#modalDetailValidasi').modal('hide');
-                            $('table[jf-data="kunjungan-validasi"]').DataTable().ajax.reload(null, false);
-                            clearSelection();
-                        } else {
-                            Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
-                        }
-                    }).fail(function() {
-                        Swal.fire('Gagal!', 'Terjadi kesalahan saat memvalidasi kunjungan.', 'error');
-                    });
-                }
+                confirmText: 'Ya, Validasi',
+                postUrl: `{{ route('app.kunjungan.index') }}/validate/${currentDetailId}`,
+                postData: {},
+                onSuccessHideModal: true,
+                onSuccessReload: true,
+                failMessage: 'Terjadi kesalahan saat memvalidasi kunjungan.'
             });
         }
 
@@ -431,31 +467,16 @@
                 return;
             }
 
-            Swal.fire({
+            confirmAndPost({
                 title: 'Konfirmasi Penghapusan',
                 text: 'Apakah Anda yakin menghapus kunjungan ini?',
                 icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal',
-                reverseButtons: true
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post(`{{ route('app.kunjungan.index') }}/reject/${currentDetailId}`, {
-                        _token: $('meta[name="csrf-token"]').attr('content')
-                    }).done(function(response) {
-                        if (response.status) {
-                            Swal.fire('Berhasil!', 'Kunjungan berhasil dihapus.', 'success');
-                            $('#modalDetailValidasi').modal('hide');
-                            $('table[jf-data="kunjungan-validasi"]').DataTable().ajax.reload(null, false);
-                            clearSelection();
-                        } else {
-                            Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
-                        }
-                    }).fail(function() {
-                        Swal.fire('Gagal!', 'Terjadi kesalahan saat menolak kunjungan.', 'error');
-                    });
-                }
+                confirmText: 'Ya, Hapus',
+                postUrl: `{{ route('app.kunjungan.index') }}/reject/${currentDetailId}`,
+                postData: {},
+                onSuccessHideModal: true,
+                onSuccessReload: true,
+                failMessage: 'Terjadi kesalahan saat menolak kunjungan.'
             });
         }
     </script>

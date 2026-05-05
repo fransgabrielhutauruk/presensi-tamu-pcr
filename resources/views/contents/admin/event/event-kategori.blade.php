@@ -8,6 +8,15 @@
 @endsection
 
 @section('content')
+    @php
+        $crudRoutes = [
+            'add' => route('app.event.store', ['param1' => 'kategori']),
+            'edit' => route('app.event.data', ['param1' => 'kategori-detail']),
+            'update' => route('app.event.update', ['param1' => 'kategori']),
+            'delete' => route('app.event.destroy', ['param1' => 'kategori']),
+        ];
+    @endphp
+
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.event.tabs')
@@ -47,12 +56,7 @@
     <script>
         jForm.init({
             name: "event-kategori",
-            url: {
-                add: `{{ route('app.event.store', ['param1' => 'kategori']) }}`,
-                edit: `{{ route('app.event.data', ['param1' => 'kategori-detail']) }}`,
-                update: `{{ route('app.event.update', ['param1' => 'kategori']) }}`,
-                delete: `{{ route('app.event.destroy', ['param1' => 'kategori']) }}`
-            },
+            url: @json($crudRoutes),
         })
     </script>
 @endpush

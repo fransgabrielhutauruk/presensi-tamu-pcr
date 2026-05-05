@@ -8,15 +8,32 @@
 @endsection
 
 @section('content')
+    @php
+        use App\Enums\UserRole;
+
+        $kategoriOptions = $pageData->dataKategori ?? [];
+        $hiddenFromCivitas = hasAnyActiveRole(UserRole::getAdminEksekutifSecurityRoles());
+    @endphp
+
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.event.tabs')
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="event" jf-list="datatable">
             @slot('action')
-                <x-btn type="primary" class="act-add" jf-add="event">
+                @if ($hiddenFromCivitas)
+                    <select id="filterKategori" class="form-select form-select-sm me-2" style="max-width: 250px;">
+                        <option value="">Semua Kategori</option>
+                        @foreach ($kategoriOptions as $row)
+                            <option value="{{ $row['id'] }}">{{ $row['text'] }}</option>
+                        @endforeach
+                    </select>
+                @endif
+                <x-btn type="primary" class="act-add me-2" jf-add="event">
                     <i class="bi bi-plus fs-2"></i> Tambah Event
                 </x-btn>
-                <x-btn.refresh-datatable />
+                @if ($hiddenFromCivitas)
+                    <x-btn.refresh-datatable />
+                @endif
             @endslot
         </x-table.dttable>
     </div>
@@ -29,7 +46,7 @@
             </div>
             <div class="mb-4">
                 <x-form.select name="eventkategori_id" label="Kategori Event" required>
-                    @foreach ($pageData->dataKategori as $row)
+                    @foreach ($kategoriOptions as $row)
                         <option value="{{ $row['id'] }}">
                             {{ $row['text'] }}
                         </option>
@@ -55,8 +72,8 @@
                     required></x-form.input>
             </div>
             <div class="mb-4" id="field-link-dokumentasi" style="display: none;">
-                <x-form.input type="url" label="Link Dokumentasi (Google Drive)" name="link_dokumentasi_event" value=""
-                    placeholder="https://drive.google.com/..."></x-form.input>
+                <x-form.input type="url" label="Link Dokumentasi (Google Drive)" name="link_dokumentasi_event"
+                    value="" placeholder="https://drive.google.com/..."></x-form.input>
                 <div class="form-text">Link dokumentasi event. Contoh: https://drive.google.com/drive/folders/tes</div>
             </div>
             <div class="mb-4">
@@ -73,17 +90,41 @@
 @push('scripts')
     <x-script.crud2></x-script.crud2>
     <script>
+        const eventListTableSelector = 'table[jf-list="datatable"]';
+        const documentationFieldSelector = '#field-link-dokumentasi';
+
+        function toggleDocumentationField(shouldShow) {
+            $(documentationFieldSelector).toggle(Boolean(shouldShow));
+        }
+
+        function filterEventTable(kategoriId) {
+            const table = $(eventListTableSelector).DataTable();
+
+            if (!table) {
+                return;
+            }
+
+            const currentUrl = table.ajax.url().split('?')[0];
+            const nextUrl = kategoriId ? `${currentUrl}?kategori=${kategoriId}` : currentUrl;
+
+            table.ajax.url(nextUrl).load();
+        }
+
         jForm.init({
             name: "event",
             base_url: `{{ route('app.event.index') }}`
         });
 
         $(document).on('click', '[jf-edit]', function() {
-            $('#field-link-dokumentasi').show();
+            toggleDocumentationField(true);
         });
 
         $(document).on('click', '[jf-add]', function() {
-            $('#field-link-dokumentasi').hide();
+            toggleDocumentationField(false);
+        });
+
+        $('#filterKategori').on('change', function() {
+            filterEventTable($(this).val());
         });
     </script>
 @endpush

@@ -1,10 +1,5 @@
 <?php
 
-/*
- * Author: @wahyudibinsaid
- * Created At: {{currTime}}
- */
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -33,7 +28,7 @@ class MasterController extends Controller
 
     public function show($param1 = '', $param2 = '')
     {
-        if ($param1 == 'pegawai') {
+        if ($param1 === 'pegawai') {
             $this->title        = 'Kelola Data Pegawai';
             $this->activeMenu   = 'pegawai';
             $this->breadCrump[] = ['title' => 'Pegawai', 'link' => url()->current()];
@@ -59,7 +54,7 @@ class MasterController extends Controller
 
     function store(Request $req, $param1 = ''): JsonResponse
     {
-        if ($param1 == 'sync-pegawai') {
+        if ($param1 === 'sync-pegawai') {
             try {
                 $syncService = new PegawaiSyncService();
                 $result = $syncService->syncPegawai();
@@ -100,12 +95,12 @@ class MasterController extends Controller
 
     function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
-        if ($param1 == 'pegawai-list') {
+        if ($param1 === 'pegawai-list') {
             $filter = [];
 
             $data = DataTables::of(DmPegawai::getDataDetail($filter, get: true))->toArray();
 
-            $start = $req->input('start');
+            $start = (int) $req->input('start', 0);
             $resp  = [];
 
             foreach ($data['data'] as $key => $value) {
@@ -123,7 +118,7 @@ class MasterController extends Controller
                     'btn' => []
                 ];
 
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                $dt['action'] = (string) Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
 
                 $resp[] = $dt;
             }

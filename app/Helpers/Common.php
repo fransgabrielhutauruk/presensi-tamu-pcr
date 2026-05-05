@@ -133,7 +133,7 @@ function eventActivityLogBahasa($eventName)
 {
     $ev = [
         'created'      => 'Menambahkan data ',
-        'updated'      => 'Merubah data',
+        'updated'      => 'Mengubah data',
         'deleted'      => 'Menghapus data',
         'restored'     => 'Mengembalikan data',
         'forceDeleted' => 'Menghapus permanen data',

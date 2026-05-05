@@ -2,6 +2,22 @@
 
 @php
     use Illuminate\Support\Str;
+
+    $event = $pageData->event;
+    $eventDate = $event->tanggal_event ? date('d F Y', strtotime($event->tanggal_event)) : '-';
+    $eventTime = null;
+    $eventCategory = $event->eventKategori->nama_kategori ?? '-';
+    $eventLocation = $event->lokasi_event ?? null;
+
+    if ($event->waktu_mulai_event || $event->waktu_selesai_event) {
+        $eventTime = $event->waktu_mulai_event ? date('H:i', strtotime($event->waktu_mulai_event)) : '-';
+
+        if ($event->waktu_selesai_event) {
+            $eventTime .= ' - ' . date('H:i', strtotime($event->waktu_selesai_event));
+        }
+    }
+
+    $qrCodeFileName = 'qr-code-' . Str::slug($event->nama_event) . '.png';
 @endphp
 
 @section('toolbar')
@@ -17,22 +33,34 @@
         </x-slot:tools>
     </x-theme.toolbar>
 
-
     <script>
-        function printQrCode() {
+        const eventName = @json($event->nama_event);
+        const presensiUrl = @json($pageData->presensiUrl);
+        const qrCodeFileName = @json($qrCodeFileName);
+
+        function getQrSvgOrShowError() {
             const svg = document.querySelector('#qr-code svg');
+
             if (!svg) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
                     text: 'QR Code tidak ditemukan'
                 });
+
+                return null;
+            }
+
+            return svg;
+        }
+
+        function printQrCode() {
+            const svg = getQrSvgOrShowError();
+
+            if (!svg) {
                 return;
             }
 
-            const eventName = @json($pageData->event->nama_event);
-            const presensiUrl = @json($pageData->presensiUrl);
-            
             const printContent = `
                 <!DOCTYPE html>
                 <html>
@@ -153,9 +181,13 @@
             `.replace('{nama_event}', eventName).replace('{url}', presensiUrl);
 
             const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                return;
+            }
+
             printWindow.document.write(printContent);
             printWindow.document.close();
-            
+
             printWindow.onload = function() {
                 printWindow.focus();
                 printWindow.print();
@@ -166,13 +198,9 @@
         }
 
         function downloadQrCode() {
-            const svg = document.querySelector('#qr-code svg');
+            const svg = getQrSvgOrShowError();
+
             if (!svg) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: 'QR Code tidak ditemukan'
-                });
                 return;
             }
 
@@ -191,7 +219,7 @@
                 ctx.drawImage(img, 0, 0, 1024, 1024);
 
                 const link = document.createElement('a');
-                link.download = 'qr-code-{{ Str::slug($pageData->event->nama_event) }}.png';
+                link.download = qrCodeFileName;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
             };
@@ -234,24 +262,21 @@
                         <div class="mb-5">
                             <h4 class="text-primary mb-2">{{ $pageData->event->nama_event }}</h4>
                             <div class="text-muted mb-1">
-                                <i class="bi bi-tag"></i> {{ $pageData->event->eventKategori->nama_kategori ?? '-' }}
+                                <i class="bi bi-tag"></i> {{ $eventCategory }}
                             </div>
                             <div class="text-muted mb-1">
                                 <i class="bi bi-calendar"></i>
-                                {{ $pageData->event->tanggal_event ? date('d F Y', strtotime($pageData->event->tanggal_event)) : '-' }}
+                                {{ $eventDate }}
                             </div>
-                            @if ($pageData->event->waktu_mulai_event || $pageData->event->waktu_selesai_event)
+                            @if ($eventTime)
                                 <div class="text-muted mb-1">
                                     <i class="bi bi-clock"></i>
-                                    {{ $pageData->event->waktu_mulai_event ? date('H:i', strtotime($pageData->event->waktu_mulai_event)) : '-' }}
-                                    @if ($pageData->event->waktu_selesai_event)
-                                        - {{ date('H:i', strtotime($pageData->event->waktu_selesai_event)) }}
-                                    @endif
+                                    {{ $eventTime }}
                                 </div>
                             @endif
-                            @if ($pageData->event->lokasi_event)
+                            @if ($eventLocation)
                                 <div class="text-muted mb-1">
-                                    <i class="bi bi-geo-alt"></i> {{ $pageData->event->lokasi_event }}
+                                    <i class="bi bi-geo-alt"></i> {{ $eventLocation }}
                                 </div>
                             @endif
                         </div>
@@ -313,9 +338,4 @@
             </div>
         </div>
     </div>
-
-
-@endsection
-
-@section('script')
 @endsection

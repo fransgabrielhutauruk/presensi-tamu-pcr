@@ -48,28 +48,12 @@ class FeedbackController extends Controller
     public function data(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $query = DB::table('feedback as f')
-                ->leftJoin('kunjungan as k', 'f.kunjungan_id', '=', 'k.kunjungan_id')
-                ->leftJoin('tamu as t', 'k.tamu_id', '=', 't.tamu_id')
-                ->leftJoin('event as e', 'k.event_id', '=', 'e.event_id')
-                ->whereNull('f.deleted_at')
-                ->whereNull('k.deleted_at')
-                ->select([
-                    'f.feedback_id',
-                    'f.kunjungan_id',
-                    'f.rating',
-                    'f.komentar',
-                    'f.created_at as feedback_created_at',
-                    't.tamu_id',
-                    't.nama_tamu',
-                    't.email_tamu',
-                    't.nomor_telepon_tamu',
-                    't.jenis_kelamin_tamu',
-                    'k.identitas',
-                    'k.created_at as waktu_kunjungan',
-                    'e.nama_event',
-                ])
-                ->orderBy('f.created_at', 'desc')
+            $query = Feedback::with(['kunjungan.tamu', 'kunjungan.civitas', 'kunjungan.event'])
+                ->whereNull('deleted_at')
+                ->whereHas('kunjungan', function ($q) {
+                    $q->whereNull('deleted_at');
+                })
+                ->latest('created_at')
                 ->get();
 
             $data = DataTables::of($query)->toArray();
@@ -80,7 +64,7 @@ class FeedbackController extends Controller
                 $dt = [];
                 $dt['no'] = ++$start;
                 $dt['feedback_id'] = $value['feedback_id'] ?? '-';
-                $dt['nama_tamu'] = $value['nama_tamu'] ?? '-';
+                $dt['nama_tamu'] = $value['kunjungan']['tamu']['nama_tamu'] ?? $value['kunjungan']['civitas']['nama_civitas'] ?? '-';
                 $dt['rating'] = $value['rating'] ?? 0;
                 $komentar = $value['komentar'] ?? '-';
 
@@ -90,17 +74,17 @@ class FeedbackController extends Controller
                     $dt['komentar'] = $komentar;
                 }
 
-                if (!empty($value['nama_event'])) {
-                    $dt['nama_event'] = $value['nama_event'];
+                if (!empty($value['kunjungan']['event']['nama_event'])) {
+                    $dt['nama_event'] = $value['kunjungan']['event']['nama_event'];
                 } else {
                     $dt['nama_event'] = '<span class="badge badge-secondary">Non-Event</span>';
                 }
 
-                $dt['waktu_kunjungan'] = $value['waktu_kunjungan'] ?
-                    date('d/m/Y H:i', strtotime($value['waktu_kunjungan'])) : '-';
+                $dt['waktu_kunjungan'] = $value['kunjungan']['created_at'] ?
+                    date('d/m/Y H:i', strtotime($value['kunjungan']['created_at'])) : '-';
 
-                $dt['feedback_created_at'] = $value['feedback_created_at'] ?
-                    date('d/m/Y H:i', strtotime($value['feedback_created_at'])) : '-';
+                $dt['feedback_created_at'] = $value['created_at'] ?
+                    date('d/m/Y H:i', strtotime($value['created_at'])) : '-';
 
                 $id = encid($value['feedback_id']);
 
@@ -108,6 +92,7 @@ class FeedbackController extends Controller
                     'id' => $id,
                     'btn' => [
                         ['action' => 'detail', 'attr' => ['jf-detail' => $id]],
+                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
                     ]
                 ];
 
@@ -124,7 +109,7 @@ class FeedbackController extends Controller
             ]);
 
             $feedbackId = decid($req->input('id'));
-            $feedback = Feedback::with(['kunjungan.tamu', 'kunjungan.details', 'kunjungan.event', 'kunjungan.event.eventKategori'])
+            $feedback = Feedback::with(['kunjungan.tamu', 'kunjungan.civitas', 'kunjungan.details', 'kunjungan.event', 'kunjungan.event.eventKategori'])
                 ->findOrFail($feedbackId);
 
             $currData = $feedback->kunjungan;
@@ -136,10 +121,10 @@ class FeedbackController extends Controller
                 'rating' => $feedback->rating,
                 'komentar' => $feedback->komentar ?? '-',
 
-                'nama' => $currData->tamu->nama_tamu ?? '',
-                'jenis_kelamin' => $currData->tamu->jenis_kelamin_tamu ?? '',
-                'email' => $currData->tamu->email_tamu ?? '',
-                'nomor_telepon' => $currData->tamu->nomor_telepon_tamu ?? '',
+                'nama' => $currData->tamu->nama_tamu ?? $currData->civitas->nama_civitas ?? '-',
+                'jenis_kelamin' => $currData->tamu->jenis_kelamin_tamu ?? $currData->civitas->jenis_kelamin ?? '-',
+                'email' => $currData->tamu->email_tamu ?? $currData->civitas->email ?? '-',
+                'nomor_telepon' => $currData->tamu->nomor_telepon_tamu ?? $currData->civitas->nomor_telepon ?? '-',
 
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => \App\Enums\KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
@@ -170,6 +155,33 @@ class FeedbackController extends Controller
             }
 
             return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $detailData]);
+        } else {
+            abort(404, 'Halaman tidak ditemukan');
+        }
+    }
+
+    public function destroy(Request $req, $param1 = ''): JsonResponse
+    {
+        if ($param1 == '') {
+            validate_and_response([
+                'id' => ['Parameter data', 'required'],
+            ]);
+
+            $currData = Feedback::findOrFail(decid($req->input('id')));
+
+            DB::beginTransaction();
+            try {
+                $currData->delete();
+                DB::commit();
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data feedback berhasil dihapus'
+                ]);
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                abort(500, 'Gagal menghapus data, kesalahan database');
+            }
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }

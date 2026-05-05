@@ -8,6 +8,12 @@
 @endsection
 
 @section('content')
+    @php
+        $event = $pageData->event;
+        $eventDate = tanggal($event->tanggal_event);
+        $eventLocation = $event->lokasi_event ?: '-';
+    @endphp
+
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
 
@@ -15,10 +21,10 @@
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
-                        <h3 class="mb-1">{{ $pageData->event->nama_event }}</h3>
+                        <h3 class="mb-1">{{ $event->nama_event }}</h3>
                         <p class="text-muted mb-0">
-                            <i class="bi bi-calendar me-2"></i>{{ tanggal($pageData->event->tanggal_event) }}
-                            <i class="bi bi-geo-alt ms-3 me-2"></i>{{ $pageData->event->lokasi_event }}
+                            <i class="bi bi-calendar me-2"></i>{{ $eventDate }}
+                            <i class="bi bi-geo-alt ms-3 me-2"></i>{{ $eventLocation }}
                         </p>
                     </div>
                     <a href="{{ route('app.event.index') }}" class="btn btn-light btn-sm">
@@ -43,7 +49,8 @@
                         </button>
                     </div>
                     <div class="d-flex gap-2">
-                        <x-btn.form action="save" text="Tambah Tamu VIP" icon="bi bi-star-fill" class="d-flex align-items-center act-save" id="addVipGuestBtn" />
+                        <x-btn.form action="save" text="Tambah Tamu VIP" icon="bi bi-star-fill"
+                            class="d-flex align-items-center act-save" id="addVipGuestBtn" />
                         <x-btn.refresh-datatable />
                     </div>
                 </div>
@@ -76,8 +83,6 @@
                     <label class="fw-bold text-muted">Jenis Kelamin:</label>
                     <div data-field="jenis_kelamin" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Email:</label>
                     <div data-field="email" class="fw-bold">-</div>
@@ -100,8 +105,6 @@
                     <label class="fw-bold text-muted">Transportasi:</label>
                     <div data-field="transportasi" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Identitas:</label>
                     <div data-field="identitas" class="fw-bold">-</div>
@@ -120,8 +123,6 @@
                     <label class="fw-bold text-muted">Waktu Kunjungan:</label>
                     <div data-field="waktu_kunjungan" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Waktu Keluar (Estimasi):</label>
                     <div data-field="waktu_keluar" class="fw-bold">-</div>
@@ -207,7 +208,13 @@
 @push('scripts')
     <script>
         let currentDetailId = null;
-        const eventIdEnc = '{{ $pageData->eventIdEnc }}';
+        const eventIdEnc = @json($pageData->eventIdEnc);
+        const detailDataEndpoint = @json(route('app.kunjungan.detail-data'));
+        const csrfToken = @json(csrf_token());
+        const bulkValidasiEndpoint = @json(route('app.kunjungan.bulk-validasi'));
+        const validateSingleEndpointBase = '/app/kunjungan/validate/';
+        const rejectSingleEndpointBase = '/app/kunjungan/reject/';
+        const datatableSelector = 'table[jf-data="kunjungan-event-validasi"]';
 
         $(document).ready(function() {
             $(document).off('click', '[jf-data="kunjungan-event-validasi"] [jf-detail]');
@@ -219,10 +226,10 @@
                 currentDetailId = detailId;
 
                 $.ajax({
-                    url: '{{ route('app.kunjungan.detail-data') }}',
+                    url: detailDataEndpoint,
                     method: 'POST',
                     data: {
-                        _token: '{{ csrf_token() }}',
+                        _token: csrfToken,
                         id: detailId
                     },
                     success: function(resp) {
@@ -261,15 +268,30 @@
 
             setTimeout(updateBulkActionPanel, 500);
 
-            $(document).on('click', '#bulkValidateBtn, #bulkRejectBtn', function() {
+            $(document).off('click', '#bulkValidateBtn, #bulkRejectBtn').on('click', '#bulkValidateBtn, #bulkRejectBtn', function(e) {
+                e.preventDefault(); e.stopPropagation();
                 bulkAction($(this).data('action'));
             });
 
-            $(document).on('click', '#validateSingleBtn', validateSingle);
-            $(document).on('click', '#rejectSingleBtn', rejectSingle);
+            $(document).off('click', '#validateSingleBtn').on('click', '#validateSingleBtn', validateSingle);
+            $(document).off('click', '#rejectSingleBtn').on('click', '#rejectSingleBtn', rejectSingle);
 
             $(document).on('click', '#addVipGuestBtn', function() {
-                $('#vipGuestForm')[0].reset();
+                // Reset native form fields
+                const formEl = $('#vipGuestForm')[0];
+                if (formEl) formEl.reset();
+
+                // Ensure the jenis_kelamin select is reset and any UI plugin is refreshed
+                const jkSelect = $('#vipGuestForm').find('select[name="jenis_kelamin"]');
+                if (jkSelect.length) {
+                    jkSelect.prop('selectedIndex', 0).trigger('change');
+                    if (typeof jkSelect.selectpicker === 'function') {
+                        try {
+                            jkSelect.selectpicker('refresh');
+                        } catch (e) {}
+                    }
+                }
+
                 $('#modalVipGuest').modal('show');
             });
 
@@ -325,7 +347,8 @@
             setDetailField('jumlah_rombongan', data.jumlah_rombongan);
 
             var statusBadge = $('[data-field="status_badge"]');
-            if (data.status_validasi) {
+            console.log('this', data.status_validasi)
+            if (data.status_validasi == 'Sudah validasi') {
                 statusBadge.removeClass('badge-warning').addClass('badge-success').text('Tervalidasi');
                 $('#validateSingleBtn').hide();
             } else {
@@ -340,9 +363,10 @@
                     data.details.forEach(function(detail) {
                         var formattedLabel = formatLabel(detail.kunci);
                         var detailHtml = '<div class="row mb-2">' +
-                            '<div class="col-auto fw-bold text-muted">' + formattedLabel + ':</div>' +
-                            '<div class="col-auto fw-bold">' + detail.nilai + '</div>' +
-                            '</div>';
+                            '<div class="col-auto fw-bold">' +
+                            '<span class="text-muted">' + formattedLabel +
+                            ': </span>' + '<span class="fw-bold">' + detail.nilai +
+                            '</span>' + '</div>';
                         detailContainer.append(detailHtml);
                     });
                 }
@@ -412,14 +436,13 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     $.post(`{{ route('app.kunjungan.bulk-validasi') }}`, {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        _token: csrfToken,
                         ids: ids,
                         action: action
                     }).done(function(response) {
                         if (response.status) {
                             Swal.fire('Berhasil!', response.message, 'success');
-                            $('table[jf-data="kunjungan-event-validasi"]').DataTable().ajax.reload(null,
-                                false);
+                            $(datatableSelector).DataTable().ajax.reload(null, false);
                             clearSelection();
                         } else {
                             Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
@@ -431,7 +454,12 @@
             });
         }
 
-        function validateSingle() {
+        function validateSingle(e) {
+            if (e && e.preventDefault) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
             if (!currentDetailId) {
                 Swal.fire('Error!', 'ID kunjungan tidak ditemukan.', 'error');
                 return;
@@ -447,14 +475,13 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post(`/app/kunjungan/validate/${currentDetailId}`, {
-                        _token: $('meta[name="csrf-token"]').attr('content')
+                    $.post(`${validateSingleEndpointBase}${currentDetailId}`, {
+                        _token: csrfToken
                     }).done(function(response) {
                         if (response.status) {
                             Swal.fire('Berhasil!', 'Kunjungan berhasil divalidasi.', 'success');
                             $('#modalDetailValidasi').modal('hide');
-                            $('table[jf-data="kunjungan-event-validasi"]').DataTable().ajax.reload(null,
-                                false);
+                            $(datatableSelector).DataTable().ajax.reload(null, false);
                             clearSelection();
                         } else {
                             Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
@@ -466,7 +493,12 @@
             });
         }
 
-        function rejectSingle() {
+        function rejectSingle(e) {
+            if (e && e.preventDefault) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
             if (!currentDetailId) {
                 Swal.fire('Error!', 'ID kunjungan tidak ditemukan.', 'error');
                 return;
@@ -482,14 +514,13 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    $.post(`/app/kunjungan/reject/${currentDetailId}`, {
-                        _token: $('meta[name="csrf-token"]').attr('content')
+                    $.post(`${rejectSingleEndpointBase}${currentDetailId}`, {
+                        _token: csrfToken
                     }).done(function(response) {
                         if (response.status) {
                             Swal.fire('Berhasil!', 'Kunjungan berhasil dihapus.', 'success');
                             $('#modalDetailValidasi').modal('hide');
-                            $('table[jf-data="kunjungan-event-validasi"]').DataTable().ajax.reload(null,
-                                false);
+                            $(datatableSelector).DataTable().ajax.reload(null, false);
                             clearSelection();
                         } else {
                             Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
@@ -509,15 +540,25 @@
             }
 
             const submitBtn = $('#submitVipBtn');
-            const submitText = submitBtn.find('.submit-text');
-            const submitLoading = submitBtn.find('.submit-loading');
+            let submitText = submitBtn.find('.submit-text');
+            let submitLoading = submitBtn.find('.submit-loading');
+
+            // If the button doesn't contain the expected spans, create them so spinner toggles work
+            if (!submitText.length || !submitLoading.length) {
+                const btnHtml = submitBtn.html();
+                submitBtn.html('<span class="submit-text">' + btnHtml + '</span>' +
+                    '<span class="submit-loading d-none ms-2"><span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Loading...</span>'
+                );
+                submitText = submitBtn.find('.submit-text');
+                submitLoading = submitBtn.find('.submit-loading');
+            }
 
             submitText.addClass('d-none');
             submitLoading.removeClass('d-none');
             submitBtn.prop('disabled', true);
 
             $.ajax({
-                url: '{{ route('app.event.store-vip-guest') }}',
+                url: @json(route('app.event.store-vip-guest')),
                 method: 'POST',
                 data: $('#vipGuestForm').serialize(),
                 success: function(response) {
@@ -525,6 +566,19 @@
                         Swal.fire('Berhasil!', response.message, 'success');
                         $('#modalVipGuest').modal('hide');
                         $('table[jf-data="kunjungan-event-validasi"]').DataTable().ajax.reload(null, false);
+
+                        // Reset the form and select after success
+                        const f = $('#vipGuestForm')[0];
+                        if (f) f.reset();
+                        const jk = $('#vipGuestForm').find('select[name="jenis_kelamin"]');
+                        if (jk.length) {
+                            jk.prop('selectedIndex', 0).trigger('change');
+                            if (typeof jk.selectpicker === 'function') {
+                                try {
+                                    jk.selectpicker('refresh');
+                                } catch (e) {}
+                            }
+                        }
                     } else {
                         Swal.fire('Gagal!', response.message || 'Terjadi kesalahan', 'error');
                     }

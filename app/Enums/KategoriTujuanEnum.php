@@ -26,7 +26,7 @@ enum KategoriTujuanEnum: string
     public static function getDescription(?string $value): string
     {
         $enum = self::tryFrom($value);
-        return $enum?->description() ?? '-';
+        return $enum?->description() ?? '';
     }
 
     public static function fromValue(?string $value): ?self

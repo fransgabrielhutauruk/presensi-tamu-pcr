@@ -67,73 +67,93 @@
 @push('scripts')
     <x-script.crud2></x-script.crud2>
     <script>
+        const OPTION_TEMPLATE = {
+            id: '',
+            en: '',
+        };
+
+        const SELECTORS = {
+            list: 'optionsList',
+            hidden: 'hiddenNilaiOpsi',
+            addButton: 'addOptionItem',
+        };
+
         let optionsData = [];
 
-        jForm.init({
-            name: "opsi-kunjungan",
-            url: {
-                add: `{{ route('app.kunjungan.store', ['param1' => 'opsi']) }}`,
-                edit: `{{ route('app.kunjungan.data', ['param1' => 'opsi-detail']) }}`,
-                update: `{{ route('app.kunjungan.update', ['param1' => 'opsi']) }}`,
-                delete: `{{ route('app.kunjungan.destroy', ['param1' => 'opsi']) }}`,
-            },
-            onEdit: function(data) {
-                if (data.nilai_opsi) {
-                    if (typeof data.nilai_opsi === 'string') {
-                        optionsData = JSON.parse(data.nilai_opsi);
-                    } else {
-                        optionsData = data.nilai_opsi;
-                    }
-                } else {
-                    optionsData = [];
-                }
-                renderOptionsList();
-            },
-            onAdd: function() {
-                optionsData = [];
-                renderOptionsList();
-            },
-            beforeSave: function() {
-                collectOptionsData();
-            }
-        });
-
-        function renderOptionsList() {
-            const container = document.getElementById('optionsList');
-            container.innerHTML = '';
-
-            if (optionsData.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center text-muted py-4">
-                        <i class="ki-outline ki-information fs-2x mb-2"></i>
-                        <p>Belum ada item opsi. Klik "Tambah Item" untuk menambah.</p>
-                    </div>
-                `;
-                return;
-            }
-
-            optionsData.forEach((option, index) => {
-                const optionHtml = createOptionItemHtml(option, index);
-                container.insertAdjacentHTML('beforeend', optionHtml);
-            });
-
-            collectOptionsData();
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
         }
 
-        function createOptionItemHtml(option, index) {
-            const idLabel = option.id || option.label || '';
-            const enLabel = option.en || option.label || '';
-            
+        function normalizeOption(option = {}) {
+            const fallback = option.label ?? '';
+
+            return {
+                id: option.id ?? fallback,
+                en: option.en ?? fallback,
+            };
+        }
+
+        function parseOptionsData(value) {
+            if (!value) {
+                return [];
+            }
+
+            if (Array.isArray(value)) {
+                return value.map(normalizeOption);
+            }
+
+            if (typeof value === 'string') {
+                try {
+                    const parsed = JSON.parse(value);
+                    return Array.isArray(parsed) ? parsed.map(normalizeOption) : [];
+                } catch (error) {
+                    return [];
+                }
+            }
+
+            return [];
+        }
+
+        function getOptionsListElement() {
+            return document.getElementById(SELECTORS.list);
+        }
+
+        function getHiddenOptionsField() {
+            return document.getElementById(SELECTORS.hidden);
+        }
+
+        function setOptionsData(nextOptions) {
+            optionsData = nextOptions.map(normalizeOption);
+            renderOptionsList();
+        }
+
+        function renderEmptyState(container) {
+            container.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="ki-outline ki-information fs-2x mb-2"></i>
+                    <p>Belum ada item opsi. Klik "Tambah Item" untuk menambah.</p>
+                </div>
+            `;
+        }
+
+        function renderOptionItem(option, index) {
+            const normalizedOption = normalizeOption(option);
+
             return `
                 <div class="mb-3 option-item" data-index="${index}">
                     <div class="row align-items-center">
                         <div class="col-5">
-                            <input type="text" class="form-control form-control-sm option-id required" 
-                                   value="${idLabel}" placeholder="e.g: Direktur">
+                            <input type="text" class="form-control form-control-sm option-id required"
+                                   value="${escapeHtml(normalizedOption.id)}" placeholder="e.g: Direktur">
                         </div>
                         <div class="col-5">
-                            <input type="text" class="form-control form-control-sm option-en required" 
-                                   value="${enLabel}" placeholder="e.g: Director">
+                            <input type="text" class="form-control form-control-sm option-en required"
+                                   value="${escapeHtml(normalizedOption.en)}" placeholder="e.g: Director">
                         </div>
                         <div class="col-2 text-center">
                             <button type="button" class="btn btn-sm btn-light-danger option-remove w-100" title="Hapus item">
@@ -145,48 +165,82 @@
             `;
         }
 
+        jForm.init({
+            name: "opsi-kunjungan",
+            url: {
+                add: `{{ route('app.kunjungan.store', ['param1' => 'opsi']) }}`,
+                edit: `{{ route('app.kunjungan.data', ['param1' => 'opsi-detail']) }}`,
+                update: `{{ route('app.kunjungan.update', ['param1' => 'opsi']) }}`,
+                delete: `{{ route('app.kunjungan.destroy', ['param1' => 'opsi']) }}`,
+            },
+            onEdit: function(data) {
+                setOptionsData(parseOptionsData(data.nilai_opsi));
+            },
+            onAdd: function() {
+                setOptionsData([]);
+            },
+            beforeSave: function() {
+                collectOptionsData();
+            }
+        });
+
+        function renderOptionsList() {
+            const container = getOptionsListElement();
+            container.innerHTML = '';
+
+            if (optionsData.length === 0) {
+                renderEmptyState(container);
+                return;
+            }
+
+            container.insertAdjacentHTML('beforeend', optionsData.map(renderOptionItem).join(''));
+
+            collectOptionsData();
+        }
+
         function collectOptionsData() {
-            const options = [];
-            document.querySelectorAll('.option-item').forEach(function(item, index) {
-                const id = item.querySelector('.option-id').value.trim();
-                const en = item.querySelector('.option-en').value.trim();
-                
-                if (id || en) {
-                    options.push({
+            const options = Array.from(document.querySelectorAll('.option-item'))
+                .map(function(item) {
+                    const id = item.querySelector('.option-id').value.trim();
+                    const en = item.querySelector('.option-en').value.trim();
+
+                    if (!id && !en) {
+                        return null;
+                    }
+
+                    return {
                         id: id,
-                        en: en
-                    });
-                }
-            });
-            
-            document.getElementById('hiddenNilaiOpsi').value = JSON.stringify(options);
+                        en: en,
+                    };
+                })
+                .filter(Boolean);
+
+            getHiddenOptionsField().value = JSON.stringify(options);
             optionsData = options;
             return options;
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('addOptionItem').addEventListener('click', function() {
-                optionsData.push({
-                    id: '',
-                    en: ''
-                });
-                renderOptionsList();
+            document.getElementById(SELECTORS.addButton).addEventListener('click', function() {
+                setOptionsData([].concat(optionsData, [OPTION_TEMPLATE]));
             });
-            document.getElementById('optionsList').addEventListener('click', function(e) {
-                const target = e.target.closest('.option-remove');
-                if (!target) return;
+            getOptionsListElement().addEventListener('click', function(e) {
+                const removeButton = e.target.closest('.option-remove');
 
-                const item = target.closest('.option-item');
-                const index = parseInt(item.dataset.index);
-
-                if (target.classList.contains('option-remove')) {
-                    optionsData.splice(index, 1);
-                    renderOptionsList();
+                if (!removeButton) {
+                    return;
                 }
+
+                const item = removeButton.closest('.option-item');
+                const index = Number(item.dataset.index);
+
+                setOptionsData(optionsData.filter(function(_, currentIndex) {
+                    return currentIndex !== index;
+                }));
             });
 
-            document.getElementById('optionsList').addEventListener('input', function(e) {
-                if (e.target.classList.contains('option-id') || 
+            getOptionsListElement().addEventListener('input', function(e) {
+                if (e.target.classList.contains('option-id') ||
                     e.target.classList.contains('option-en')) {
                     collectOptionsData();
                 }

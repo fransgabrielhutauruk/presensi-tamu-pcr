@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Carbon\Carbon;
-use App\Models\Tamu;
-use App\Models\Event;
+use App\Enums\KategoriTujuanEnum;
 use App\Enums\UserRole;
-use App\Models\Kunjungan;
-use Illuminate\Http\Request;
-use App\Models\EventKategori;
-use App\Models\KunjunganDetail;
-use Yajra\DataTables\DataTables;
-use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Event;
+use App\Models\EventKategori;
+use App\Models\Kunjungan;
+use App\Models\KunjunganDetail;
+use App\Models\Tamu;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Throwable;
+use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Html\Column;
 
 class EventController extends Controller
 {
@@ -26,15 +28,39 @@ class EventController extends Controller
     {
         $this->activeRoot = 'event';
         $this->breadCrump[] = ['title' => 'Event', 'link' => route('app.event.index')];
+        $this->dataKategori = $this->buildKategoriSelect();
+    }
 
-        $temp = [];
-        foreach (EventKategori::all() as $row) {
-            $temp[] = [
+    private function buildKategoriSelect(): array
+    {
+        return EventKategori::all()
+            ->map(fn($row) => [
                 'id' => encid($row->eventkategori_id),
                 'text' => $row->nama_kategori,
-            ];
-        }
-        $this->dataKategori = $temp;
+            ])
+            ->toArray();
+    }
+
+    private function buildEventData(Request $request): array
+    {
+        return [
+            'eventkategori_id' => decid($request->post('eventkategori_id')),
+            'nama_event' => clean_post('nama_event'),
+            'deskripsi_event' => clean_post('deskripsi_event'),
+            'tanggal_event' => clean_post('tanggal_event'),
+            'waktu_mulai_event' => clean_post('waktu_mulai_event'),
+            'waktu_selesai_event' => clean_post('waktu_selesai_event'),
+            'lokasi_event' => clean_post('lokasi_event'),
+            'link_dokumentasi_event' => clean_post('link_dokumentasi_event'),
+        ];
+    }
+
+    private function buildKategoriData(Request $request): array
+    {
+        return [
+            'nama_kategori' => clean_post('nama_kategori'),
+            'deskripsi_kategori' => clean_post('deskripsi_kategori'),
+        ];
     }
 
     public function index()
@@ -49,8 +75,9 @@ class EventController extends Controller
                 Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
                 Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
                 Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
-                Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true, 'className' => 'text-center']),
-                Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true, 'className' => 'text-center']),
+                Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
+                Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true]),
+                Column::make(['width' => '10%', 'title' => 'Status', 'data' => 'status', 'orderable' => true]),
                 Column::make(['width' => '10%', 'title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
             ]);
@@ -77,10 +104,10 @@ class EventController extends Controller
 
             $builder = app('datatables.html');
             $dataTable = $builder->serverSide(true)->ajax(route('app.event.data') . '/kategori-list')->columns([
-                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
-                Column::make(['width' => '30%', 'title' => 'Nama Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
-                Column::make(['width' => '35%', 'title' => 'Deskripsi', 'data' => 'deskripsi_kategori', 'orderable' => true]),
-                Column::make(['width' => '10%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'Nama Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
+                Column::make(['title' => 'Deskripsi', 'data' => 'deskripsi_kategori', 'orderable' => true]),
+                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
             ]);
 
             $this->dataView([
@@ -100,7 +127,6 @@ class EventController extends Controller
             $builder = app('datatables.html');
             $dataTable = $builder->serverSide(true)->ajax(route('app.event.data') . '/validasi-kunjungan-list/' . $param2)->columns([
                 Column::make([
-                    'width' => '3%',
                     'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
                         <input class="form-check-input" type="checkbox" id="checkAllValidasi"></div>',
                     'data' => 'checkbox',
@@ -109,7 +135,6 @@ class EventController extends Controller
                     'searchable' => false
                 ]),
                 Column::make([
-                    'width' => '5%',
                     'title' => 'No',
                     'data' => 'no',
                     'orderable' => false,
@@ -123,7 +148,6 @@ class EventController extends Controller
                     'className' => 'text-center'
                 ]),
                 Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
-                Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
                 Column::make([
                     'title' => 'Identitas',
                     'data' => 'identitas',
@@ -136,14 +160,12 @@ class EventController extends Controller
                     'className' => 'text-center'
                 ]),
                 Column::make([
-                    'width' => '10%',
                     'title' => 'Status',
                     'data' => 'status',
                     'orderable' => true,
                     'className' => 'text-center'
                 ]),
                 Column::make([
-                    'width' => '12%',
                     'title' => 'Aksi',
                     'data' => 'action',
                     'orderable' => false,
@@ -176,53 +198,32 @@ class EventController extends Controller
                 'link_dokumentasi_event' => ['Link Dokumentasi', 'nullable|url'],
             ]);
 
-            $data = [
-                'eventkategori_id' => decid($req->post('eventkategori_id')),
-                'nama_event' => clean_post('nama_event'),
-                'deskripsi_event' => clean_post('deskripsi_event'),
-                'tanggal_event' => clean_post('tanggal_event'),
-                'waktu_mulai_event' => clean_post('waktu_mulai_event'),
-                'waktu_selesai_event' => clean_post('waktu_selesai_event'),
-                'lokasi_event' => clean_post('lokasi_event'),
-                'link_dokumentasi_event' => clean_post('link_dokumentasi_event'),
-            ];
-
-            DB::beginTransaction();
             try {
-                Event::create($data);
-                DB::commit();
-
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data event berhasil disimpan'
-                ]);
-            } catch (\Throwable $th) {
-                DB::rollBack();
+                DB::transaction(fn() => Event::create($this->buildEventData($req)));
+            } catch (Throwable $th) {
                 abort(500, 'Tambah data gagal, kesalahan database');
             }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data event berhasil disimpan'
+            ]);
         } else if ($param1 == 'kategori') {
             validate_and_response([
                 'nama_kategori' => ['Nama Kategori', 'required'],
                 'deskripsi_kategori' => ['Deskripsi Kategori', 'nullable'],
             ]);
 
-            $data = [
-                'nama_kategori' => clean_post('nama_kategori'),
-                'deskripsi_kategori' => clean_post('deskripsi_kategori'),
-            ];
-
-            DB::beginTransaction();
             try {
-                EventKategori::create($data);
-                DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data kategori berhasil disimpan'
-                ]);
-            } catch (\Throwable $th) {
-                DB::rollBack();
+                DB::transaction(fn() => EventKategori::create($this->buildKategoriData($req)));
+            } catch (Throwable $th) {
                 abort(500, 'Tambah data gagal, kesalahan database');
             }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data kategori berhasil disimpan'
+            ]);
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }
@@ -239,57 +240,36 @@ class EventController extends Controller
                 'link_dokumentasi_event' => ['Link Dokumentasi', 'nullable|url'],
             ]);
 
-            $currData = Event::findOrFail(decid($req->input('id')));
+            $event = Event::findOrFail(decid($req->input('id')));
 
-            $data = [
-                'eventkategori_id' => decid($req->post('eventkategori_id')),
-                'nama_event' => clean_post('nama_event'),
-                'deskripsi_event' => clean_post('deskripsi_event'),
-                'tanggal_event' => clean_post('tanggal_event'),
-                'waktu_mulai_event' => clean_post('waktu_mulai_event'),
-                'waktu_selesai_event' => clean_post('waktu_selesai_event'),
-                'lokasi_event' => clean_post('lokasi_event'),
-                'link_dokumentasi_event' => clean_post('link_dokumentasi_event'),
-            ];
-
-            DB::beginTransaction();
             try {
-                $currData->update($data);
-
-                DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data event berhasil diperbarui'
-                ]);
-            } catch (\Throwable $th) {
-                DB::rollBack();
+                DB::transaction(fn() => $event->update($this->buildEventData($req)));
+            } catch (Throwable $th) {
                 abort(500, 'Gagal memperbarui data, kesalahan database');
             }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data event berhasil diperbarui'
+            ]);
         } else if ($param1 == 'kategori') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
                 'nama_kategori' => ['Nama Kategori', 'required'],
             ]);
 
-            $currData = EventKategori::findOrFail(decid($req->input('id')));
+            $kategori = EventKategori::findOrFail(decid($req->input('id')));
 
-            $data = [
-                'nama_kategori' => clean_post('nama_kategori'),
-                'deskripsi_kategori' => clean_post('deskripsi_kategori'),
-            ];
-
-            DB::beginTransaction();
             try {
-                $currData->update($data);
-                DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data kategori berhasil diperbarui'
-                ]);
-            } catch (\Throwable $th) {
-                DB::rollBack();
+                DB::transaction(fn() => $kategori->update($this->buildKategoriData($req)));
+            } catch (Throwable $th) {
                 abort(500, 'Gagal memperbarui data, kesalahan database');
             }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Data kategori berhasil diperbarui'
+            ]);
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }
@@ -302,40 +282,37 @@ class EventController extends Controller
                 'id' => ['Parameter data', 'required'],
             ]);
 
-            $currData = Event::findOrFail(decid($req->input('id')));
+            $event = Event::findOrFail(decid($req->input('id')));
 
-            DB::beginTransaction();
             try {
-                $currData->delete();
-                DB::commit();
-                return response()->json(['status' => true, 'message' => 'Data event berhasil dihapus']);
-            } catch (\Throwable $th) {
-                DB::rollBack();
+                DB::transaction(fn() => $event->delete());
+            } catch (Throwable $th) {
                 abort(500, 'Gagal menghapus data, kesalahan database');
             }
+
+            return response()->json(['status' => true, 'message' => 'Data event berhasil dihapus']);
         } else if ($param1 == 'kategori') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
             ]);
 
-            $currData = EventKategori::findOrFail(decid($req->input('id')));
+            $kategori = EventKategori::findOrFail(decid($req->input('id')));
 
-            $eventCount = Event::where('eventkategori_id', $currData->eventkategori_id)->count();
+            $eventCount = Event::where('eventkategori_id', $kategori->eventkategori_id)->count();
             if ($eventCount > 0) {
                 return response()->json([
                     'status' => false,
                     'message' => "Kategori tidak dapat dihapus karena masih digunakan oleh {$eventCount} event"
                 ], 422);
             }
-            DB::beginTransaction();
+
             try {
-                $currData->delete();
-                DB::commit();
-                return response()->json(['status' => true, 'message' => 'Data kategori berhasil dihapus']);
-            } catch (\Throwable $th) {
-                DB::rollBack();
+                DB::transaction(fn() => $kategori->delete());
+            } catch (Throwable $th) {
                 abort(500, 'Gagal menghapus data, kesalahan database');
             }
+
+            return response()->json(['status' => true, 'message' => 'Data kategori berhasil dihapus']);
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }
@@ -343,28 +320,7 @@ class EventController extends Controller
 
     public function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
-        if ($param1 == 'detail') {
-            validate_and_response([
-                'id' => ['Parameter data', 'required'],
-            ]);
-
-            $currData = Event::findOrFail(decid($req->input('id')))->makeHidden(Event::$exceptEdit);
-
-            $currData->id = $req->input('id');
-            $currData->eventkategori_id = encid($currData->eventkategori_id);
-
-            return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $currData]);
-        } else if ($param1 == 'kategori-detail') {
-            validate_and_response([
-                'id' => ['Parameter data', 'required'],
-            ]);
-
-            $currData = EventKategori::findOrFail(decid($req->input('id')))->makeHidden(EventKategori::$exceptEdit);
-
-            $currData->id = $req->input('id');
-
-            return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $currData]);
-        } else if ($param1 == 'list') {
+        if ($param1 == 'list') {
             $filter = [];
 
             $rolesCanViewAll = UserRole::getAdminEksekutifSecurityRoles();
@@ -372,6 +328,10 @@ class EventController extends Controller
 
             if (!in_array($activeRole, $rolesCanViewAll)) {
                 $filter['a.created_by'] = userId();
+            }
+
+            if (!empty($req->query('kategori'))) {
+                $filter['a.eventkategori_id'] = decid($req->query('kategori'));
             }
 
             $data = DataTables::of(Event::getDataDetail($filter, get: true))->toArray();
@@ -399,6 +359,26 @@ class EventController extends Controller
                     ' s/d ' .
                     ($value['waktu_selesai_event'] ? date('H:i', strtotime($value['waktu_selesai_event'])) : '-');
 
+                try {
+                    $now = Carbon::now()->setTimezone(config('app.timezone'));
+                    if (!empty($value['tanggal_event'])) {
+                        $eventStartAt = !empty($value['waktu_mulai_event']) ? \Carbon\Carbon::parse($value['tanggal_event'] . ' ' . $value['waktu_mulai_event'])->setTimezone(config('app.timezone')) : \Carbon\Carbon::parse($value['tanggal_event'])->startOfDay()->setTimezone(config('app.timezone'));
+                        $eventEndAt = !empty($value['waktu_selesai_event']) ? \Carbon\Carbon::parse($value['tanggal_event'] . ' ' . $value['waktu_selesai_event'])->setTimezone(config('app.timezone')) : \Carbon\Carbon::parse($value['tanggal_event'])->endOfDay()->setTimezone(config('app.timezone'));
+
+                        if ($now->lt($eventStartAt)) {
+                            $dt['status'] = '<span class="badge badge-warning">Mendatang</span>';
+                        } elseif ($now->between($eventStartAt, $eventEndAt)) {
+                            $dt['status'] = '<span class="badge badge-success">Berlangsung</span>';
+                        } else {
+                            $dt['status'] = '<span class="badge badge-secondary">Selesai</span>';
+                        }
+                    } else {
+                        $dt['status'] = '<span class="badge badge-light">-</span>';
+                    }
+                } catch (\Throwable $e) {
+                    $dt['status'] = '<span class="badge badge-light">-</span>';
+                }
+
                 if (!empty($value['link_dokumentasi_event'])) {
                     $dt['dokumentasi'] = '<a href="' . $value['link_dokumentasi_event'] . '" target="_blank" class="text-primary">Lihat</a>';
                 } else {
@@ -424,6 +404,27 @@ class EventController extends Controller
             $data['data'] = $resp;
 
             return response()->json($data);
+        } else if ($param1 == 'detail') {
+            validate_and_response([
+                'id' => ['Parameter data', 'required'],
+            ]);
+
+            $currData = Event::findOrFail(decid($req->input('id')))->makeHidden(Event::$exceptEdit);
+
+            $currData->id = $req->input('id');
+            $currData->eventkategori_id = encid($currData->eventkategori_id);
+
+            return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $currData]);
+        } else if ($param1 == 'kategori-detail') {
+            validate_and_response([
+                'id' => ['Parameter data', 'required'],
+            ]);
+
+            $currData = EventKategori::findOrFail(decid($req->input('id')))->makeHidden(EventKategori::$exceptEdit);
+
+            $currData->id = $req->input('id');
+
+            return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $currData]);
         } else if ($param1 == 'kategori-list') {
             $filter = [];
 
@@ -460,7 +461,8 @@ class EventController extends Controller
             $eventId = decid($param2);
             $filter = ['event_id' => $eventId];
 
-            $data = DataTables::of(Kunjungan::with(['tamu', 'civitas', 'details', 'event'])->where($filter))->toArray();
+            $query = Kunjungan::with(['tamu', 'civitas', 'details', 'event'])->where($filter)->latest()->get();
+            $data = DataTables::of($query)->toArray();
 
             $start = $req->input('start');
             $resp = [];
@@ -481,7 +483,6 @@ class EventController extends Controller
                 $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
                 $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
                 $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
-                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
                 $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
 
                 $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .
@@ -554,48 +555,52 @@ class EventController extends Controller
             'jabatan' => ['Jabatan', 'required|string|max:255'],
         ]);
 
-        DB::beginTransaction();
         try {
-            $eventId = decid($request->post('event_id'));
-            $event = Event::findOrFail($eventId);
+            DB::transaction(function () use ($request) {
+                $eventId = decid($request->post('event_id'));
+                $event = Event::findOrFail($eventId);
 
-            $tamu = Tamu::create([
-                'nama_tamu' => clean_post('nama'),
-                'jenis_kelamin_tamu' => $request->post('jenis_kelamin'),
-            ]);
+                $tamu = Tamu::create([
+                    'nama_tamu' => clean_post('nama'),
+                    'jenis_kelamin_tamu' => $request->post('jenis_kelamin'),
+                ]);
 
-            $kunjungan = Kunjungan::create([
-                'tamu_id' => $tamu->tamu_id,
-                'event_id' => $eventId,
-                'identitas' => 'non-civitas',
-                'waktu_keluar' => $event->waktu_selesai_event,
-                'status_validasi' => true,
-                'is_vip' => true,
-            ]);
+                $kunjungan = Kunjungan::create([
+                    'tamu_id' => $tamu->tamu_id,
+                    'event_id' => $eventId,
+                    'identitas' => 'non-civitas',
+                    'kategori_tujuan' => KategoriTujuanEnum::EVENT->value,
+                    'waktu_keluar' => $event->waktu_selesai_event,
+                    'status_validasi' => true,
+                    'is_vip' => true,
+                ]);
 
-            KunjunganDetail::create([
-                'kunjungan_id' => $kunjungan->kunjungan_id,
-                'kunci' => 'institusi',
-                'nilai' => clean_post('institusi'),
-                'urutan' => 1,
-            ]);
-
-            KunjunganDetail::create([
-                'kunjungan_id' => $kunjungan->kunjungan_id,
-                'kunci' => 'jabatan',
-                'nilai' => clean_post('jabatan'),
-                'urutan' => 2,
-            ]);
-
-            DB::commit();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Tamu VIP berhasil ditambahkan'
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
+                $this->storeVipGuestDetails($kunjungan->kunjungan_id, $request);
+            });
+        } catch (Throwable $th) {
             abort(500, 'Tambah data gagal, kesalahan database');
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Tamu VIP berhasil ditambahkan'
+        ]);
+    }
+
+    private function storeVipGuestDetails(int $kunjunganId, Request $request): void
+    {
+        $details = [
+            ['kunci' => 'institusi', 'nilai' => clean_post('institusi'), 'urutan' => 1],
+            ['kunci' => 'jabatan', 'nilai' => clean_post('jabatan'), 'urutan' => 2],
+        ];
+
+        foreach ($details as $detail) {
+            KunjunganDetail::create([
+                'kunjungan_id' => $kunjunganId,
+                'kunci' => $detail['kunci'],
+                'nilai' => $detail['nilai'],
+                'urutan' => $detail['urutan'],
+            ]);
         }
     }
 }

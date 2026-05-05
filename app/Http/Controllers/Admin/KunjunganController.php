@@ -162,71 +162,6 @@ class KunjunganController extends Controller
             ]);
 
             return $this->view('admin.kunjungan.opsi');
-        } else if ($param1 == 'validasi') {
-            $this->title = 'Validasi Kunjungan';
-            $this->activeMenu = 'validasi-kunjungan';
-            $this->breadCrump[] = ['title' => 'Validasi Kunjungan', 'link' => route('app.kunjungan.validasi')];
-
-            $builder = app('datatables.html');
-            $dataTable = $builder->serverSide(true)
-                ->ajax(route('app.kunjungan.data') . '/validasi-list')
-                ->columns([
-                    Column::make([
-                        'width' => '3%',
-                        'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" id="checkAllValidasi"></div>',
-                        'data' => 'checkbox',
-                        'orderable' => false,
-                        'className' => 'text-center',
-                        'searchable' => false
-                    ]),
-                    Column::make([
-                        'width' => '5%',
-                        'title' => 'No',
-                        'data' => 'no',
-                        'orderable' => false,
-                        'className' => 'text-center'
-                    ]),
-                    Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
-                    Column::make([
-                        'title' => 'Jenis Kelamin',
-                        'data' => 'jenis_kelamin',
-                        'orderable' => true,
-                        'className' => 'text-center'
-                    ]),
-                    Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
-                    Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
-                    Column::make([
-                        'title' => 'Identitas',
-                        'data' => 'identitas',
-                        'orderable' => true,
-                    ]),
-                    Column::make([
-                        'title' => 'Jenis Kunjungan',
-                        'data' => 'jenis_kunjungan',
-                        'orderable' => true,
-                        'className' => 'text-center'
-                    ]),
-                    Column::make([
-                        'title' => 'Waktu Kunjungan',
-                        'data' => 'waktu_kunjungan',
-                        'orderable' => true,
-                        'className' => 'text-center'
-                    ]),
-                    Column::make([
-                        'width' => '12%',
-                        'title' => 'Aksi',
-                        'data' => 'action',
-                        'orderable' => false,
-                        'className' => 'text-nowrap text-center'
-                    ]),
-                ]);
-
-            $this->dataView([
-                'dataTable' => $dataTable,
-            ]);
-
-            return $this->view('admin.kunjungan.validasi');
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }
@@ -290,26 +225,7 @@ class KunjunganController extends Controller
 
     public function update(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
-        if ($param1 == 'validasi') {
-            validate_and_response([
-                'id' => ['Parameter data', 'required'],
-            ]);
-
-            $currData = Kunjungan::findOrFail(decid($req->input('id')));
-
-            DB::beginTransaction();
-            try {
-                $currData->update(['status_validasi' => true]);
-                DB::commit();
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Kunjungan berhasil divalidasi'
-                ]);
-            } catch (\Throwable $th) {
-                DB::rollBack();
-                abort(500, 'Gagal memvalidasi kunjungan, kesalahan database');
-            }
-        } else if ($param1 == 'opsi') {
+        if ($param1 == 'opsi') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
                 'nama_opsi' => ['Nama Opsi', 'required'],
@@ -419,14 +335,14 @@ class KunjunganController extends Controller
 
                 $dt['no'] = ++$start;
                 $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-' ;
+                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
                 $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
                 $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
 
                 $dt['kategori_tujuan'] = KategoriTujuanEnum::getDescription($value['kategori_tujuan']) ?? '-';
                 $dt['jumlah_rombongan'] = $value['jumlah_rombongan'] ?? '-';
                 $dt['transportasi'] = $value['transportasi'] ?? '-';
-                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas']);
+                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
 
                 $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .
                     \Carbon\Carbon::parse($value['created_at'])->setTimezone(config('app.timezone'))
@@ -480,10 +396,10 @@ class KunjunganController extends Controller
                 'kategori_tujuan' => KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
                 'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar'
                     : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
-                'jumlah_rombongan' => $currData->jumlah_rombongan ?? '-',
+                'jumlah_rombongan' => $currData->jumlah_rombongan ?? '',
                 'transportasi' => $currData->transportasi ?? '',
-                'status_validasi' => (bool) $currData->status_validasi,
-                'is_checkout' => (bool) $currData->is_checkout,
+                'status_validasi' => $currData->status_validasi ? 'Sudah validasi' : 'Belum validasi',
+                'is_checkout' => $currData->is_checkout ? 'Sudah checkout' : 'Belum checkout',
 
                 'tanggal_kunjungan' => $currData->created_at ? tanggal($currData->created_at) : '',
                 'waktu_kunjungan' => $currData->created_at ? $currData->created_at->format('H:i') : '-',
@@ -505,55 +421,6 @@ class KunjunganController extends Controller
             }
 
             return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $detailData]);
-        } else if ($param1 == 'validasi-list') {
-            $filter = ['status_validasi' => false];
-            $query = Kunjungan::with(['tamu', 'civitas', 'details', 'event'])
-                ->where($filter)
-                ->latest()
-                ->get();
-            $data = DataTables::of($query)->toArray();
-
-            $start = $req->input('start');
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-
-                $id = encid($value['kunjungan_id']);
-
-                $dt['checkbox'] = '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                    <input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' .
-                    $id . '">
-                </div>';
-
-                $dt['no'] = ++$start;
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
-                $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
-                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
-                $dt['kategori_tujuan'] = $value['kategori_tujuan'] ?? '-';
-                $dt['transportasi'] = $value['transportasi'] ?? '-';
-                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas']);
-                $dt['jenis_kunjungan'] = Kunjungan::getJenisKunjunganBadge($value['event_id']);
-
-                $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .
-                    \Carbon\Carbon::parse($value['created_at'])->setTimezone(config('app.timezone'))
-                    ->format('H:i') : '-';
-
-                $dataAction = [
-                    'id' => $id,
-                    'btn' => [
-                        ['action' => 'detail', 'title' => 'Lihat Detail', 'attr' => ['jf-detail' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-
-                $resp[] = $dt;
-            }
-
-            $data['data'] = $resp;
-
-            return response()->json($data);
         } else if ($param1 == 'opsi-list') {
             $filter = [];
             $data = DataTables::of(MstOpsiKunjungan::where($filter))->toArray();
@@ -615,193 +482,8 @@ class KunjunganController extends Controller
                 'message' => 'Data loaded',
                 'data' => $currData
             ]);
-        } else if ($param1 == 'monitoring-hari-ini') {
-            $today = \Carbon\Carbon::today();
-            $filter = [];
-            $query = Kunjungan::with(['tamu', 'details', 'event', 'event.eventKategori'])
-                ->whereDate('created_at', $today)
-                ->where($filter)
-                ->latest()
-                ->get();
-            $data = DataTables::of($query)->toArray();
-
-            $start = $req->input('start');
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-                $dt['no'] = ++$start;
-                $dt['waktu_kunjungan'] = $value['created_at'] ? \Carbon\Carbon::parse($value['created_at'])
-                    ->setTimezone(config('app.timezone'))->format('H:i') : '-';
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? '-';
-
-                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas']);
-                $dt['jenis_kunjungan'] = Kunjungan::getJenisKunjunganBadge($value['event_id']);
-                $dt['waktu_keluar'] = $value['waktu_keluar'] ? \Carbon\Carbon::parse($value['waktu_keluar'])
-                    ->format('H:i') : '-';
-                $dt['status_checkout'] = Kunjungan::getStatusCheckoutBadge($value['is_checkout']);
-
-                $id = encid($value['kunjungan_id']);
-                $dataAction = [
-                    'id' => $id,
-                    'btn' => [
-                        ['action' => 'detail', 'title' => 'Lihat Detail', 'attr' => ['jf-detail' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-                $resp[] = $dt;
-            }
-            $data['data'] = $resp;
-            return response()->json($data);
         } else {
             abort(404, 'Halaman tidak ditemukan');
-        }
-    }
-
-    public function validasi()
-    {
-        return $this->show('validasi');
-    }
-
-    public function monitoring()
-    {
-        $this->title = 'Monitoring Kunjungan Hari Ini';
-        $this->activeMenu = 'monitoring-kunjungan';
-        $this->breadCrump[] = ['title' => 'Monitoring Kunjungan', 'link' => url()->current()];
-
-        $today = \Carbon\Carbon::today();
-        $totalKunjunganHariIni = Kunjungan::whereDate('created_at', $today)->count();
-        $kunjunganSudahCheckout = Kunjungan::whereDate('created_at', $today)
-            ->where('is_checkout', true)->count();
-
-        $builder = app('datatables.html');
-        $dataTable = $builder->serverSide(true)
-            ->ajax(route('app.kunjungan.data') . '/monitoring-hari-ini')
-            ->columns([
-                Column::make([
-                    'width' => '5%',
-                    'title' => 'No',
-                    'data' => 'no',
-                    'orderable' => false,
-                    'className' => 'text-center'
-                ]),
-                Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
-                Column::make([
-                    'title' => 'Identitas',
-                    'data' => 'identitas',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Jenis Kunjungan',
-                    'data' => 'jenis_kunjungan',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Waktu Kunjungan',
-                    'data' => 'waktu_kunjungan',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Waktu Keluar (Estimasi)',
-                    'data' => 'waktu_keluar',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Status Checkout',
-                    'data' => 'status_checkout',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'width' => '15%',
-                    'title' => 'Aksi',
-                    'data' => 'action',
-                    'orderable' => false,
-                    'className' => 'text-nowrap text-center'
-                ]),
-            ]);
-
-        $this->dataView([
-            'dataTable' => $dataTable,
-            'totalKunjunganHariIni' => $totalKunjunganHariIni,
-            'kunjunganSudahCheckout' => $kunjunganSudahCheckout,
-            'tanggalHariIni' => $today->format('d F Y'),
-        ]);
-
-        return $this->view('admin.kunjungan.monitoring');
-    }
-
-    public function validateSingle(Request $request, $id): JsonResponse
-    {
-        $currData = Kunjungan::findOrFail(decid($id));
-
-        DB::beginTransaction();
-        try {
-            $currData->update(['status_validasi' => true]);
-            DB::commit();
-            return response()->json([
-                'status' => true,
-                'message' => 'Kunjungan berhasil divalidasi'
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            abort(500, 'Gagal memvalidasi kunjungan, kesalahan database');
-        }
-    }
-
-    public function rejectSingle(Request $request, $id): JsonResponse
-    {
-        $currData = Kunjungan::findOrFail(decid($id));
-
-        DB::beginTransaction();
-        try {
-            $currData->delete();
-            DB::commit();
-            return response()->json([
-                'status' => true,
-                'message' => 'Kunjungan berhasil dihapus'
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            abort(500, 'Gagal menghapus kunjungan, kesalahan database');
-        }
-    }
-
-    public function bulkValidasi(Request $request): JsonResponse
-    {
-        validate_and_response([
-            'ids' => ['Parameter data', 'required|array'],
-            'action' => ['Aksi', 'required|in:validate,reject'],
-        ]);
-
-        $ids = $request->input('ids');
-        $action = $request->input('action');
-
-        DB::beginTransaction();
-        try {
-            $decodedIds = array_map('decid', $ids);
-            $kunjungans = Kunjungan::whereIn('kunjungan_id', $decodedIds)->get();
-
-            if ($action === 'validate') {
-                Kunjungan::whereIn('kunjungan_id', $decodedIds)->update(['status_validasi' => true]);
-                $message = count($kunjungans) . ' kunjungan berhasil divalidasi';
-            } else {
-                Kunjungan::whereIn('kunjungan_id', $decodedIds)->delete();
-                $message = count($kunjungans) . ' kunjungan berhasil dihapus';
-            }
-
-            DB::commit();
-            return response()->json([
-                'status' => true,
-                'message' => $message
-            ]);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            abort(500, 'Gagal melakukan bulk action, kesalahan database');
         }
     }
 }

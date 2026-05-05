@@ -52,7 +52,7 @@ class UserController extends Controller
             $filter = [];
             $data = DataTables::of(User::getDataDetail($filter, get: false))->toArray();
 
-            $start = $req->input('start');
+            $start = (int) $req->input('start', 0);
             $resp = [];
             foreach ($data['data'] as $key => $value) {
                 $dt = [];
@@ -82,9 +82,9 @@ class UserController extends Controller
             $data['data'] = $resp;
 
             return response()->json($data);
-        } else if ($param1 = 'detail') {
+        } else if ($param1 === 'detail') {
             validate_and_response([
-                'id' => ['Paramater data', 'required'],
+                'id' => ['Parameter data', 'required'],
             ]);
             $currData = User::findOrFail(decid($req->input('id')));
             

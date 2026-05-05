@@ -39,20 +39,21 @@ class ActivityLogController extends Controller
 
     public function data(Request $req, $param1 = ''): JsonResponse
     {
-        if ($param1 == 'list') {
+        if ($param1 === 'list') {
             $query = Activity::with('causer');
 
             $data = DataTables::of($query->latest()->get())
                 ->toArray();
 
-            $total = Activity::count();
-            $start = $req->input('start');
+            $start = (int) $req->input('start', 0);
             $resp = [];
-            foreach ($data['data'] as $key => $value) {
+            foreach ($data['data'] as $value) {
                 $dt = [];
 
                 $dt['no'] = ++$start;
-                $dt['created_at'] = Carbon::parse($value['created_at'])->format('d M Y H:i');
+                $dt['created_at'] = Carbon::parse($value['created_at'])
+                    ->timezone('Asia/Jakarta')
+                    ->format('d M Y H:i');
                 $dt['user'] = $value['causer']['name'] ?? 'System';
                 $dt['description'] = $value['description'] ?? '-';
                 $subjectType = $value['subject_type'] ?? '-';
@@ -75,7 +76,7 @@ class ActivityLogController extends Controller
             $data['data'] = $resp;
 
             return response()->json($data);
-        } else if ($param1 == 'detail') {
+        } else if ($param1 === 'detail') {
             $id = $req->input('id');
             $log = Activity::with('causer', 'subject')->find($id);
 
