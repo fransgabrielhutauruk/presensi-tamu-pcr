@@ -98,6 +98,10 @@ function ajaxRequest(param = {}) {
                 });
             }
 
+            if (param.error) {
+                param.error(xhr, textStatus, errorThrown);
+            }
+
 
             resp = { status: false, data: false }
             if (param.callback && param.object_origin) param.callback(param.object_origin, resp);
