@@ -9,3 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('reminders:process')->everyMinute();
+
+// Menjadwalkan sinkronisasi Data Warehouse setiap tengah malam
+Schedule::command('app:etl-sync-kunjungan')->dailyAt('00:00');

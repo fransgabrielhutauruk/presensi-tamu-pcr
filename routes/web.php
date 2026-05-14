@@ -53,14 +53,15 @@ Route::prefix('app')
             Route::get('kunjungan/monitoring/stats', [KunjunganMonitoringController::class, 'getStats'])
                 ->name('app.kunjungan.monitoring.stats');
 
+            Route::any('kunjungan/data/validasi-list/{param2?}/{param3?}/{param4?}', [KunjunganValidasiController::class, 'data'])
+                ->middleware(['ajax']);
+            Route::get('kunjungan/validasi', [KunjunganValidasiController::class, 'index'])->name('app.kunjungan.validasi');
+
             generalRoute(KunjunganController::class, 'kunjungan', 'app');
             generalRoute(FeedbackController::class, 'feedback', 'app');
         });
 
         Route::middleware('active-role:' . UserRole::ADMIN->value)->group(function () {
-            Route::any('kunjungan/data/validasi-list/{param2?}/{param3?}/{param4?}', [KunjunganValidasiController::class, 'data'])
-                ->middleware(['ajax']);
-            Route::get('kunjungan/validasi', [KunjunganValidasiController::class, 'index'])->name('app.kunjungan.validasi');
             generalRoute(UserController::class, 'user', 'app');
             generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
             generalRoute(MasterController::class, 'master', 'app');
