@@ -27,8 +27,8 @@ class EtlSyncKunjungan extends Command
      */
     public function handle()
     {
-        $oltp = DB::connection('sqlsrv');
-        $dwh = DB::connection('sqlsrv_dwh');
+        $oltp = DB::connection(env('DB_CONNECTION', 'mysql'));
+        $dwh = DB::connection(env('DB_DWH_CONNECTION', 'mysql_dwh'));
 
         $tamuRows = $oltp->table('tamu')
             ->join('kunjungan', 'tamu.tamu_id', '=', 'kunjungan.tamu_id')

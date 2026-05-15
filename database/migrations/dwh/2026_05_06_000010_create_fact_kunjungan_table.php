@@ -6,9 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * The connection name for the migration.
+     *
+     * @var string
+     */
+    protected $connection;
+
+    public function __construct()
+    {
+        $this->connection = config('database.dwh_connection', 'mysql_dwh');
+    }
+
     public function up(): void
     {
-        Schema::connection('sqlsrv_dwh')->create('fact_kunjungan', function (Blueprint $table) {
+        Schema::connection($this->connection)->create('fact_kunjungan', function (Blueprint $table) {
             $table->integer('kunjungan_id')->primary();
             $table->integer('tamu_id')->nullable();
             $table->integer('civitas_id')->nullable();
@@ -28,6 +40,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::connection('sqlsrv_dwh')->dropIfExists('fact_kunjungan');
+        Schema::connection($this->connection)->dropIfExists('fact_kunjungan');
     }
 };

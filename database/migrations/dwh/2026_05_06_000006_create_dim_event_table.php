@@ -6,9 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * The connection name for the migration.
+     *
+     * @var string
+     */
+    protected $connection;
+
+    public function __construct()
+    {
+        $this->connection = config('database.dwh_connection', 'mysql_dwh');
+    }
+
     public function up(): void
     {
-        Schema::connection('sqlsrv_dwh')->create('dim_event', function (Blueprint $table) {
+        Schema::connection($this->connection)->create('dim_event', function (Blueprint $table) {
             $table->integer('event_id')->primary();
             $table->integer('eventkategori_id')->nullable();
             $table->string('nama_event');
@@ -21,6 +33,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::connection('sqlsrv_dwh')->dropIfExists('dim_event');
+        Schema::connection($this->connection)->dropIfExists('dim_event');
     }
 };
