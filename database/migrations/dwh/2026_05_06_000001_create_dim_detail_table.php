@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::connection('sqlsrv_dwh')->create('dim_detail', function (Blueprint $table) {
             $table->integer('detail_id')->primary();
             $table->string('kunci');
-            $table->string('kategori');
         });
     }
 

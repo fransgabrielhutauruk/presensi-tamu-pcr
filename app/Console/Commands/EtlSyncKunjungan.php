@@ -38,6 +38,7 @@ class EtlSyncKunjungan extends Command
             ->select('tamu.*')
             ->distinct()
             ->get();
+        
         foreach ($tamuRows as $row) {
             $dwh->table('dim_tamu')->updateOrInsert(
                 ['tamu_id' => $row->tamu_id],
@@ -63,7 +64,7 @@ class EtlSyncKunjungan extends Command
             $dwh->table('dim_civitas')->updateOrInsert(
                 ['civitas_id' => $row->civitas_id],
                 [
-                    'nama' => $row->nama_civitas ?? $row->nama,
+                    'nama' => $row->nama_civitas,
                     'nip' => $row->nip,
                     'nim' => $row->nim,
                     'email' => $row->email,
@@ -127,13 +128,22 @@ class EtlSyncKunjungan extends Command
             ->whereNotNull('kategori_tujuan')
             ->distinct()
             ->pluck('kategori_tujuan');
+        $kategoriMap = [
+            'instansi' => 'Kunjungan resmi dari instansi/lembaga',
+            'bisnis' => 'Kunjungan untuk keperluan bisnis',
+            'ortu' => 'Kunjungan orang tua mahasiswa',
+            'informasi_kampus' => 'Mencari informasi tentang kampus',
+            'lainnya' => 'Keperluan lainnya',
+            'event' => 'Kunjungan untuk menghadiri event',
+        ];
         foreach ($kategoriValues as $kategori) {
+            $kategoriLabel = $kategoriMap[$kategori] ?? $kategori;
             $existingId = $dwh->table('dim_kunjungan_kategori')->where('kategori_kunjungan', $kategori)->value('kunjungankategori_id');
             if ($existingId === null) {
                 $nextId = (int) $dwh->table('dim_kunjungan_kategori')->max('kunjungankategori_id') + 1;
                 $dwh->table('dim_kunjungan_kategori')->insert([
                     'kunjungankategori_id' => $nextId,
-                    'kategori_kunjungan' => $kategori,
+                    'kategori_kunjungan' => $kategoriLabel,
                 ]);
             }
         }
@@ -162,7 +172,6 @@ class EtlSyncKunjungan extends Command
             ->join('kunjungan', 'kunjungan_detail.kunjungan_id', '=', 'kunjungan.kunjungan_id')
             ->whereNull('kunjungan.deleted_at')
             ->whereNull('kunjungan_detail.deleted_at')
-            ->select('kunjungan_detail.kunci', 'kunjungan.kategori_tujuan as kategori')
             ->distinct()
             ->get();
         foreach ($detailRows as $row) {
@@ -174,7 +183,6 @@ class EtlSyncKunjungan extends Command
                 ['kunci' => $row->kunci],
                 [
                     'detail_id' => $existingId,
-                    'kategori' => $row->kategori,
                 ]
             );
         }
