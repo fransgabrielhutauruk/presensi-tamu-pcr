@@ -15,7 +15,7 @@ use App\Http\Controllers\Admin\KunjunganValidasiController;
 use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\MasterController;
 
-include_once __DIR__ . "/web-frontend.php";
+require __DIR__ . "/web-frontend.php";
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
