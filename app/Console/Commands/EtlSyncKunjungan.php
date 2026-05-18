@@ -138,7 +138,7 @@ class EtlSyncKunjungan extends Command
         ];
         foreach ($kategoriValues as $kategori) {
             $kategoriLabel = $kategoriMap[$kategori] ?? $kategori;
-            $existingId = $dwh->table('dim_kunjungan_kategori')->where('kategori_kunjungan', $kategori)->value('kunjungankategori_id');
+            $existingId = $dwh->table('dim_kunjungan_kategori')->where('kategori_kunjungan', $kategoriLabel)->value('kunjungankategori_id');
             if ($existingId === null) {
                 $nextId = (int) $dwh->table('dim_kunjungan_kategori')->max('kunjungankategori_id') + 1;
                 $dwh->table('dim_kunjungan_kategori')->insert([
@@ -224,8 +224,11 @@ class EtlSyncKunjungan extends Command
             $transportasiId = $row->transportasi !== null
                 ? $dwh->table('dim_transportasi')->where('transportasi', $row->transportasi)->value('transportasi_id')
                 : null;
-            $kunjunganKategoriId = $kategoriKunjungan !== null
-                ? $dwh->table('dim_kunjungan_kategori')->where('kategori_kunjungan', $kategoriKunjungan)->value('kunjungankategori_id')
+            $kunjunganKategoriLabel = $kategoriKunjungan !== null
+                ? ($kategoriMap[$kategoriKunjungan] ?? $kategoriKunjungan)
+                : null;
+            $kunjunganKategoriId = $kunjunganKategoriLabel !== null
+                ? $dwh->table('dim_kunjungan_kategori')->where('kategori_kunjungan', $kunjunganKategoriLabel)->value('kunjungankategori_id')
                 : null;
 
             $kunjunganWaktu = $row->created_at;
