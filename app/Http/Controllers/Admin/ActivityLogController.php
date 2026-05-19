@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\DataTables;
@@ -18,6 +19,13 @@ class ActivityLogController extends Controller
         $this->activeMenu = 'log-aktivitas';
         $this->breadCrump[] = ['title' => 'Log Aktivitas', 'link' => url()->current()];
 
+        $users = User::select('id', 'name')->orderBy('name')->get();
+        $subjects = Activity::select('subject_type')
+            ->whereNotNull('subject_type')
+            ->distinct()
+            ->orderBy('subject_type')
+            ->pluck('subject_type');
+
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)
             ->ajax(route('app.log-aktivitas.data') . '/list')
@@ -31,7 +39,9 @@ class ActivityLogController extends Controller
             ]);
 
         $this->dataView([
-            'dataTable' => $dataTable
+            'dataTable' => $dataTable,
+            'users' => $users,
+            'subjects' => $subjects,
         ]);
 
         return $this->view('admin.log-aktivitas.list');
@@ -41,6 +51,35 @@ class ActivityLogController extends Controller
     {
         if ($param1 === 'list') {
             $query = Activity::with('causer');
+
+            $filterUser = $req->input('filter_user');
+            $filterEvent = $req->input('filter_event');
+            $filterSubject = $req->input('filter_subject');
+            $filterDateFrom = $req->input('filter_date_from');
+            $filterDateTo = $req->input('filter_date_to');
+
+            if (!empty($filterUser)) {
+                $query->where('causer_id', $filterUser);
+            }
+
+            if (!empty($filterEvent)) {
+                $query->where(function ($q) use ($filterEvent) {
+                    $q->where('event', $filterEvent)
+                        ->orWhere('description', $filterEvent);
+                });
+            }
+
+            if (!empty($filterSubject)) {
+                $query->where('subject_type', $filterSubject);
+            }
+
+            if (!empty($filterDateFrom)) {
+                $query->whereDate('created_at', '>=', $filterDateFrom);
+            }
+
+            if (!empty($filterDateTo)) {
+                $query->whereDate('created_at', '<=', $filterDateTo);
+            }
 
             $data = DataTables::of($query->latest()->get())
                 ->toArray();

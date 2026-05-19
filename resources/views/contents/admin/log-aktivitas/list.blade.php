@@ -15,6 +15,52 @@
             <div class="col-md">
                 <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="log_aktivitas"
                     jf-list="datatable">
+                    @slot('filter')
+                        <div class="row g-4">
+                            <div class="col-md-2">
+                                <label class="form-label fs-7 fw-semibold">User</label>
+                                <select id="filter_user" name="filter_user" class="form-select form-select-sm"
+                                    data-control="select2" data-placeholder="Semua User" data-allow-clear="true">
+                                    <option value="">Semua User</option>
+                                    @foreach ($pageData->users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fs-7 fw-semibold">Aksi</label>
+                                <select id="filter_event" name="filter_event" class="form-select form-select-sm"
+                                    data-control="select2" data-placeholder="Semua Aksi" data-allow-clear="true">
+                                    <option value="">Semua Aksi</option>
+                                    <option value="login">Login</option>
+                                    <option value="logout">Logout</option>
+                                    <option value="created">Tambah Data</option>
+                                    <option value="updated">Ubah Data</option>
+                                    <option value="deleted">Hapus Data</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label fs-7 fw-semibold">Subjek</label>
+                                <select id="filter_subject" name="filter_subject" class="form-select form-select-sm"
+                                    data-control="select2" data-placeholder="Semua Subjek" data-allow-clear="true">
+                                    <option value="">Semua Subjek</option>
+                                    @foreach ($pageData->subjects as $subject)
+                                        <option value="{{ $subject }}">{{ class_basename($subject) }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fs-7 fw-semibold">Dari Tanggal</label>
+                                <input type="date" id="filter_date_from" name="filter_date_from"
+                                    class="form-control form-control-sm" />
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label fs-7 fw-semibold">Sampai Tanggal</label>
+                                <input type="date" id="filter_date_to" name="filter_date_to"
+                                    class="form-control form-control-sm" />
+                            </div>
+                        </div>
+                    @endslot
                     @slot('action')
                         <x-btn.refresh-datatable />
                     @endslot
