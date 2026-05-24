@@ -128,7 +128,6 @@ class KunjunganNonEventController extends Controller
             'tamu_id' => $tamuId,
             'kategori_tujuan' => $request->kategori_tujuan,
             'identitas' => 'non-civitas',
-            'jumlah_rombongan' => $request->jumlah_rombongan,
             'waktu_keluar' => $waktuKeluar->format('H:i:s'),
             'transportasi' => $request->transportasi,
             'status_validasi' => false,

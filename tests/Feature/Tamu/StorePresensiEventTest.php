@@ -32,7 +32,6 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'email' => 'siti@example.com',
             'institusi' => 'PT Inovasi Nusantara',
             'jabatan' => 'Koordinator Program',
-            'jumlah_rombongan' => 4,
             'transportasi' => 'Mobil',
         ];
 
@@ -81,12 +80,6 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'kunjungan_id' => $kunjungan->kunjungan_id,
             'kunci' => 'jabatan',
             'nilai' => 'Koordinator Program',
-        ]);
-
-        $this->assertDatabaseHas('kunjungan_detail', [
-            'kunjungan_id' => $kunjungan->kunjungan_id,
-            'kunci' => 'jumlah_rombongan',
-            'nilai' => '4',
         ]);
 
         $this->get($redirectUrl)
@@ -375,7 +368,6 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'email' => 'siti@example.com',
             'institusi' => '',
             'jabatan' => 'Koordinator Program',
-            'jumlah_rombongan' => 4,
             'transportasi' => 'Mobil',
         ];
 

@@ -167,7 +167,6 @@ return [
         'transportasi' => 'Transportation',
         'nim_nip' => 'Student ID/Employee ID',
         'keperluan' => 'Visit Purpose',
-        'jumlah_rombongan' => 'Group Size',
         'waktu_keluar' => 'End Time',
         'pihak_dituju' => 'Visiting Party',
         'asal_sekolah' => 'School Origin',

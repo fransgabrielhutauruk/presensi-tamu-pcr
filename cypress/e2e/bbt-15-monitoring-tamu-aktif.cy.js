@@ -34,7 +34,6 @@ const buatKunjunganNonEventHariIni = () => {
     cy.get('[data-cy="input-email"]:visible:enabled').first().type(uniqueEmail, { force: true });
     cy.get('[data-cy="input-pihak_dituju"]:visible:enabled').first().type('Petugas Informasi', { force: true });
     cy.get('[data-cy="textarea-keperluan"]:visible:enabled').first().type('Pengujian monitoring tamu aktif BBT-15', { force: true });
-    cy.get('[data-cy="input-jumlah_rombongan"]:visible:enabled').first().clear({ force: true }).type('1', { force: true });
     cy.get('[data-cy="input-estimasi_durasi"]:visible:enabled').first().clear({ force: true }).type('2', { force: true });
   });
   pilihOpsiPertama('[data-cy="select-transportasi"]');

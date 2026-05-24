@@ -112,10 +112,6 @@
                     <label class="fw-bold text-muted">Waktu Checkout:</label>
                     <div data-field="checkout_time" class="fw-bold">-</div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Jumlah Rombongan:</label>
-                    <div data-field="jumlah_rombongan" class="fw-bold">-</div>
-                </div>
             </div>
         </div>
 
@@ -291,7 +287,6 @@
                 'waktu_kunjungan',
                 'waktu_keluar',
                 'checkout_time',
-                'jumlah_rombongan',
                 'event_nama',
                 'event_kategori'
             ];

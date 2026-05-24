@@ -167,7 +167,6 @@ return [
         'transportasi' => 'Transportasi',
         'nim_nip' => 'NIM/NIP',
         'keperluan' => 'Keperluan Kunjungan',
-        'jumlah_rombongan' => 'Jumlah Rombongan',
         'waktu_keluar' => 'Jam Selesai',
         'pihak_dituju' => 'Pihak yang Dituju',
         'asal_sekolah' => 'Asal Sekolah',

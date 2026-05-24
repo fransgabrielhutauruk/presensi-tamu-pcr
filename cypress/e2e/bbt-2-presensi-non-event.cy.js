@@ -25,7 +25,6 @@ const isiDataKunjunganDasar = () => {
     cy.get('[data-cy="textarea-keperluan"]').type(
         "Kunjungan untuk kebutuhan administrasi.",
     );
-    cy.get('[data-cy="input-jumlah_rombongan"]').clear().type("1");
     cy.get('[data-cy="input-estimasi_durasi"]').clear().type("2");
     pilihOpsiPertama('[data-cy="select-transportasi"]');
 };
@@ -162,7 +161,6 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
         cy.get('[data-cy="input-nomor_telepon"]').type("081388888889");
         cy.get('[data-cy="input-email"]').type(uniqueEmail);
         cy.get('[data-cy="input-pihak_dituju"]').type("Petugas Informasi");
-        cy.get('[data-cy="input-jumlah_rombongan"]').clear().type("1");
         cy.get('[data-cy="input-estimasi_durasi"]').clear().type("2");
         cy.get('[data-cy="select-transportasi"]').select("Jalan Kaki");
         cy.get('[data-cy="btn-submit-presensi"]').click();
@@ -189,7 +187,6 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="input-jabatan"]',
             '[data-cy="select-pihak_dituju"]',
             '[data-cy="textarea-keperluan"]',
-            '[data-cy="input-jumlah_rombongan"]',
             '[data-cy="input-estimasi_durasi"]',
             '[data-cy="select-transportasi"]',
         ]);
@@ -208,7 +205,6 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="input-jabatan"]',
             '[data-cy="select-pihak_dituju"]',
             '[data-cy="textarea-keperluan"]',
-            '[data-cy="input-jumlah_rombongan"]',
             '[data-cy="input-estimasi_durasi"]',
             '[data-cy="select-transportasi"]',
         ]);
@@ -226,7 +222,6 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="select-prodi_mahasiswa"]',
             '[data-cy="select-pihak_dituju"]',
             '[data-cy="textarea-keperluan"]',
-            '[data-cy="input-jumlah_rombongan"]',
             '[data-cy="input-estimasi_durasi"]',
             '[data-cy="select-transportasi"]',
         ]);
@@ -242,7 +237,6 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="input-asal_sekolah"]',
             '[data-cy="select-prodi_diminati"]',
             '[data-cy="textarea-keperluan"]',
-            '[data-cy="input-jumlah_rombongan"]',
             '[data-cy="input-estimasi_durasi"]',
             '[data-cy="select-transportasi"]',
         ]);
@@ -257,7 +251,6 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="input-email"]',
             '[data-cy="input-pihak_dituju"]',
             '[data-cy="textarea-keperluan"]',
-            '[data-cy="input-jumlah_rombongan"]',
             '[data-cy="input-estimasi_durasi"]',
             '[data-cy="select-transportasi"]',
         ]);

@@ -145,8 +145,6 @@ return [
     // Visit Data Labels
     'visit_purpose_label' => 'Keperluan Kunjungan',
     'visit_purpose_placeholder' => 'Jelaskan keperluan kunjungan',
-    'group_size_label' => 'Jumlah Rombongan',
-    'group_size_placeholder' => 'Isi \'1\' jika sendiri',
     'estimated_duration' => 'Estimasi Durasi Kunjungan (Jam)',
     'estimated_duration_placeholder' => 'Contoh: 2 (untuk 2 jam)',
     'transportation_label' => 'Jenis Kendaraan/Transportasi',

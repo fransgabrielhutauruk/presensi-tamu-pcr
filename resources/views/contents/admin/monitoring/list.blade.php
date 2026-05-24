@@ -72,7 +72,6 @@
                     'waktu_kunjungan',
                     'waktu_keluar',
                     'checkout_time',
-                    'jumlah_rombongan',
                 ],
             ];
         @endphp
@@ -130,7 +129,7 @@
             detailFields: ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
                 'kategori_tujuan', 'transportasi', 'status_validasi', 'is_checkout',
                 'identitas', 'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar',
-                'checkout_time', 'jumlah_rombongan', 'event_nama', 'event_kategori'
+                'checkout_time', 'event_nama', 'event_kategori'
             ]
         };
 

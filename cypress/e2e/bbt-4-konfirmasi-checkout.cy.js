@@ -15,7 +15,6 @@ const isiPresensiNonEventSampaiSukses = (suffix) => {
   cy.get('[data-cy="input-email"]').type(`bbt4.${suffix}@example.com`);
   cy.get('[data-cy="input-pihak_dituju"]').type('Petugas Informasi');
   cy.get('[data-cy="textarea-keperluan"]').type('Konfirmasi checkout kunjungan.');
-  cy.get('[data-cy="input-jumlah_rombongan"]').clear().type('1');
   cy.get('[data-cy="input-estimasi_durasi"]').clear().type('1');
   pilihOpsiPertama('[data-cy="select-transportasi"]');
   cy.get('[data-cy="btn-submit-presensi"]').click();

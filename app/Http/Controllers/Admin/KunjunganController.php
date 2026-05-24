@@ -49,11 +49,6 @@ class KunjunganController extends Controller
                 'orderable' => true,
             ],
             'kategori_tujuan' => ['title' => 'Kategori Tujuan', 'data' => 'kategori_tujuan', 'orderable' => true],
-            'jumlah_rombongan' => [
-                'title' => 'Jumlah Rombongan',
-                'data' => 'jumlah_rombongan',
-                'orderable' => true,
-            ],
             'transportasi' => [
                 'title' => 'Transportasi',
                 'data' => 'transportasi',
@@ -340,7 +335,6 @@ class KunjunganController extends Controller
                 $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
 
                 $dt['kategori_tujuan'] = KategoriTujuanEnum::getDescription($value['kategori_tujuan']) ?? '-';
-                $dt['jumlah_rombongan'] = $value['jumlah_rombongan'] ?? '-';
                 $dt['transportasi'] = $value['transportasi'] ?? '-';
                 $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
 
@@ -396,7 +390,6 @@ class KunjunganController extends Controller
                 'kategori_tujuan' => KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
                 'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar'
                     : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
-                'jumlah_rombongan' => $currData->jumlah_rombongan ?? '',
                 'transportasi' => $currData->transportasi ?? '',
                 'status_validasi' => $currData->status_validasi ? 'Sudah validasi' : 'Belum validasi',
                 'is_checkout' => $currData->is_checkout ? 'Sudah checkout' : 'Belum checkout',

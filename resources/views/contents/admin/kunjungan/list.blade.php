@@ -99,7 +99,6 @@
                         'waktu_kunjungan',
                         'waktu_keluar',
                         'checkout_time',
-                        'jumlah_rombongan',
                     ],
                 ],
             ];
@@ -119,7 +118,6 @@
                 'waktu_kunjungan' => 'Waktu Kunjungan',
                 'waktu_keluar' => 'Waktu Keluar (Estimasi)',
                 'checkout_time' => 'Waktu Checkout',
-                'jumlah_rombongan' => 'Jumlah Rombongan',
             ];
         @endphp
 
@@ -258,8 +256,8 @@
         function populateDetailFields(data) {
             const detailFields = ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
                 'kategori_tujuan', 'transportasi', 'status_validasi', 'is_checkout', 'identitas',
-                'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time', 'jumlah_rombongan',
-                'event_nama', 'event_kategori'
+                'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time', 'event_nama',
+                'event_kategori'
             ];
             detailFields.forEach(field => setDetailField(field, data[field]));
         }

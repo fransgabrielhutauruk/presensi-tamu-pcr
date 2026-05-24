@@ -77,7 +77,6 @@ describe('BBT-3 Pengisian Presensi Event', () => {
     cy.get('[data-cy="input-email"]').type(`siti.bbt3.${suffix}@example.com`);
     cy.get('[data-cy="input-institusi"]').type('PT Inovasi Nusantara');
     cy.get('[data-cy="input-jabatan"]').type('Koordinator Program');
-    cy.get('[data-cy="input-jumlah_rombongan"]').clear().type('4');
     pilihOpsiPertama('[data-cy="select-transportasi"]');
     cy.get('[data-cy="btn-submit-presensi-event"]').click();
 
@@ -188,7 +187,6 @@ describe('BBT-3 Pengisian Presensi Event', () => {
       '[data-cy="input-email"]',
       '[data-cy="input-institusi"]',
       '[data-cy="input-jabatan"]',
-      '[data-cy="input-jumlah_rombongan"]',
       '[data-cy="select-transportasi"]',
     ]);
   });

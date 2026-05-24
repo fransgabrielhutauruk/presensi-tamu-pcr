@@ -60,7 +60,6 @@ const buatPresensiNonEventBelumValidasi = () => {
   getInputAktifDiForm('input-email').clear({ force: true }).type(uniqueEmail, { force: true });
   getInputAktifDiForm('input-pihak_dituju').clear({ force: true }).type('Petugas Informasi', { force: true });
   getInputAktifDiForm('textarea-keperluan').clear({ force: true }).type('Pengujian validasi kunjungan non-event BBT-13', { force: true });
-  getInputAktifDiForm('input-jumlah_rombongan').clear({ force: true }).type('1', { force: true });
   getInputAktifDiForm('input-estimasi_durasi').clear({ force: true }).type('2', { force: true });
   pilihOpsiPertama('[data-cy="select-transportasi"]');
   cy.get('[data-cy="btn-submit-presensi"]').click();

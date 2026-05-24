@@ -75,8 +75,6 @@
                     <x-tamu.partials.data-pengunjung />
                     <x-form.input-field name="institusi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_placeholder')" required="true" />
                     <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true" />
-                    <x-form.input-field name="jumlah_rombongan" :label="__('visitor.group_size_label')" type="number" min="1"
-                        max="50" required="true" :placeholder="__('visitor.group_size_placeholder')" />
                     <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
 
                     <div class="mt-5 mb-4">

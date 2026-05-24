@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Feedback;
-use Illuminate\Http\Request;
-use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Feedback;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Html\Column;
 
 class FeedbackController extends Controller
 {
@@ -77,6 +77,9 @@ class FeedbackController extends Controller
                             });
                     });
                 }, true)
+                ->order(function ($q) {
+                    $q->orderBy('created_at', 'desc');
+                })
                 ->addColumn('no', function () use (&$start) {
                     return ++$start;
                 })
@@ -144,7 +147,6 @@ class FeedbackController extends Controller
                 'kategori_tujuan' => \App\Enums\KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
                 'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar'
                     : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
-                'jumlah_rombongan' => $currData->jumlah_rombongan ?? '-',
                 'transportasi' => $currData->transportasi ?? '',
                 'status_validasi' => (bool) $currData->status_validasi,
                 'is_checkout' => (bool) $currData->is_checkout,

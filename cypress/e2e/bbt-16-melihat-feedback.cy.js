@@ -79,7 +79,6 @@ const buatFeedbackTamu = () => {
         kategori_tujuan: 'lainnya',
         pihak_dituju: 'Petugas Informasi',
         keperluan: 'Pengujian melihat detail feedback BBT-16',
-        jumlah_rombongan: '1',
         estimasi_durasi: '1',
         transportasi: 'Mobil',
       },

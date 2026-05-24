@@ -145,8 +145,6 @@ return [
     // Visit Data Labels
     'visit_purpose_label' => 'Visit Purpose',
     'visit_purpose_placeholder' => 'Describe visit purpose',
-    'group_size_label' => 'Group Size',
-    'group_size_placeholder' => 'Enter \'1\' if alone',
     'estimated_duration' => 'Estimated Visit Duration (Hours)',
     'estimated_duration_placeholder' => 'Example: 2 (for 2 hours)',
     'transportation_label' => 'Vehicle/Transportation Type',

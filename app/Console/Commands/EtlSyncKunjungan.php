@@ -252,7 +252,6 @@ class EtlSyncKunjungan extends Command
                     'waktu_masuk' => $parsedWaktu->format('H:i:s'),
                     'waktu_keluar' => $row->waktu_keluar,
                     'jumlah_kunjungan' => 1,
-                    'jumlah_rombongan' => $row->jumlah_rombongan ?? 1,
                 ]
             );
         }

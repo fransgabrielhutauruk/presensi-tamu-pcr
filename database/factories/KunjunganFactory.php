@@ -21,7 +21,6 @@ class KunjunganFactory extends Factory
             'event_id' => null,
             'identitas' => 'non-civitas',
             'kategori_tujuan' => 'instansi',
-            'jumlah_rombongan' => 1,
             'waktu_keluar' => now()->addHour()->format('H:i:s'),
             'transportasi' => 'Mobil',
             'status_validasi' => false,

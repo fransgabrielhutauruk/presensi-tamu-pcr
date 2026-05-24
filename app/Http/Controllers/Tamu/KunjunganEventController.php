@@ -92,7 +92,6 @@ class KunjunganEventController extends Controller
             'email' => 'required|email',
             'institusi' => 'required',
             'jabatan' => 'required',
-            'jumlah_rombongan' => 'required|integer|min:1',
             'transportasi' => 'required',
         ]);
         if ($validator->fails()) {
@@ -454,7 +453,6 @@ class KunjunganEventController extends Controller
         return [
             'institusi' => $request->institusi,
             'jabatan' => $request->jabatan,
-            'jumlah_rombongan' => $request->jumlah_rombongan,
         ];
     }
 

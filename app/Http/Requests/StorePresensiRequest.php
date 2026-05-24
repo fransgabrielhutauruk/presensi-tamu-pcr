@@ -21,8 +21,7 @@ class StorePresensiRequest extends FormRequest
 
             'kategori_tujuan' => 'required|in:instansi,bisnis,ortu,informasi_kampus,lainnya',
             'estimasi_durasi' => 'required|integer|min:1|max:24',
-            'transportasi' => 'required|string|max:255',
-            'jumlah_rombongan' => 'required|integer|min:1'
+            'transportasi' => 'required|string|max:255'
         ];
 
         switch ($this->kategori_tujuan) {

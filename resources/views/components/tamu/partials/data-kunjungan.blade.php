@@ -12,9 +12,6 @@
 
 <x-form.textarea-field name="keperluan" :label="__('visitor.visit_purpose_label')" :placeholder="__('visitor.visit_purpose_placeholder')" required="true" rows="3" />
 
-<x-form.input-field name="jumlah_rombongan" :label="__('visitor.group_size_label')" type="number" min="1" max="50" required="true"
-    :placeholder="__('visitor.group_size_placeholder')" />
-
 <x-form.input-field name="estimasi_durasi" :label="__('visitor.estimated_duration')" type="number" min="1" required="true"
     :placeholder="__('visitor.estimated_duration_placeholder')" />
 

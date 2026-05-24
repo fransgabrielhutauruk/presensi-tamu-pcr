@@ -347,7 +347,6 @@
             setDetailField('tanggal_kunjungan', data.tanggal_kunjungan);
             setDetailField('waktu_kunjungan', data.waktu_kunjungan);
             setDetailField('waktu_keluar', data.waktu_keluar);
-            setDetailField('jumlah_rombongan', data.jumlah_rombongan);
 
             var statusBadge = $('[data-field="status_badge"]');
             console.log('this', data.status_validasi)
