@@ -43,23 +43,25 @@
 
                 <div class="text-start mt-4">
                     <a href="{{ route('tamu.non-event.tujuan') }}" class="btn btn-link p-0 mb-2 gap-2 text-decoration-none"
-                        style="color: var(--dark-color);">
+                        style="color: var(--dark-color);" data-cy="btn-back-tujuan">
                         <i class="fas fa-arrow-left"></i>
                         <span>{{ __('visitor.back') }}</span>
                     </a>
                 </div>
 
-                <form id="tamu-form" class="text-start wow fadeInUp" action="{{ route('tamu.non-event.store-presensi') }}"
-                    method="POST" data-toggle="validator" novalidate>
+                <form id="tamu-form" class="text-start wow fadeInUp"
+                    action="{{ route('tamu.non-event.store-presensi') }}" method="POST" data-toggle="validator"
+                    novalidate data-cy="form-presensi-non-event">
                     @csrf
-                    <input type="hidden" name="kategori_tujuan" value="{{ $tujuanKey }}">
+                    <input type="hidden" name="kategori_tujuan" value="{{ $tujuanKey }}"
+                        data-cy="input-kategori-tujuan">
 
                     @if ($currentTujuan['partial'])
                         @include($currentTujuan['partial'])
                     @endif
 
                     <div class="mt-5 mb-4">
-                        <button type="submit" id="submitBtn" class="btn-default w-100">
+                        <button type="submit" id="submitBtn" class="btn-default w-100" data-cy="btn-submit-presensi">
                             <span id="btn-text">{{ __('visitor.submit') }}</span>
                             <span id="btn-loading" style="display: none;">
                                 <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}

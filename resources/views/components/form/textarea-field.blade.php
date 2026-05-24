@@ -7,10 +7,12 @@
     'value' => null,
     'rows' => 3,
     'validationRules' => null,
+    'dataCy' => null,
 ])
 
 @php
     $fieldId = $id ?: $name;
+    $fieldDataCy = $dataCy ?: 'textarea-' . $name;
     $hasBackendError = $errors->has($name);
     $validationAttrs = '';
 
@@ -50,10 +52,10 @@
     </label>
     <textarea class="form-control @if ($hasBackendError) is-invalid @endif" name="{{ $name }}"
         id="{{ $fieldId }}" rows="{{ $rows }}" placeholder="{{ $placeholder }}" {!! $validationAttrs !!}
-        data-error="{{ $requiredErrorMessage }}">{{ old($name, $value) }}</textarea>
+        data-error="{{ $requiredErrorMessage }}" data-cy="{{ $fieldDataCy }}">{{ old($name, $value) }}</textarea>
 
     @if ($hasBackendError)
-        <div class="invalid-feedback">
+        <div class="invalid-feedback" data-cy="error-{{ $name }}">
             {{ $errors->first($name) }}
         </div>
     @endif

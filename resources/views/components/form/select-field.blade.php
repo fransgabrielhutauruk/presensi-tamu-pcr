@@ -6,10 +6,12 @@
     'required' => false,
     'placeholder' => null,
     'value' => null,
+    'dataCy' => null,
 ])
 
 @php
     $fieldId = $id ?: $name;
+    $fieldDataCy = $dataCy ?: 'select-' . $name;
     $defaultPlaceholder = $placeholder ?: __('visitor.select_category');
     $requiredErrorMessage = __('visitor.field_required', ['field' => $label]);
 @endphp
@@ -22,6 +24,7 @@
         @endif
     </label>
     <select class="form-select @error($name) is-invalid @enderror" name="{{ $name }}" id="{{ $fieldId }}"
+        data-cy="{{ $fieldDataCy }}"
         {{ $required ? 'required' : '' }} data-error="{{ $requiredErrorMessage }}">
         <option value="">{{ $defaultPlaceholder }}</option>
         @foreach ($options as $optionValue => $optionLabel)
@@ -32,7 +35,7 @@
     </select>
 
     @error($name)
-        <div class="invalid-feedback">
+        <div class="invalid-feedback" data-cy="error-{{ $name }}">
             {{ $message }}
         </div>
     @enderror

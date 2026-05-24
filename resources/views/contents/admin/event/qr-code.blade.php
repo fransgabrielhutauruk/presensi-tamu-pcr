@@ -259,8 +259,8 @@
             <div class="col-lg-10 my-3 py-3">
                 <div class="card">
                     <div class="card-body text-center">
-                        <div class="mb-5">
-                            <h4 class="text-primary mb-2">{{ $pageData->event->nama_event }}</h4>
+                        <div class="mb-5" data-cy="event-detail-info">
+                            <h4 class="text-primary mb-2" data-cy="text-event-title">{{ $pageData->event->nama_event }}</h4>
                             <div class="text-muted mb-1">
                                 <i class="bi bi-tag"></i> {{ $eventCategory }}
                             </div>
@@ -281,9 +281,9 @@
                             @endif
                         </div>
 
-                        <div class="mb-5" id="qr-container">
+                        <div class="mb-5" id="qr-container" data-cy="qr-event-container">
                             <div class="border rounded p-4 bg-white d-inline-block">
-                                <div id="qr-code"
+                                <div id="qr-code" data-cy="qr-event-code"
                                     style="width: 250px; height: 250px; display: flex; align-items: center; justify-content: center;">
                                     {!! $pageData->qrCodeSvg !!}
                                 </div>
@@ -293,11 +293,11 @@
                             </div>
                         </div>
 
-                        <div class="alert alert-light">
+                        <div class="alert alert-light" data-cy="event-presensi-link-container">
                             <h6 class="mb-2">Link Presensi:</h6>
                             <div class="input-group">
                                 <input type="text" class="form-control" id="presensi-url"
-                                    value="{{ $pageData->presensiUrl }}" readonly>
+                                    value="{{ $pageData->presensiUrl }}" readonly data-cy="input-event-presensi-link">
                                 <button class="btn btn-outline-primary" type="button" onclick="copyUrl()">
                                     <i class="bi bi-copy"></i> Copy
                                 </button>

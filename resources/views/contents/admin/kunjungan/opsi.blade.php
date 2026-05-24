@@ -11,9 +11,9 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.kunjungan.tabs')
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="opsi-kunjungan" jf-list="datatable">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="opsi-kunjungan" jf-list="datatable" data-cy="table-opsi-kunjungan-list">
             @slot('action')
-                <x-btn type="primary" class="act-add" jf-add="opsi-kunjungan">
+                <x-btn type="primary" class="act-add" jf-add="opsi-kunjungan" data-cy="btn-add-opsi-kunjungan">
                     <i class="bi bi-plus fs-2"></i> Tambah Opsi
                 </x-btn>
             @endslot
@@ -21,20 +21,20 @@
     </div>
 
     <x-modal id="modalForm" type="centered" :static="true" size="lg" jf-modal="opsi-kunjungan"
-        title="Opsi Kunjungan">
-        <form id="formData" class="needs-validation" jf-form="opsi-kunjungan">
+        title="Opsi Kunjungan" data-cy="modal-opsi-kunjungan-form">
+        <form id="formData" class="needs-validation" jf-form="opsi-kunjungan" data-cy="form-opsi-kunjungan">
             <input type="hidden" name="id" value="">
             <div class="mb-4">
                 <x-form.input type="text" label="Nama Opsi" name="nama_opsi" value="" required
-                    placeholder="Masukkan nama opsi"></x-form.input>
+                    placeholder="Masukkan nama opsi" data-cy="input-nama_opsi"></x-form.input>
             </div>
             <div class="mb-5">
-                <x-form.textarea name="deskripsi_opsi" label="Deskripsi Opsi" value="" />
+                <x-form.textarea name="deskripsi_opsi" label="Deskripsi Opsi" value="" data-cy="textarea-deskripsi_opsi" />
             </div>
             <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <label class="form-label mb-0 required">Daftar Nilai Opsi</label>
-                    <button type="button" class="btn btn-sm btn-primary" id="addOptionItem">
+                    <button type="button" class="btn btn-sm btn-primary" id="addOptionItem" data-cy="btn-add-option-item">
                         <i class="ki-outline ki-plus fs-6"></i> Tambah Opsi
                     </button>
                 </div>
@@ -51,15 +51,15 @@
                                 <label class="form-label fs-7 fw-semibold text-muted text-center">Aksi</label>
                             </div>
                         </div>
-                        <div id="optionsList" class="min-h-100px">
+                        <div id="optionsList" class="min-h-100px" data-cy="options-list-container">
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="nilai_opsi" id="hiddenNilaiOpsi" value="">
+                <input type="hidden" name="nilai_opsi" id="hiddenNilaiOpsi" value="" data-cy="input-hidden-nilai_opsi">
             </div>
         </form>
         @slot('action')
-            <x-btn.form action="save" class="act-save" jf-save="opsi-kunjungan" />
+            <x-btn.form action="save" class="act-save" jf-save="opsi-kunjungan" data-cy="btn-save-opsi-kunjungan" />
         @endslot
     </x-modal>
 @endsection
@@ -145,18 +145,20 @@
             const normalizedOption = normalizeOption(option);
 
             return `
-                <div class="mb-3 option-item" data-index="${index}">
+                <div class="mb-3 option-item" data-index="${index}" data-cy="option-item-row-${index}">
                     <div class="row align-items-center">
                         <div class="col-5">
                             <input type="text" class="form-control form-control-sm option-id required"
+                                   data-cy="input-option-id-${index}"
                                    value="${escapeHtml(normalizedOption.id)}" placeholder="e.g: Direktur">
                         </div>
                         <div class="col-5">
                             <input type="text" class="form-control form-control-sm option-en required"
+                                   data-cy="input-option-en-${index}"
                                    value="${escapeHtml(normalizedOption.en)}" placeholder="e.g: Director">
                         </div>
                         <div class="col-2 text-center">
-                            <button type="button" class="btn btn-sm btn-light-danger option-remove w-100" title="Hapus item">
+                            <button type="button" class="btn btn-sm btn-light-danger option-remove w-100" title="Hapus item" data-cy="btn-remove-option-item-${index}">
                                 <i class="ki-outline ki-trash fs-7"></i>
                             </button>
                         </div>

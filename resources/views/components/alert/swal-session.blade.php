@@ -1,4 +1,5 @@
 @if (session('success'))
+    <div data-cy="flash-success-message" style="display: none;">{{ session('success') }}</div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             Swal.fire({

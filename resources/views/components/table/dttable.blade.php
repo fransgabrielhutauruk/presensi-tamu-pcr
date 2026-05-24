@@ -96,15 +96,15 @@
         <div class="flex-grow-1 d-flex align-items-center justify-content-md-start table-search gap-2">
             <div class="d-flex align-items-center position-relative w-100 mw-250px {{ !$search ? 'd-none' : '' }}">
                 <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
-                <input type="text" class="form-control border border-gray-200 form-control-solid ps-12 w-100 mw-250px form-control-sm" id="customSearch-{{ $builder->getTableId() }}" placeholder="Cari..">
+                <input type="text" class="form-control border border-gray-200 form-control-solid ps-12 w-100 mw-250px form-control-sm" id="customSearch-{{ $builder->getTableId() }}" placeholder="Cari.." data-cy="input-table-search-{{ $builder->getTableId() }}">
             </div>
             @if ($order != '')
-                <x-btn type="secondary" class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_order" title="Order Data">
+                <x-btn type="secondary" class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_order" title="Order Data" data-cy="btn-table-order-{{ $builder->getTableId() }}">
                     <i class="bi bi-sort-alpha-down fs-3 text-gray-700 pe-0"></i><span id="order-count"></span>
                 </x-btn>
             @endif
             @if ($filter != '')
-                <x-btn type="secondary" class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_filter" title="Filter Data">
+                <x-btn type="secondary" class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_filter" title="Filter Data" data-cy="btn-table-filter-{{ $builder->getTableId() }}">
                     <i class="bi bi-filter fs-3 text-gray-700 pe-0"></i><span id="filter-count"></span>
                 </x-btn>
             @endif
@@ -134,8 +134,8 @@
                 </form>
                 <div class="separator separator-dashed my-4"></div>
                 <div class="d-flex w-100 justify-content-end">
-                    <x-btn type="secondary" text="Reset Filter" class="act-filter_reset btn-sm me-2" data-table="{{ $builder->getTableId() }}" />
-                    <x-btn type="light-primary" text="Terapkan Filter" class="act-filter_applay btn-sm" data-table="{{ $builder->getTableId() }}" />
+                    <x-btn type="secondary" text="Reset Filter" class="act-filter_reset btn-sm me-2" data-table="{{ $builder->getTableId() }}" data-cy="btn-table-filter-reset-{{ $builder->getTableId() }}" />
+                    <x-btn type="light-primary" text="Terapkan Filter" class="act-filter_applay btn-sm" data-table="{{ $builder->getTableId() }}" data-cy="btn-table-filter-apply-{{ $builder->getTableId() }}" />
                 </div>
             </x-card.compact>
         @endif

@@ -18,8 +18,8 @@
                 <x-card class="wow fadeInUp py-2">
                     <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"
                         class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
-                    <h1 class="mt-3 lh-1 fs-2">{{ __('visitor.thank_you') }}!</h1>
-                    <p class="mt-1 lh-sm text-body">{{ __('visitor.registration_complete') }}</p>
+                    <h1 class="mt-3 lh-1 fs-2" data-cy="text-terima-kasih">{{ __('visitor.thank_you') }}!</h1>
+                    <p class="mt-1 lh-sm text-body" data-cy="text-registrasi-berhasil">{{ __('visitor.registration_complete') }}</p>
 
                     <div class="alert alert-light mt-3 mb-3 text-start">
                         <p class="mb-0"><strong>{{ __('visitor.visitor_name') }}:</strong>
@@ -41,7 +41,7 @@
                         </small>
                     </div>
 
-                    <a href="{{ $checkoutRoute }}" class="btn-default w-100 mt-2" id="route">
+                    <a href="{{ $checkoutRoute }}" class="btn-default w-100 mt-2" id="route" data-cy="btn-checkout-sekarang">
                         <span id="beforeSubmit">{{ $checkoutLabel }}</span>
                         <span id="loadingIndicator" style="display: none;">
                             <i class="fas fa-spinner fa-spin me-2"></i>{{ __('common.processing') }}

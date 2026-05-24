@@ -6,19 +6,33 @@ use App\Http\Controllers\Controller;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use App\Enums\UserRole;
+use App\Services\CypressTestingService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
+    public function __construct(private CypressTestingService $cypressTestingService)
+    {
+    }
+
     /**
      * Redirect the user to the Google authentication page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function redirectToGoogle($provider)
+    public function redirectToGoogle(Request $request, $provider)
     {
+        if ($this->cypressTestingService->shouldUseMockCallback($request)) {
+            return redirect()->route('login.google.callback', [
+                'provider' => $provider,
+                'cy_mock' => 1,
+                'cy_scenario' => $this->cypressTestingService->getScenario($request, 'single-role'),
+            ]);
+        }
+
         return Socialite::driver($provider)->redirect();
     }
 
@@ -27,12 +41,10 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function handleGoogleCallback($provider)
+    public function handleGoogleCallback(Request $request, $provider)
     {
         try {
-            $googleUser = Socialite::driver($provider)->user();
-
-            $email = $googleUser->getEmail();
+            [$email, $name, $mockRoles] = $this->resolveGoogleIdentity($request, $provider);
             if (! Str::endsWith($email, ['@pcr.ac.id', '@mahasiswa.pcr.ac.id'])) {
                 return redirect()->route('login')->with(['error' => 'Hanya email @pcr.ac.id yang diizinkan.']);
             }
@@ -41,17 +53,13 @@ class AuthController extends Controller
 
             if (!$user) {
                 $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
+                    'name' => $name,
+                    'email' => $email,
                     'password' => bcrypt(uniqid()),
                 ]);
             }
 
-            if (Str::endsWith($email, '@pcr.ac.id')) {
-                $user->assignRole(UserRole::STAF->value);
-            } elseif (Str::endsWith($email, '@mahasiswa.pcr.ac.id')) {
-                $user->assignRole(UserRole::MAHASISWA->value);
-            }
+            $this->assignRoles($user, $email, $mockRoles);
 
             Auth::login($user, true);
 
@@ -64,6 +72,7 @@ class AuthController extends Controller
                 ->log('Login ke sistem');
 
             request()->session()->regenerate();
+            $this->setMockActiveRoleIfNeeded($request);
 
             return redirect()->intended('/app/event');
         } catch (\Exception $e) {
@@ -92,5 +101,55 @@ class AuthController extends Controller
             'status' => true,
             'message' => 'Role berhasil diubah ke ' . $role
         ]);
+    }
+
+    private function resolveGoogleIdentity(Request $request, string $provider): array
+    {
+        if ($this->cypressTestingService->isMockEnabled($request)
+            && ($request->boolean('cy_mock') || $request->attributes->get('cy_mock', false) === true)) {
+            return $this->cypressTestingService->resolveMockIdentity($request);
+        }
+
+        $googleUser = Socialite::driver($provider)->user();
+
+        return [
+            $googleUser->getEmail(),
+            $googleUser->getName(),
+            [],
+        ];
+    }
+
+    private function assignRoles(User $user, string $email, array $mockRoles = []): void
+    {
+        if (!empty($mockRoles)) {
+            foreach ($mockRoles as $roleName) {
+                Role::firstOrCreate([
+                    'name' => $roleName,
+                    'guard_name' => 'web',
+                ]);
+            }
+
+            $user->syncRoles($mockRoles);
+            return;
+        }
+
+        if (Str::endsWith($email, '@pcr.ac.id')) {
+            Role::firstOrCreate([
+                'name' => UserRole::STAF->value,
+                'guard_name' => 'web',
+            ]);
+            $user->assignRole(UserRole::STAF->value);
+        } elseif (Str::endsWith($email, '@mahasiswa.pcr.ac.id')) {
+            Role::firstOrCreate([
+                'name' => UserRole::MAHASISWA->value,
+                'guard_name' => 'web',
+            ]);
+            $user->assignRole(UserRole::MAHASISWA->value);
+        }
+    }
+
+    private function setMockActiveRoleIfNeeded(Request $request): void
+    {
+        $this->cypressTestingService->setMockActiveRole($request);
     }
 }

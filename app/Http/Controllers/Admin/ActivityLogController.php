@@ -105,7 +105,7 @@ class ActivityLogController extends Controller
 
                 $id = $value['id'];
 
-                $dt['action'] = '<button type="button" class="btn btn-sm btn-light-primary" onclick="viewDetail(' . $id . ')">
+                $dt['action'] = '<button type="button" class="btn btn-sm btn-light-primary" data-cy="btn-action-detail-log-' . $id . '" onclick="viewDetail(' . $id . ')">
                     <i class="bi bi-eye"></i> Detail
                 </button>';
 

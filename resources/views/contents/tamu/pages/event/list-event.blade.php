@@ -26,7 +26,7 @@
                 <div class="form-section mb-4 position-relative d-flex align-items-center">
                     <input type="text" class="form-control input-sm form-sm ps-5"
                         placeholder="{{ __('visitor.search_event_placeholder') }}" style="border-radius: 8px;"
-                        id="search-input">
+                        id="search-input" data-cy="input-search-event">
                     <i class="fa-solid fa-magnifying-glass position-absolute top-50 translate-middle-y ms-2 text-muted"
                         style="left: 0.75rem;"></i>
                 </div>
@@ -44,7 +44,8 @@
                                 <div class="col-12 event-item mb-2" data-name="{{ strtolower($event->nama_event) }}">
                                     <a href="{{ route('tamu.event.identitas', encid($event->event_id)) }}"
                                         class="card border-0 shadow-sm h-100 wow fadeInUp event-card"
-                                        style="cursor: pointer; text-decoration: none; color: inherit;">
+                                        style="cursor: pointer; text-decoration: none; color: inherit;"
+                                        data-cy="{{ $loop->first ? 'card-event-first' : 'card-event-' . $event->event_id }}">
                                         <div class="card-body p-3">
                                             <div class="row align-items-center">
                                                 <div class="col-md-8">

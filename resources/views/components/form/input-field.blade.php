@@ -9,10 +9,12 @@
     'validationRules' => null,
     'min' => null,
     'max' => null,
+    'dataCy' => null,
 ])
 
 @php
     $fieldId = $id ?: $name;
+    $fieldDataCy = $dataCy ?: 'input-' . $name;
     $hasBackendError = $errors->has($name);
     $validationAttrs = '';
 
@@ -56,13 +58,14 @@
     <input type="{{ $type }}" class="form-control @if ($hasBackendError) is-invalid @endif"
         name="{{ $name }}" id="{{ $fieldId }}" placeholder="{{ $placeholder }}"
         value="{{ old($name, $value) }}"
+        data-cy="{{ $fieldDataCy }}"
         @if($min !== null) min="{{ $min }}" @endif
         @if($max !== null) max="{{ $max }}" @endif
         {!! $validationAttrs !!} data-error="{{ $requiredErrorMessage }}"
         @if($type === 'number' && $min !== null) oninput="if(this.value < {{ $min }}) this.value = {{ $min }};" @endif>
 
     @if ($hasBackendError)
-        <div class="invalid-feedback">
+        <div class="invalid-feedback" data-cy="error-{{ $name }}">
             {{ $errors->first($name) }}
         </div>
     @endif

@@ -10,7 +10,8 @@
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="feedback" jf-list="datatable">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="feedback" jf-list="datatable"
+            data-cy="table-feedback-list">
             @slot('action')
                 <x-btn.refresh-datatable />
             @endslot
@@ -18,13 +19,14 @@
     </div>
 
     <x-modal id="modalDetail" type="centered" :static="true" size="lg" jf-detail-modal="feedback"
+        data-cy="modal-feedback-detail"
         title="Detail Feedback">
         <div class="mb-7">
             <h5 class="mb-4">Data Tamu</h5>
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Nama:</label>
-                    <div data-field="nama" class="fw-bold">-</div>
+                    <div data-field="nama" data-cy="field-feedback-nama" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Jenis Kelamin:</label>
@@ -72,11 +74,11 @@
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <label class="fw-bold text-muted">Rating:</label>
-                    <div data-field="rating" class="fw-bold fs-2">-</div>
+                    <div data-field="rating" data-cy="field-feedback-rating" class="fw-bold fs-2">-</div>
                 </div>
                 <div class="col-md-12 mb-3">
                     <label class="fw-bold text-muted">Komentar:</label>
-                    <div data-field="komentar" class="fw-bold bg-light p-4 rounded">-</div>
+                    <div data-field="komentar" data-cy="field-feedback-komentar" class="fw-bold bg-light p-4 rounded">-</div>
                 </div>
             </div>
         </div>
@@ -100,7 +102,7 @@
             name: "feedback",
             base_url: `{{ route('app.feedback.index') }}`,
             onDetail: function(data) {
-                console.log('Detail data received:', data);
+                $('[data-cy="field-feedback-rating"]').attr('data-rating', String(data.rating ?? '0'));
 
                 let stars = '';
                 for (let i = 1; i <= 5; i++) {

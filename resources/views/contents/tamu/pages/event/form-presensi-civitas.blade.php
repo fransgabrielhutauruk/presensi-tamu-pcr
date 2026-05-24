@@ -38,7 +38,7 @@
                 <div class="text-start mt-3 mb-4 wow fadeInUp">
                     <a href="{{ route('tamu.event.identitas', $eventId) }}"
                         class="btn btn-link p-0 align-items-center gap-2 text-decoration-none"
-                        style="color: var(--dark-color);">
+                        style="color: var(--dark-color);" data-cy="btn-back-identitas-event-civitas">
                         <i class="fas fa-arrow-left"></i>
                         <span class="ms-2">{{ __('visitor.back') }}</span>
                     </a>
@@ -76,18 +76,19 @@
 
                 <form id="event-form" class="text-start wow fadeInUp"
                     action="{{ route('tamu.event.store-presensi-civitas') }}" method="POST" data-toggle="validator"
-                    novalidate>
+                    novalidate data-cy="form-presensi-event-civitas">
                     @csrf
-                    <input type="hidden" name="event_id" value="{{ $eventId }}">
-                    <div id="step-1">
+                    <input type="hidden" name="event_id" value="{{ $eventId }}" data-cy="input-event-id-civitas">
+                    <div id="step-1" data-cy="step-1-civitas">
                         <x-tamu.section-header :title="__('visitor.personal_data')" icon="👤" />
                         <x-form.input-field name="nim_nip" :label="__('visitor.nim_nip')" :placeholder="__('visitor.nim_nip_placeholder')" required="true"
                             id="nim-nip-input" />
 
-                        <div id="lookup-feedback" class="alert d-none" role="alert"></div>
+                        <div id="lookup-feedback" class="alert d-none" role="alert" data-cy="lookup-feedback-civitas"></div>
 
                         <div class="mb-4 mt-3">
-                            <button type="button" id="btn-lookup" class="btn-default w-100" style="padding: 0.8rem">
+                            <button type="button" id="btn-lookup" class="btn-default w-100" style="padding: 0.8rem"
+                                data-cy="btn-lookup-civitas">
                                 <span id="lookup-btn-text"><i
                                         class="fas fa-search me-2"></i>{{ __('visitor.lookup_check_data') }}</span>
                                 <span id="lookup-btn-loading" style="display: none;">
@@ -97,11 +98,11 @@
                         </div>
                     </div>
 
-                    <div id="step-2" style="display: none;">
+                    <div id="step-2" style="display: none;" data-cy="step-2-civitas">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <x-tamu.section-header :title="__('visitor.personal_data')" icon="👤" />
                             <button type="button" id="btn-change-identifier"
-                                class="btn btn-link p-0 text-decoration-underline">
+                                class="btn btn-link p-0 text-decoration-underline" data-cy="btn-change-identifier-civitas">
                                 {{ __('visitor.change_nim_nip') }}
                             </button>
                         </div>
@@ -125,7 +126,8 @@
                             id="jabatan-input" />
 
                         <div class="mt-5 mb-4">
-                            <button type="submit" id="submitBtn" class="btn-default w-100">
+                            <button type="submit" id="submitBtn" class="btn-default w-100"
+                                data-cy="btn-submit-presensi-event-civitas">
                                 <span id="btn-text">{{ __('visitor.submit') }}</span>
                                 <span id="btn-loading" style="display: none;">
                                     <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}

@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\Feedback;
 use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
 use Illuminate\Http\JsonResponse;
 use Yajra\DataTables\Html\Column;
 use Illuminate\Support\Facades\DB;
@@ -48,61 +47,76 @@ class FeedbackController extends Controller
     public function data(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $query = Feedback::with(['kunjungan.tamu', 'kunjungan.civitas', 'kunjungan.event'])
+            $start = (int) $req->input('start', 0);
+            $query = Feedback::query()
+                ->with(['kunjungan.tamu', 'kunjungan.civitas', 'kunjungan.event'])
                 ->whereNull('deleted_at')
                 ->whereHas('kunjungan', function ($q) {
                     $q->whereNull('deleted_at');
+                });
+
+            return app('datatables')->eloquent($query)
+                ->filter(function ($filteredQuery) use ($req) {
+                    $keyword = trim((string) $req->input('search.value', ''));
+                    if ($keyword === '') {
+                        return;
+                    }
+
+                    $likeKeyword = '%' . $keyword . '%';
+                    $filteredQuery->where(function ($searchQuery) use ($likeKeyword) {
+                        $searchQuery->where('komentar', 'like', $likeKeyword)
+                            ->orWhere('rating', 'like', $likeKeyword)
+                            ->orWhereHas('kunjungan.tamu', function ($q) use ($likeKeyword) {
+                                $q->where('nama_tamu', 'like', $likeKeyword);
+                            })
+                            ->orWhereHas('kunjungan.civitas', function ($q) use ($likeKeyword) {
+                                $q->where('nama_civitas', 'like', $likeKeyword);
+                            })
+                            ->orWhereHas('kunjungan.event', function ($q) use ($likeKeyword) {
+                                $q->where('nama_event', 'like', $likeKeyword);
+                            });
+                    });
+                }, true)
+                ->addColumn('no', function () use (&$start) {
+                    return ++$start;
                 })
-                ->latest('created_at')
-                ->get();
+                ->addColumn('feedback_id', function ($row) {
+                    return $row->feedback_id ?? '-';
+                })
+                ->addColumn('nama_tamu', function ($row) {
+                    return $row->kunjungan?->tamu?->nama_tamu ?? $row->kunjungan?->civitas?->nama_civitas ?? '-';
+                })
+                ->addColumn('rating', function ($row) {
+                    return $row->rating ?? 0;
+                })
+                ->addColumn('komentar', function ($row) {
+                    $komentar = $row->komentar ?? '-';
+                    return strlen($komentar) > 100 ? substr($komentar, 0, 100) . '...' : $komentar;
+                })
+                ->addColumn('nama_event', function ($row) {
+                    $namaEvent = $row->kunjungan?->event?->nama_event;
+                    return !empty($namaEvent) ? $namaEvent : '<span class="badge badge-secondary">Non-Event</span>';
+                })
+                ->addColumn('waktu_kunjungan', function ($row) {
+                    return $row->kunjungan?->created_at ? date('d/m/Y H:i', strtotime($row->kunjungan->created_at)) : '-';
+                })
+                ->addColumn('feedback_created_at', function ($row) {
+                    return $row->created_at ? date('d/m/Y H:i', strtotime($row->created_at)) : '-';
+                })
+                ->addColumn('action', function ($row) {
+                    $id = encid($row->feedback_id);
+                    $dataAction = [
+                        'id' => $id,
+                        'btn' => [
+                            ['action' => 'detail', 'attr' => ['jf-detail' => $id]],
+                            ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
+                        ]
+                    ];
 
-            $data = DataTables::of($query)->toArray();
-
-            $start = $req->input('start');
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-                $dt['no'] = ++$start;
-                $dt['feedback_id'] = $value['feedback_id'] ?? '-';
-                $dt['nama_tamu'] = $value['kunjungan']['tamu']['nama_tamu'] ?? $value['kunjungan']['civitas']['nama_civitas'] ?? '-';
-                $dt['rating'] = $value['rating'] ?? 0;
-                $komentar = $value['komentar'] ?? '-';
-
-                if (strlen($komentar) > 100) {
-                    $dt['komentar'] = substr($komentar, 0, 100) . '...';
-                } else {
-                    $dt['komentar'] = $komentar;
-                }
-
-                if (!empty($value['kunjungan']['event']['nama_event'])) {
-                    $dt['nama_event'] = $value['kunjungan']['event']['nama_event'];
-                } else {
-                    $dt['nama_event'] = '<span class="badge badge-secondary">Non-Event</span>';
-                }
-
-                $dt['waktu_kunjungan'] = $value['kunjungan']['created_at'] ?
-                    date('d/m/Y H:i', strtotime($value['kunjungan']['created_at'])) : '-';
-
-                $dt['feedback_created_at'] = $value['created_at'] ?
-                    date('d/m/Y H:i', strtotime($value['created_at'])) : '-';
-
-                $id = encid($value['feedback_id']);
-
-                $dataAction = [
-                    'id' => $id,
-                    'btn' => [
-                        ['action' => 'detail', 'attr' => ['jf-detail' => $id]],
-                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-                $resp[] = $dt;
-            }
-
-            $data['data'] = $resp;
-
-            return response()->json($data);
+                    return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                })
+                ->rawColumns(['nama_event', 'action'])
+                ->toJson();
         } else if ($param1 == 'detail') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],

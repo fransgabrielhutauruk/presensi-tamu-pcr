@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\Kunjungan;
 use App\Models\KunjunganDetail;
 use App\Models\Tamu;
+use App\Services\CypressTestingService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -26,9 +27,19 @@ class KunjunganEventController extends Controller
     private const SOURCE_NOT_FOUND = 'not_found';
     private const SOURCE_INVALID_IDENTIFIER = 'invalid_identifier';
     private const SOURCE_EXTERNAL_ERROR = 'external_error';
+    private CypressTestingService $cypressTestingService;
+
+    public function __construct(CypressTestingService $cypressTestingService)
+    {
+        $this->cypressTestingService = $cypressTestingService;
+    }
 
     public function listEvent(Request $request)
     {
+        if ($this->cypressTestingService->isMockEnabled($request)) {
+            $this->cypressTestingService->ensureEventFixturesForToday();
+        }
+
         $currentDate = now()->format('Y-m-d');
 
         $events = Event::query()
@@ -233,6 +244,20 @@ class KunjunganEventController extends Controller
 
             if ($identifierType === null) {
                 return $this->invalidIdentifierResponse();
+            }
+
+            if ($this->cypressTestingService->shouldUseMockMahasiswaApi($request, trim((string) $request->input('nim_nip')))) {
+                return response()->json([
+                    'status' => true,
+                    'source' => self::SOURCE_API_MAHASISWA,
+                    'identifier_type' => 'nim',
+                    'autofilled_fields' => ['nama', 'email'],
+                    'data' => [
+                        'nama' => 'Sri Wahyuni',
+                        'email' => 'sri@mahasiswa.pcr.ac.id',
+                    ],
+                    'message' => 'Data ditemukan. Lengkapi data yang belum terisi.',
+                ]);
             }
 
             $lookupResult = $this->fetchExternalByIdentifier($nimNip, $identifierType);

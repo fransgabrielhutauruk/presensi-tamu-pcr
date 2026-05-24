@@ -14,13 +14,14 @@
         <div class="row">
             <div class="col-md">
                 <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="log_aktivitas"
-                    jf-list="datatable">
+                    jf-list="datatable" data-cy="table-log-aktivitas-list">
                     @slot('filter')
                         <div class="row g-4">
                             <div class="col-md-2">
                                 <label class="form-label fs-7 fw-semibold">User</label>
                                 <select id="filter_user" name="filter_user" class="form-select form-select-sm"
-                                    data-control="select2" data-placeholder="Semua User" data-allow-clear="true">
+                                    data-control="select2" data-placeholder="Semua User" data-allow-clear="true"
+                                    data-cy="select-filter-log-user">
                                     <option value="">Semua User</option>
                                     @foreach ($pageData->users as $user)
                                         <option value="{{ $user->id }}">{{ $user->name }}</option>
@@ -30,7 +31,8 @@
                             <div class="col-md-3">
                                 <label class="form-label fs-7 fw-semibold">Aksi</label>
                                 <select id="filter_event" name="filter_event" class="form-select form-select-sm"
-                                    data-control="select2" data-placeholder="Semua Aksi" data-allow-clear="true">
+                                    data-control="select2" data-placeholder="Semua Aksi" data-allow-clear="true"
+                                    data-cy="select-filter-log-aksi">
                                     <option value="">Semua Aksi</option>
                                     <option value="login">Login</option>
                                     <option value="logout">Logout</option>
@@ -42,7 +44,8 @@
                             <div class="col-md-3">
                                 <label class="form-label fs-7 fw-semibold">Subjek</label>
                                 <select id="filter_subject" name="filter_subject" class="form-select form-select-sm"
-                                    data-control="select2" data-placeholder="Semua Subjek" data-allow-clear="true">
+                                    data-control="select2" data-placeholder="Semua Subjek" data-allow-clear="true"
+                                    data-cy="select-filter-log-subjek">
                                     <option value="">Semua Subjek</option>
                                     @foreach ($pageData->subjects as $subject)
                                         <option value="{{ $subject }}">{{ class_basename($subject) }}</option>
@@ -52,12 +55,12 @@
                             <div class="col-md-2">
                                 <label class="form-label fs-7 fw-semibold">Dari Tanggal</label>
                                 <input type="date" id="filter_date_from" name="filter_date_from"
-                                    class="form-control form-control-sm" />
+                                    class="form-control form-control-sm" data-cy="input-filter-log-date-from" />
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label fs-7 fw-semibold">Sampai Tanggal</label>
                                 <input type="date" id="filter_date_to" name="filter_date_to"
-                                    class="form-control form-control-sm" />
+                                    class="form-control form-control-sm" data-cy="input-filter-log-date-to" />
                             </div>
                         </div>
                     @endslot
@@ -69,12 +72,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modal-detail" tabindex="-1" aria-hidden="true">
+    <div class="modal fade" id="modal-detail" tabindex="-1" aria-hidden="true" data-cy="modal-log-detail">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 class="modal-title">Detail Log Aktivitas</h3>
-                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
+                    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" data-cy="btn-close-modal-log-detail-header">
                         <i class="bi bi-x-lg"></i>
                     </div>
                 </div>
@@ -106,7 +109,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Tutup</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" data-cy="btn-close-modal-log-detail">Tutup</button>
                 </div>
             </div>
         </div>

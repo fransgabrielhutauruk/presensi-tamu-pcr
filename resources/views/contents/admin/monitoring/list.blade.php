@@ -18,12 +18,12 @@
         data-delay="0">
         <div class="row g-5 g-xl-10">
             <div class="col-md-6 col-lg-6 col-xl-3">
-                <div class="card card-flush mb-5">
+                <div class="card card-flush mb-5" data-cy="card-total-kunjungan-hari-ini">
                     <div class="card-header py-5">
                         <div class="card-title d-flex flex-column">
                             <div class="d-flex align-items-center">
                                 <span
-                                    class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2">{{ $pageData->totalKunjunganHariIni }}</span>
+                                    class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2" data-cy="text-total-kunjungan-hari-ini">{{ $pageData->totalKunjunganHariIni }}</span>
                             </div>
                             <span class="text-gray-400 pt-1 fw-semibold fs-6">Kunjungan Hari Ini</span>
                         </div>
@@ -32,12 +32,12 @@
             </div>
 
             <div class="col-md-6 col-lg-6 col-xl-3">
-                <div class="card card-flush mb-5">
+                <div class="card card-flush mb-5" data-cy="card-kunjungan-sudah-checkout">
                     <div class="card-header py-5">
                         <div class="card-title d-flex flex-column">
                             <div class="d-flex align-items-center">
                                 <span
-                                    class="fs-2hx fw-bold text-primary me-2 lh-1 ls-n2">{{ $pageData->kunjunganSudahCheckout }}</span>
+                                    class="fs-2hx fw-bold text-primary me-2 lh-1 ls-n2" data-cy="text-kunjungan-sudah-checkout">{{ $pageData->kunjunganSudahCheckout }}</span>
                             </div>
                             <span class="text-gray-400 pt-1 fw-semibold fs-6">Sudah Checkout</span>
                         </div>
@@ -47,7 +47,7 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-monitoring"
-            jf-list="datatable">
+            jf-list="datatable" data-cy="table-monitoring-kunjungan">
             @slot('action')
                 <x-btn.refresh-datatable />
             @endslot

@@ -39,7 +39,9 @@
         <!--begin::User menu-->
         <div class="app-navbar-item" id="kt_header_user_menu_toggle">
             <!--begin::Menu wrapper-->
-            <div class="cursor-pointer symbol symbol-circle symbol-25px symbol-lg-35px p-1 bg-white" data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent" data-kt-menu-placement="bottom-end">
+            <div class="cursor-pointer symbol symbol-circle symbol-25px symbol-lg-35px p-1 bg-white"
+                data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-attach="parent"
+                data-kt-menu-placement="bottom-end" data-cy="menu-user-toggle">
                 <img src="{{ asset('theme') }}/media/svg/avatars/001-boy.svg" alt="user" />
             </div>
             <!--begin::User account menu-->
@@ -59,7 +61,7 @@
                                 @php
                                 $activeRole = session('active_role', Auth::user()->roles->first()?->name ?? 'Guest');
                                 @endphp
-                                <span class="badge badge-light-primary fs-7 flex-shrink-0">{{ $activeRole }}</span>
+                                <span class="badge badge-light-primary fs-7 flex-shrink-0" data-cy="badge-active-role">{{ $activeRole }}</span>
                             </div>
                             <span class="fw-semibold text-muted fs-7 text-truncate">{{ Auth::user()->email }}</span>
                         </div>
@@ -86,7 +88,9 @@
                 </div>
                 @foreach($availableRoles as $role)
                 <div class="menu-item px-5 mb-2">
-                    <a href="#" class="menu-link px-5 btn btn-light-primary text-primary text-hover-white switch-role-btn w-100 text-start" data-role="{{ $role }}">
+                    <a href="#"
+                        class="menu-link px-5 btn btn-light-primary text-primary text-hover-white switch-role-btn w-100 text-start"
+                        data-role="{{ $role }}" data-cy="btn-switch-role-{{ \Illuminate\Support\Str::slug($role) }}">
                         <i class="ki-outline ki-profile-user fs-4 me-2"></i>
                         Login sebagai {{ $role }}
                     </a>

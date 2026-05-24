@@ -18,16 +18,18 @@
             <div class="checkout-success-container">
                 <x-tamu.page-header title="{{ __('visitor.visitor_feedback') }}" img=true />
                 <div class="feedback-card wow fadeInUp my-4" data-wow-delay="0.5s">
-                    <h6 class="text-center mb-0">
+                    <h6 class="text-center mb-0" data-cy="text-feedback-title">
                         {{ __('visitor.service_rating') }}
                     </h6>
 
-                    <form id="feedbackForm" method="POST" action="{{ route('tamu.feedback-store', $kunjunganId) }}">
+                    <form id="feedbackForm" method="POST" action="{{ route('tamu.feedback-store', $kunjunganId) }}"
+                        data-cy="form-feedback">
                         @csrf
                         <div class="text-center mt-2 mb-4">
-                            <div class="star-rating">
+                            <div class="star-rating" data-cy="rating-stars">
                                 @for ($i = 1; $i <= 5; $i++)
-                                    <button type="button" class="star-btn" data-rating="{{ $i }}">
+                                    <button type="button" class="star-btn" data-rating="{{ $i }}"
+                                        data-cy="btn-rating-{{ $i }}">
                                         <svg class="star-icon" fill="currentColor" viewBox="0 0 20 20">
                                             <path
                                                 d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -39,8 +41,8 @@
                             <div class="rating-description" id="ratingDescription" style="display: none;">
                                 <span class="rating-label"></span>
                             </div>
-                            <input type="hidden" name="rating" id="ratingInput" required>
-                            <div id="rating-error" class="rating-error-message" style="display: none;">
+                            <input type="hidden" name="rating" id="ratingInput" required data-cy="input-rating">
+                            <div id="rating-error" class="rating-error-message" style="display: none;" data-cy="error-rating">
                                 <i class="fas fa-exclamation-triangle me-1"></i>
                                 {{ __('visitor.rating_required') }}
                             </div>
@@ -50,7 +52,8 @@
                             rows="4" placeholder="{{ __('visitor.share_experience') }}"
                             validationRules="data-maxlength=500" />
 
-                        <button type="submit" class="btn-default mt-3 w-100" id="submitBtn">
+                        <button type="submit" class="btn-default mt-3 w-100" id="submitBtn"
+                            data-cy="btn-submit-feedback">
                             <span class="submit-text">{{ __('visitor.submit') }}</span>
                             <span class="submit-loading d-none">
                                 <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}

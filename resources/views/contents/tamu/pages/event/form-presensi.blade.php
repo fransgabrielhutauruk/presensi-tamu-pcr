@@ -31,7 +31,7 @@
                 <div class="text-start mt-4">
                     <a href="{{ route('tamu.event.identitas', $eventId) }}"
                         class="btn btn-link p-0 align-items-center gap-2 text-decoration-none"
-                        style="color: var(--dark-color);">
+                        style="color: var(--dark-color);" data-cy="btn-back-identitas-event">
                         <i class="fas fa-arrow-left"></i>
                         <span>{{ __('visitor.back') }}</span>
                     </a>
@@ -69,9 +69,9 @@
 
                 <form id="event-form" class="text-start wow fadeInUp"
                     action="{{ route('tamu.event.store-presensi-non-civitas') }}" method="POST" data-toggle="validator"
-                    novalidate>
+                    novalidate data-cy="form-presensi-event-non-civitas">
                     @csrf
-                    <input type="hidden" name="event_id" value="{{ $eventId }}">
+                    <input type="hidden" name="event_id" value="{{ $eventId }}" data-cy="input-event-id">
                     <x-tamu.partials.data-pengunjung />
                     <x-form.input-field name="institusi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_placeholder')" required="true" />
                     <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true" />
@@ -80,7 +80,7 @@
                     <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
 
                     <div class="mt-5 mb-4">
-                        <button type="submit" id="submitBtn" class="btn-default w-100">
+                        <button type="submit" id="submitBtn" class="btn-default w-100" data-cy="btn-submit-presensi-event">
                             <span id="btn-text">{{ __('visitor.submit') }}</span>
                             <span id="btn-loading" style="display: none;">
                                 <i class="fas fa-spinner fa-spin me-2"></i>{{ __('visitor.processing') }}

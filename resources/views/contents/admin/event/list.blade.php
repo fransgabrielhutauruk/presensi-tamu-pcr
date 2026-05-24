@@ -18,17 +18,18 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.event.tabs')
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="event" jf-list="datatable">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="event" jf-list="datatable" data-cy="table-event-list">
             @slot('action')
                 @if ($hiddenFromCivitas)
-                    <select id="filterKategori" class="form-select form-select-sm me-2" style="max-width: 250px;">
+                    <select id="filterKategori" class="form-select form-select-sm me-2" style="max-width: 250px;"
+                        data-cy="select-filter-kategori-event">
                         <option value="">Semua Kategori</option>
                         @foreach ($kategoriOptions as $row)
                             <option value="{{ $row['id'] }}">{{ $row['text'] }}</option>
                         @endforeach
                     </select>
                 @endif
-                <x-btn type="primary" class="act-add me-2" jf-add="event">
+                <x-btn type="primary" class="act-add me-2" jf-add="event" data-cy="btn-tambah-event">
                     <i class="bi bi-plus fs-2"></i> Tambah Event
                 </x-btn>
                 @if ($hiddenFromCivitas)
@@ -38,14 +39,15 @@
         </x-table.dttable>
     </div>
 
-    <x-modal id="modalForm" type="centered" :static="true" size="lg" jf-modal="event" title="Event">
-        <form id="formData" class="needs-validation" jf-form="event">
+    <x-modal id="modalForm" type="centered" :static="true" size="lg" jf-modal="event" title="Event" data-cy="modal-event-form">
+        <form id="formData" class="needs-validation" jf-form="event" data-cy="form-create-event">
             <input type="hidden" name="id" value="">
             <div class="mb-4">
-                <x-form.input type="text" label="Nama Event" name="nama_event" value="" required></x-form.input>
+                <x-form.input type="text" label="Nama Event" name="nama_event" value="" required
+                    data-cy="input-nama_event"></x-form.input>
             </div>
             <div class="mb-4">
-                <x-form.select name="eventkategori_id" label="Kategori Event" required>
+                <x-form.select name="eventkategori_id" label="Kategori Event" required data-cy="select-eventkategori_id">
                     @foreach ($kategoriOptions as $row)
                         <option value="{{ $row['id'] }}">
                             {{ $row['text'] }}
@@ -56,33 +58,34 @@
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <x-form.input type="date" label="Tanggal Event" name="tanggal_event" value=""
-                        required></x-form.input>
+                        required data-cy="input-tanggal_event"></x-form.input>
                 </div>
                 <div class="col-md-4 mb-4">
                     <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value=""
-                        required></x-form.input>
+                        required data-cy="input-waktu_mulai_event"></x-form.input>
                 </div>
                 <div class="col-md-4 mb-4">
                     <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value=""
-                        required></x-form.input>
+                        required data-cy="input-waktu_selesai_event"></x-form.input>
                 </div>
             </div>
             <div class="mb-4">
                 <x-form.input type="text" label="Lokasi Event" name="lokasi_event" value=""
-                    required></x-form.input>
+                    required data-cy="input-lokasi_event"></x-form.input>
             </div>
             <div class="mb-4" id="field-link-dokumentasi" style="display: none;">
                 <x-form.input type="url" label="Link Dokumentasi (Google Drive)" name="link_dokumentasi_event"
-                    value="" placeholder="https://drive.google.com/..."></x-form.input>
+                    value="" placeholder="https://drive.google.com/..."
+                    data-cy="input-link_dokumentasi_event"></x-form.input>
                 <div class="form-text">Link dokumentasi event. Contoh: https://drive.google.com/drive/folders/tes</div>
             </div>
             <div class="mb-4">
                 <x-form.textarea label="Deskripsi Event" name="deskripsi_event" value=""
-                    rows="4"></x-form.textarea>
+                    rows="4" data-cy="textarea-deskripsi_event"></x-form.textarea>
             </div>
         </form>
         @slot('action')
-            <x-btn.form action="save" class="act-save" jf-save="event" />
+            <x-btn.form action="save" class="act-save" jf-save="event" data-cy="btn-simpan-event" />
         @endslot
     </x-modal>
 @endsection

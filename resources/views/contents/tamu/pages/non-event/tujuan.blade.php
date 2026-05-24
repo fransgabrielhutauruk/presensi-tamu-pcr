@@ -49,7 +49,8 @@
                             <div class="d-flex flex-column" style="gap: 1rem;">
                                 @foreach ($tujuanCards as $card)
                                     <a href="{{ route('tamu.non-event.form-presensi', ['tujuan' => $card['tujuan']]) }}"
-                                        class="tujuan-card wow fadeInUp" data-wow-delay="{{ $card['delay'] }}">
+                                        class="tujuan-card wow fadeInUp" data-wow-delay="{{ $card['delay'] }}"
+                                        data-cy="btn-tujuan-{{ $card['tujuan'] }}">
                                         <div class="tujuan-icon">
                                             <i class="fas {{ $card['icon'] }}"></i>
                                         </div>

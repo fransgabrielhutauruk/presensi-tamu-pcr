@@ -15,15 +15,15 @@
             <div class="p-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap">
                     <div class="d-flex align-items-center">
-                        <span id="selectedCount" class="badge badge-light fs-7">0 dipilih</span>
+                        <span id="selectedCount" class="badge badge-light fs-7" data-cy="text-selected-count-validasi-kunjungan">0 dipilih</span>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
-                            disabled>
+                            disabled data-cy="btn-bulk-validate-validasi-kunjungan">
                             <i class="bi bi-check2-circle fs-4"></i> Validasi Terpilih
                         </button>
                         <button type="button" class="btn btn-danger btn-sm" id="bulkRejectBtn" data-action="reject"
-                            disabled>
+                            disabled data-cy="btn-bulk-reject-validasi-kunjungan">
                             <i class="bi bi-x-circle fs-4"></i> Hapus Terpilih
                         </button>
                     </div>
@@ -32,14 +32,15 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-validasi"
-            jf-list="datatable">
+            jf-list="datatable" data-cy="table-validasi-kunjungan">
             @slot('action')
                 <x-btn.refresh-datatable />
             @endslot
         </x-table.dttable>
     </div>
 
-    <x-modal id="modalDetailValidasi" type="centered" :static="true" size="lg" title="Detail Kunjungan">
+    <x-modal id="modalDetailValidasi" type="centered" :static="true" size="lg" title="Detail Kunjungan"
+        data-cy="modal-detail-validasi-kunjungan">
         <div class="mb-7">
             <h5 class="mb-4">Data Tamu</h5>
             <div class="row">
@@ -139,8 +140,10 @@
         </div>
 
         @slot('action')
-            <x-btn.form action="save" id="validateSingleBtn" text="Validasi" title="Validasi" />
-            <x-btn.form action="cancle" id="rejectSingleBtn" text="Hapus" title="Hapus" />
+            <x-btn.form action="save" id="validateSingleBtn" text="Validasi" title="Validasi"
+                data-cy="btn-validate-single-validasi-kunjungan" />
+            <x-btn.form action="cancle" id="rejectSingleBtn" text="Hapus" title="Hapus"
+                data-cy="btn-reject-single-validasi-kunjungan" />
         @endslot
     </x-modal>
 @endsection

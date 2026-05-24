@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\AjaxRequest;
+use App\Http\Middleware\EnableCypressMock;
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\CheckActiveRole;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(append: [
+            EnableCypressMock::class,
             SetLocale::class,
         ]);
 

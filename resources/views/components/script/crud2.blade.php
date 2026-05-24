@@ -265,7 +265,17 @@
                         confirmButton: "btn btn-light-danger",
                         cancelButton: "btn btn-light-dark"
                     },
-                    reverseButtons: true
+                    reverseButtons: true,
+                    didOpen: function() {
+                        const confirmButton = Swal.getConfirmButton();
+                        const cancelButton = Swal.getCancelButton();
+                        if (confirmButton) {
+                            confirmButton.setAttribute('data-cy', `btn-confirm-delete-${name}`);
+                        }
+                        if (cancelButton) {
+                            cancelButton.setAttribute('data-cy', `btn-cancel-delete-${name}`);
+                        }
+                    }
                 }).then(function(result) {
                     if (result.value) {
                         ajaxRequest({

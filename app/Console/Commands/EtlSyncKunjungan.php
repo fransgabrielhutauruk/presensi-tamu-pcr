@@ -242,7 +242,7 @@ class EtlSyncKunjungan extends Command
                 [
                     'tamu_id' => $row->tamu_id,
                     'civitas_id' => $row->civitas_id,
-                    'identitas' => $row->civitas_id !== null ? 'Civitas PCR' : 'Tamu Luar',
+                    'identitas' => $row->civitas_id !== null ? 'Civitas PCR' : 'Non-Civitas',
                     'is_vip' => $row->is_vip == 1 ? 'VIP' : 'Non-VIP',
                     'jenis_kunjungan' => $row->event_id !== null ? 'Event' : 'Non-Event',
                     'event_id' => $row->event_id,

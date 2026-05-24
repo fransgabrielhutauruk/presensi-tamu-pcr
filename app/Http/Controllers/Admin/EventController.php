@@ -10,6 +10,7 @@ use App\Models\EventKategori;
 use App\Models\Kunjungan;
 use App\Models\KunjunganDetail;
 use App\Models\Tamu;
+use App\Services\CypressTestingService;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,9 +24,11 @@ use Yajra\DataTables\Html\Column;
 class EventController extends Controller
 {
     protected $dataKategori;
+    private CypressTestingService $cypressTestingService;
 
-    public function __construct()
+    public function __construct(CypressTestingService $cypressTestingService)
     {
+        $this->cypressTestingService = $cypressTestingService;
         $this->activeRoot = 'event';
         $this->breadCrump[] = ['title' => 'Event', 'link' => route('app.event.index')];
         $this->dataKategori = $this->buildKategoriSelect();
@@ -63,8 +66,13 @@ class EventController extends Controller
         ];
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        if ($this->cypressTestingService->isMockEnabled($request)) {
+            $this->cypressTestingService->ensureEventKategoriExists();
+            $this->dataKategori = $this->buildKategoriSelect();
+        }
+
         $this->title = 'Kelola Event';
         $this->activeMenu = 'event';
         $builder = app('datatables.html');
@@ -128,7 +136,7 @@ class EventController extends Controller
             $dataTable = $builder->serverSide(true)->ajax(route('app.event.data') . '/validasi-kunjungan-list/' . $param2)->columns([
                 Column::make([
                     'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input" type="checkbox" id="checkAllValidasi"></div>',
+                        <input class="form-check-input" type="checkbox" id="checkAllValidasi" data-cy="checkbox-check-all-validasi-event"></div>',
                     'data' => 'checkbox',
                     'orderable' => false,
                     'className' => 'text-center',
@@ -191,7 +199,7 @@ class EventController extends Controller
             validate_and_response([
                 'nama_event' => ['Nama Event', 'required'],
                 'eventkategori_id' => ['Kategori Event', 'required'],
-                'tanggal_event' => ['Tanggal Event', 'required|date'],
+                'tanggal_event' => ['Tanggal Event', 'required|date|after_or_equal:today'],
                 'waktu_mulai_event' => ['Waktu Mulai', 'required|date_format:H:i'],
                 'waktu_selesai_event' => ['Waktu Selesai', 'required|date_format:H:i'],
                 'lokasi_event' => ['Lokasi Event', 'required'],
@@ -199,14 +207,20 @@ class EventController extends Controller
             ]);
 
             try {
-                DB::transaction(fn() => Event::create($this->buildEventData($req)));
+                $event = null;
+                DB::transaction(function () use ($req, &$event) {
+                    $event = Event::create($this->buildEventData($req));
+                });
             } catch (Throwable $th) {
                 abort(500, 'Tambah data gagal, kesalahan database');
             }
 
             return response()->json([
                 'status' => true,
-                'message' => 'Data event berhasil disimpan'
+                'message' => 'Data event berhasil disimpan',
+                'data' => [
+                    'event_id' => isset($event) ? encid($event->event_id) : null,
+                ],
             ]);
         } else if ($param1 == 'kategori') {
             validate_and_response([
@@ -380,9 +394,9 @@ class EventController extends Controller
                 }
 
                 if (!empty($value['link_dokumentasi_event'])) {
-                    $dt['dokumentasi'] = '<a href="' . $value['link_dokumentasi_event'] . '" target="_blank" class="text-primary">Lihat</a>';
+                    $dt['dokumentasi'] = '<a href="' . $value['link_dokumentasi_event'] . '" target="_blank" class="text-primary" data-cy="link-dokumentasi-event-' . $id . '">Lihat</a>';
                 } else {
-                    $dt['dokumentasi'] = '<a href="javascript:;" class="text-warning" jf-edit="' . $id . '">Tambah</a>';
+                    $dt['dokumentasi'] = '<a href="javascript:;" class="text-warning" jf-edit="' . $id . '" data-cy="link-tambah-dokumentasi-event-' . $id . '">Tambah</a>';
                 }
 
                 $dataAction = [
@@ -473,7 +487,7 @@ class EventController extends Controller
 
                 if (!$statusValidasi) {
                     $dt['checkbox'] = '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '">
+                        <input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '" data-cy="checkbox-row-validasi-event-' . $id . '">
                     </div>';
                 } else {
                     $dt['checkbox'] = '<div class="text-center">-</div>';
@@ -603,4 +617,5 @@ class EventController extends Controller
             ]);
         }
     }
+
 }

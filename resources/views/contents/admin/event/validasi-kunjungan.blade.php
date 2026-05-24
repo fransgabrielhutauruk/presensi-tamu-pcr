@@ -17,7 +17,7 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
 
-        <div class="card mb-5">
+        <div class="card mb-5" data-cy="card-event-validasi-summary">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -34,23 +34,23 @@
             </div>
         </div>
 
-        <div class="card mb-5">
+        <div class="card mb-5" data-cy="card-bulk-validasi-panel">
             <div class="p-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap">
                     <div class="d-flex align-items-center gap-2">
-                        <span id="selectedCount" class="badge badge-light fs-7 me-2">0 dipilih</span>
+                        <span id="selectedCount" class="badge badge-light fs-7 me-2" data-cy="text-selected-count">0 dipilih</span>
                         <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
-                            disabled>
+                            disabled data-cy="btn-bulk-validate-event">
                             <i class="bi bi-check2-circle fs-4"></i> Validasi Terpilih
                         </button>
                         <button type="button" class="btn btn-danger btn-sm" id="bulkRejectBtn" data-action="reject"
-                            disabled>
+                            disabled data-cy="btn-bulk-reject-event">
                             <i class="bi bi-x-circle fs-4"></i> Hapus Terpilih
                         </button>
                     </div>
                     <div class="d-flex gap-2">
                         <x-btn.form action="save" text="Tambah Tamu VIP" icon="bi bi-star-fill"
-                            class="d-flex align-items-center act-save" id="addVipGuestBtn" />
+                            class="d-flex align-items-center act-save" id="addVipGuestBtn" data-cy="btn-add-vip-guest" />
                         <x-btn.refresh-datatable />
                     </div>
                 </div>
@@ -58,17 +58,18 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-event-validasi"
-            jf-list="datatable">
+            jf-list="datatable" data-cy="table-event-validasi">
             @slot('action')
             @endslot
         </x-table.dttable>
     </div>
 
-    <x-modal id="modalDetailValidasi" type="centered" :static="true" size="lg" title="Detail Kunjungan">
+    <x-modal id="modalDetailValidasi" type="centered" :static="true" size="lg" title="Detail Kunjungan"
+        data-cy="modal-detail-kunjungan-event">
         <div class="mb-4">
             <div class="d-flex align-items-center gap-2">
                 <h6 class="mb-0">Status Validasi:</h6>
-                <span data-field="status_badge" class="badge">-</span>
+                <span data-field="status_badge" class="badge" data-cy="badge-status-validasi-detail">-</span>
             </div>
         </div>
 
@@ -137,8 +138,10 @@
         </div>
 
         @slot('action')
-            <x-btn.form action="save" id="validateSingleBtn" text="Validasi" title="Validasi" />
-            <x-btn.form action="cancle" id="rejectSingleBtn" text="Hapus" title="Hapus" />
+            <x-btn.form action="save" id="validateSingleBtn" text="Validasi" title="Validasi"
+                data-cy="btn-validate-single-kunjungan-event" />
+            <x-btn.form action="cancle" id="rejectSingleBtn" text="Hapus" title="Hapus"
+                data-cy="btn-reject-single-kunjungan-event" />
         @endslot
     </x-modal>
 

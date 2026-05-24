@@ -26,7 +26,7 @@ class KunjunganValidasiController extends Controller
                 Column::make([
                     'width' => '3%',
                     'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                    <input class="form-check-input" type="checkbox" id="checkAllValidasi"></div>',
+                    <input class="form-check-input" type="checkbox" id="checkAllValidasi" data-cy="checkbox-check-all-validasi-kunjungan"></div>',
                     'data' => 'checkbox',
                     'orderable' => false,
                     'className' => 'text-center',
@@ -102,7 +102,7 @@ class KunjunganValidasiController extends Controller
             $id = encid($value['kunjungan_id']);
 
             $dt['checkbox'] = '<div class="form-check form-check-sm form-check-custom form-check-solid">'
-                . '<input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '">'
+                . '<input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '" data-cy="checkbox-row-validasi-kunjungan-' . $id . '">'
                 . '</div>';
 
             $dt['no'] = ++$start;

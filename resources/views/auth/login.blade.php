@@ -6,7 +6,8 @@
             <div class="position-relative text-center" style="z-index: 10;">
                 <!-- Error Messages -->
                 @if (session('error'))
-                    <div class="alert alert-danger d-flex align-items-center mb-4 wow fadeInUp" data-wow-delay="0.3s">
+                    <div class="alert alert-danger d-flex align-items-center mb-4 wow fadeInUp" data-wow-delay="0.3s"
+                        data-cy="alert-login-error">
                         <i class="fas fa-exclamation-triangle me-2"></i>
                         {{ session('error') }}
                     </div>
@@ -18,7 +19,8 @@
                 <x-card>
                     <div class="d-flex mx-auto justify-content-center mt-3">
                         <a href="{{ route('login.google', ['provider' => 'google']) }}"
-                            class="btn-default w-100 d-flex align-items-center justify-content-center gap-2">
+                            class="btn-default w-100 d-flex align-items-center justify-content-center gap-2"
+                            data-cy="btn-login-google">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" style="width: 20px; height: 20px;">
                                 <path fill="#EA4335"
                                     d="M24 9.5c3.54 0 6 1.54 7.38 2.84l5.4-5.26C33.46 3.67 28.97 2 24 2 14.82 2 6.98 7.99 3.69 16.17l6.65 5.16C12.26 14.14 17.62 9.5 24 9.5z" />
