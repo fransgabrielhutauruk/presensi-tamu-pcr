@@ -215,7 +215,7 @@ return [
     'prospective_student_data' => 'Prospective Student Data',
     'school_origin' => 'School Origin',
     'school_origin_placeholder' => 'School name origin',
-    'interested_program' => 'Interested Study Program',
+    'interested_program' => 'Most Preferred Study Program',
 
     // Other Labels
     'student_data' => 'Student Data',

@@ -215,7 +215,7 @@ return [
     'prospective_student_data' => 'Data Calon Mahasiswa',
     'school_origin' => 'Asal Sekolah',
     'school_origin_placeholder' => 'Nama sekolah asal',
-    'interested_program' => 'Program Studi yang Diminati',
+    'interested_program' => 'Program Studi yang Paling Diminati',
 
     // Other Labels
     'student_data' => 'Data Mahasiswa',
