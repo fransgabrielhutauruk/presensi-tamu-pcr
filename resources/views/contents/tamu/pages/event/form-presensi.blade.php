@@ -20,6 +20,13 @@
             __('visitor.walking_option') => __('visitor.walking_option'),
             __('visitor.other_option') => __('visitor.other_option'),
         ];
+
+        $eventRoleOptions = [
+            __('visitor.event_role_participant', [], 'id') => __('visitor.event_role_participant'),
+            __('visitor.event_role_special_guest', [], 'id') => __('visitor.event_role_special_guest'),
+            __('visitor.event_role_speaker', [], 'id') => __('visitor.event_role_speaker'),
+            __('visitor.event_role_committee', [], 'id') => __('visitor.event_role_committee'),
+        ];
     @endphp
 
     <div class="row">
@@ -73,7 +80,8 @@
                     <input type="hidden" name="event_id" value="{{ $eventId }}" data-cy="input-event-id">
                     <x-tamu.partials.data-pengunjung />
                     <x-form.input-field name="institusi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_placeholder')" required="true" />
-                    <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true" />
+                    <x-form.select-field name="jabatan" :label="__('visitor.event_role_label')" required="true"
+                        :options="$eventRoleOptions" :placeholderDisabled="true" />
                     <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
 
                     <div class="mt-5 mb-4">

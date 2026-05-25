@@ -28,6 +28,13 @@
             'notFoundManual' => __('visitor.lookup_not_found_manual'),
             'errorManual' => __('visitor.lookup_error_manual'),
         ];
+
+        $eventRoleOptions = [
+            __('visitor.event_role_participant', [], 'id') => __('visitor.event_role_participant'),
+            __('visitor.event_role_special_guest', [], 'id') => __('visitor.event_role_special_guest'),
+            __('visitor.event_role_speaker', [], 'id') => __('visitor.event_role_speaker'),
+            __('visitor.event_role_committee', [], 'id') => __('visitor.event_role_committee'),
+        ];
     @endphp
 
     <div class="row">
@@ -84,7 +91,8 @@
                         <x-form.input-field name="nim_nip" :label="__('visitor.nim_nip')" :placeholder="__('visitor.nim_nip_placeholder')" required="true"
                             id="nim-nip-input" />
 
-                        <div id="lookup-feedback" class="alert d-none" role="alert" data-cy="lookup-feedback-civitas"></div>
+                        <div id="lookup-feedback" class="alert d-none" role="alert" data-cy="lookup-feedback-civitas">
+                        </div>
 
                         <div class="mb-4 mt-3">
                             <button type="button" id="btn-lookup" class="btn-default w-100" style="padding: 0.8rem"
@@ -122,8 +130,8 @@
 
                         <x-form.input-field name="email" :label="__('visitor.email_address')" :placeholder="__('visitor.enter_email')" required="true"
                             type="email" id="email-input" />
-                        <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_job_placeholder')" required="true"
-                            id="jabatan-input" />
+                        <x-form.select-field name="jabatan" id="jabatan-input" :label="__('visitor.event_role_label')" required="true"
+                            :options="$eventRoleOptions" :placeholderDisabled="true" />
 
                         <div class="mt-5 mb-4">
                             <button type="submit" id="submitBtn" class="btn-default w-100"
