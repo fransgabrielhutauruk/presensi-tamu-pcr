@@ -16,7 +16,6 @@
             __('visitor.car_option') => __('visitor.car_option'),
             __('visitor.motorcycle_option') => __('visitor.motorcycle_option'),
             __('visitor.bus_option') => __('visitor.bus_option'),
-            __('visitor.travel_option') => __('visitor.travel_option'),
             __('visitor.online_ride_option') => __('visitor.online_ride_option'),
             __('visitor.walking_option') => __('visitor.walking_option'),
             __('visitor.other_option') => __('visitor.other_option'),

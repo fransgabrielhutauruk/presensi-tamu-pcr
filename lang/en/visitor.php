@@ -130,7 +130,6 @@ return [
     'car_option' => 'Car',
     'motorcycle_option' => 'Motorcycle',
     'bus_option' => 'Bus',
-    'travel_option' => 'Travel',
     'online_ride_option' => 'Online Ride',
     'walking_option' => 'Walking',
     'other_option' => 'Other',

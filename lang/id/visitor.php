@@ -130,7 +130,6 @@ return [
     'car_option' => 'Mobil',
     'motorcycle_option' => 'Motor',
     'bus_option' => 'Bus',
-    'travel_option' => 'Travel',
     'online_ride_option' => 'Online Ride',
     'walking_option' => 'Jalan Kaki',
     'other_option' => 'Lainnya',

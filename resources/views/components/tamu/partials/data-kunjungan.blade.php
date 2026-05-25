@@ -3,7 +3,6 @@
         __('visitor.car_option', [], 'id') => __('visitor.car_option'),
         __('visitor.motorcycle_option', [], 'id') => __('visitor.motorcycle_option'),
         __('visitor.bus_option', [], 'id') => __('visitor.bus_option'),
-        __('visitor.travel_option', [], 'id') => __('visitor.travel_option'),
         __('visitor.online_ride_option', [], 'id') => __('visitor.online_ride_option'),
         __('visitor.walking_option', [], 'id') => __('visitor.walking_option'),
         __('visitor.other_option', [], 'id') => __('visitor.other_option'),
