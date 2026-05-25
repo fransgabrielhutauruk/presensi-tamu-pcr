@@ -62,7 +62,7 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
         isiDataDasarTamu(`${Date.now()}02`);
         cy.get('[data-cy="input-instansi"]').type("PT Maju Jaya");
         pilihOpsiPertama('[data-cy="select-jenis_instansi"]');
-        cy.get('[data-cy="input-jabatan"]').type("Manajer Operasional");
+        pilihOpsiPertama('[data-cy="select-jabatan"]');
         pilihOpsiPertama('[data-cy="select-pihak_dituju"]');
         isiDataKunjunganDasar();
         cy.get('[data-cy="btn-submit-presensi"]').click();
@@ -82,7 +82,7 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
         cy.get('[data-cy="input-instansi"]').type("PT Solusi Digital");
         pilihOpsiPertama('[data-cy="select-kategori_instansi"]');
         pilihOpsiPertama('[data-cy="select-skala_instansi"]');
-        cy.get('[data-cy="input-jabatan"]').type("Business Development");
+        pilihOpsiPertama('[data-cy="select-jabatan"]');
         pilihOpsiPertama('[data-cy="select-pihak_dituju"]');
         isiDataKunjunganDasar();
         cy.get('[data-cy="btn-submit-presensi"]').click();
@@ -184,7 +184,7 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="input-email"]',
             '[data-cy="input-instansi"]',
             '[data-cy="select-jenis_instansi"]',
-            '[data-cy="input-jabatan"]',
+            '[data-cy="select-jabatan"]',
             '[data-cy="select-pihak_dituju"]',
             '[data-cy="textarea-keperluan"]',
             '[data-cy="input-estimasi_durasi"]',
@@ -202,7 +202,7 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
             '[data-cy="input-instansi"]',
             '[data-cy="select-kategori_instansi"]',
             '[data-cy="select-skala_instansi"]',
-            '[data-cy="input-jabatan"]',
+            '[data-cy="select-jabatan"]',
             '[data-cy="select-pihak_dituju"]',
             '[data-cy="textarea-keperluan"]',
             '[data-cy="input-estimasi_durasi"]',

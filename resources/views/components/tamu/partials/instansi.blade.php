@@ -8,6 +8,21 @@
         __('visitor.foundation', [], 'id') => __('visitor.foundation'),
         __('visitor.others', [], 'id') => __('visitor.others'),
     ];
+
+    $jabatanOptions = [
+        __('visitor.job_group_leadership_management') => [
+            __('visitor.job_instansi_lead_top', [], 'id') => __('visitor.job_instansi_lead_top'),
+            __('visitor.job_instansi_management_structural', [], 'id') => __('visitor.job_instansi_management_structural'),
+        ],
+        __('visitor.job_group_functional_operational') => [
+            __('visitor.job_instansi_functional_educator_expert', [], 'id') => __('visitor.job_instansi_functional_educator_expert'),
+            __('visitor.job_instansi_operational_admin_technical', [], 'id') => __('visitor.job_instansi_operational_admin_technical'),
+        ],
+        __('visitor.job_group_support_other') => [
+            __('visitor.job_instansi_support_team', [], 'id') => __('visitor.job_instansi_support_team'),
+            __('visitor.job_other', [], 'id') => __('visitor.job_other'),
+        ],
+    ];
 @endphp
 
 <x-tamu.partials.data-pengunjung />
@@ -16,7 +31,7 @@
     <x-tamu.section-header :title="__('visitor.institution_data')" icon="🏛️" />
     <x-form.input-field name="instansi" :label="__('visitor.institution_name')" :placeholder="__('visitor.institution_name_placeholder')" required="true" />
     <x-form.select-field name="jenis_instansi" :label="__('visitor.institution_type')" required="true" :options="$institutionTypeOptions" />
-    <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_placeholder')" required="true" />
+    <x-form.select-field name="jabatan" :label="__('visitor.position_job')" required="true" :options="$jabatanOptions" :placeholderDisabled="true" />
 </div>
 
 <div>

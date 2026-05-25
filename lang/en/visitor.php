@@ -185,6 +185,28 @@ return [
     'company_scale' => 'Company Scale',
     'category' => 'Category',
 
+    // Job Group Labels
+    'job_group_leadership_management' => 'Leadership & Management',
+    'job_group_functional_operational' => 'Functional & Operational',
+    'job_group_support_other' => 'Support & Others',
+    'job_group_business_specialist' => 'Business Specialists & Representatives',
+    'job_group_operational_other' => 'Operational & Others',
+
+    // Job Options - Instansi
+    'job_instansi_lead_top' => 'Top Leadership (Head of Agency / Rector / Director / Regional Head)',
+    'job_instansi_management_structural' => 'Structural Officials (Division Head / Section Head / Dean / Principal)',
+    'job_instansi_functional_educator_expert' => 'Educators / Experts (Teacher / Lecturer / Researcher / Auditor)',
+    'job_instansi_operational_admin_technical' => 'Administrative / Technical Staff',
+    'job_instansi_support_team' => 'Support Team (Aide / Protocol / Driver)',
+    'job_other' => 'Others',
+
+    // Job Options - Bisnis
+    'job_bisnis_executive_lead' => 'Company Leadership (Director / CEO / Founder)',
+    'job_bisnis_management_supervisor' => 'Manager / Supervisor (Project Manager / Branch Head)',
+    'job_bisnis_sales_partnership' => 'Sales / Partnership Team (Sales / Account Executive / PR)',
+    'job_bisnis_technical_specialist' => 'Experts / Technicians (IT Engineer / Field Technician / Consultant)',
+    'job_bisnis_operational_support' => 'Support Staff (Administration / Logistics / Driver)',
+
     // Parent/Guardian Data
     'relation_student' => 'Relationship with Student',
     'student_name' => 'Student Name',

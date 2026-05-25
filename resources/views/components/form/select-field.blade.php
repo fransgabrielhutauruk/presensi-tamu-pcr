@@ -7,6 +7,7 @@
     'placeholder' => null,
     'value' => null,
     'dataCy' => null,
+    'placeholderDisabled' => false,
 ])
 
 @php
@@ -14,6 +15,7 @@
     $fieldDataCy = $dataCy ?: 'select-' . $name;
     $defaultPlaceholder = $placeholder ?: __('visitor.select_category');
     $requiredErrorMessage = __('visitor.field_required', ['field' => $label]);
+    $selectedValue = old($name, $value);
 @endphp
 
 <div class="form-group mb-3">
@@ -24,13 +26,25 @@
         @endif
     </label>
     <select class="form-select @error($name) is-invalid @enderror" name="{{ $name }}" id="{{ $fieldId }}"
-        data-cy="{{ $fieldDataCy }}"
-        {{ $required ? 'required' : '' }} data-error="{{ $requiredErrorMessage }}">
-        <option value="">{{ $defaultPlaceholder }}</option>
+        data-cy="{{ $fieldDataCy }}" {{ $required ? 'required' : '' }} data-error="{{ $requiredErrorMessage }}">
+        <option value="" {{ $placeholderDisabled ? 'disabled' : '' }}
+            {{ $selectedValue === null || $selectedValue === '' ? 'selected' : '' }}>
+            {{ $defaultPlaceholder }}
+        </option>
         @foreach ($options as $optionValue => $optionLabel)
-            <option value="{{ $optionValue }}" {{ old($name, $value) == $optionValue ? 'selected' : '' }}>
-                {{ $optionLabel }}
-            </option>
+            @if (is_array($optionLabel))
+                <optgroup label="{{ $optionValue }}">
+                    @foreach ($optionLabel as $groupValue => $groupLabel)
+                        <option value="{{ $groupValue }}" {{ $selectedValue == $groupValue ? 'selected' : '' }}>
+                            {{ $groupLabel }}
+                        </option>
+                    @endforeach
+                </optgroup>
+            @else
+                <option value="{{ $optionValue }}" {{ $selectedValue == $optionValue ? 'selected' : '' }}>
+                    {{ $optionLabel }}
+                </option>
+            @endif
         @endforeach
     </select>
 

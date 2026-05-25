@@ -20,6 +20,21 @@
         __('visitor.large_company', [], 'id') => __('visitor.large_company'),
         __('visitor.multinational', [], 'id') => __('visitor.multinational'),
     ];
+
+    $jabatanOptions = [
+        __('visitor.job_group_leadership_management') => [
+            __('visitor.job_bisnis_executive_lead', [], 'id') => __('visitor.job_bisnis_executive_lead'),
+            __('visitor.job_bisnis_management_supervisor', [], 'id') => __('visitor.job_bisnis_management_supervisor'),
+        ],
+        __('visitor.job_group_business_specialist') => [
+            __('visitor.job_bisnis_sales_partnership', [], 'id') => __('visitor.job_bisnis_sales_partnership'),
+            __('visitor.job_bisnis_technical_specialist', [], 'id') => __('visitor.job_bisnis_technical_specialist'),
+        ],
+        __('visitor.job_group_operational_other') => [
+            __('visitor.job_bisnis_operational_support', [], 'id') => __('visitor.job_bisnis_operational_support'),
+            __('visitor.job_other', [], 'id') => __('visitor.job_other'),
+        ],
+    ];
 @endphp
 
 <x-tamu.partials.data-pengunjung />
@@ -29,7 +44,7 @@
     <x-form.input-field name="instansi" :label="__('visitor.company_name')" :placeholder="__('visitor.company_name_placeholder')" required="true" />
     <x-form.select-field name="kategori_instansi" :label="__('visitor.category')" required="true" :options="$companyCategoryOptions" />
     <x-form.select-field name="skala_instansi" :label="__('visitor.company_scale')" required="true" :options="$companyScaleOptions" />
-    <x-form.input-field name="jabatan" :label="__('visitor.position_job')" :placeholder="__('visitor.position_placeholder')" required="true" />
+    <x-form.select-field name="jabatan" :label="__('visitor.position_job')" required="true" :options="$jabatanOptions" :placeholderDisabled="true" />
 </div>
 
 <div>
