@@ -91,7 +91,7 @@ class KunjunganEventController extends Controller
             'nomor_telepon' => 'required|max:20',
             'email' => 'required|email',
             'institusi' => 'required',
-            'jabatan' => 'required',
+            'peran' => 'required',
             'transportasi' => 'required',
         ]);
         if ($validator->fails()) {
@@ -150,7 +150,7 @@ class KunjunganEventController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nomor_telepon' => 'required|numeric',
             'email' => 'required|email',
-            'jabatan' => 'required'
+            'peran' => 'required'
         ]);
         if ($validator->fails()) {
             return redirect()->back()
@@ -176,7 +176,7 @@ class KunjunganEventController extends Controller
                 $kunjungan = Kunjungan::create($this->buildCivitasKunjunganData($event, $civitas->civitas_id));
 
                 $this->storeKunjunganDetails($kunjungan->kunjungan_id, [
-                    'jabatan' => $request->jabatan,
+                    'peran' => $request->peran,
                 ]);
 
                 return $kunjungan;
@@ -452,7 +452,7 @@ class KunjunganEventController extends Controller
     {
         return [
             'institusi' => $request->institusi,
-            'jabatan' => $request->jabatan,
+            'peran' => $request->peran,
         ];
     }
 

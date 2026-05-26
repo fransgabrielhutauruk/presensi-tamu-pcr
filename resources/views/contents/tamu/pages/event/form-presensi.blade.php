@@ -80,7 +80,7 @@
                     <input type="hidden" name="event_id" value="{{ $eventId }}" data-cy="input-event-id">
                     <x-tamu.partials.data-pengunjung />
                     <x-form.input-field name="institusi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_placeholder')" required="true" />
-                    <x-form.select-field name="jabatan" :label="__('visitor.event_role_label')" required="true"
+                    <x-form.select-field name="peran" :label="__('visitor.event_role_label')" required="true"
                         :options="$eventRoleOptions" :placeholderDisabled="true" />
                     <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
 

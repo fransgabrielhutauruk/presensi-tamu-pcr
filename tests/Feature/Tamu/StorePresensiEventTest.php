@@ -31,7 +31,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'nomor_telepon' => '081298765432',
             'email' => 'siti@example.com',
             'institusi' => 'PT Inovasi Nusantara',
-            'jabatan' => 'Koordinator Program',
+            'peran' => 'Peserta',
             'transportasi' => 'Mobil',
         ];
 
@@ -78,8 +78,8 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         $this->assertDatabaseHas('kunjungan_detail', [
             'kunjungan_id' => $kunjungan->kunjungan_id,
-            'kunci' => 'jabatan',
-            'nilai' => 'Koordinator Program',
+            'kunci' => 'peran',
+            'nilai' => 'Peserta',
         ]);
 
         $this->get($redirectUrl)
@@ -117,7 +117,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Laki-laki',
             'nomor_telepon' => '081211112222',
             'email' => 'andi@pcr.ac.id',
-            'jabatan' => 'Mahasiswa',
+            'peran' => 'Peserta',
         ];
 
         // Action
@@ -156,8 +156,8 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         $this->assertDatabaseHas('kunjungan_detail', [
             'kunjungan_id' => $kunjungan->kunjungan_id,
-            'kunci' => 'jabatan',
-            'nilai' => 'Mahasiswa',
+            'kunci' => 'peran',
+            'nilai' => 'Peserta',
         ]);
 
         $this->get($redirectUrl)
@@ -193,7 +193,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Laki-laki',
             'nomor_telepon' => '081233334444',
             'email' => $pegawai->email,
-            'jabatan' => 'Dosen',
+            'peran' => 'Pengisi Acara / Narasumber',
         ];
 
         // Action
@@ -241,8 +241,8 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         $this->assertDatabaseHas('kunjungan_detail', [
             'kunjungan_id' => $kunjungan->kunjungan_id,
-            'kunci' => 'jabatan',
-            'nilai' => 'Dosen',
+            'kunci' => 'peran',
+            'nilai' => 'Pengisi Acara / Narasumber',
         ]);
 
         $this->get($redirectUrl)
@@ -290,7 +290,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Perempuan',
             'nomor_telepon' => '081255556666',
             'email' => 'sri@mahasiswa.pcr.ac.id',
-            'jabatan' => 'Mahasiswa',
+            'peran' => 'Peserta',
         ];
 
         // Action
@@ -340,8 +340,8 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         $this->assertDatabaseHas('kunjungan_detail', [
             'kunjungan_id' => $kunjungan->kunjungan_id,
-            'kunci' => 'jabatan',
-            'nilai' => 'Mahasiswa',
+            'kunci' => 'peran',
+            'nilai' => 'Peserta',
         ]);
 
         $this->get($redirectUrl)
@@ -367,7 +367,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'nomor_telepon' => '081298765432',
             'email' => 'siti@example.com',
             'institusi' => '',
-            'jabatan' => 'Koordinator Program',
+            'peran' => 'Peserta',
             'transportasi' => 'Mobil',
         ];
 
@@ -403,7 +403,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Laki-laki',
             'nomor_telepon' => '081211112222',
             'email' => 'andi@pcr.ac.id',
-            'jabatan' => '',
+            'peran' => '',
         ];
 
         // Action
@@ -413,7 +413,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         // Assertion
         $response->assertRedirect(route('tamu.event.form-presensi-civitas', encid((string) $event->event_id)));
-        $response->assertSessionHasErrors(['jabatan']);
+        $response->assertSessionHasErrors(['peran']);
 
         $this->assertDatabaseCount('civitas', 0);
         $this->assertDatabaseCount('kunjungan', 0);
@@ -438,7 +438,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Laki-laki',
             'nomor_telepon' => '081211112222',
             'email' => 'andi@pcr.ac.id',
-            'jabatan' => 'Mahasiswa',
+            'peran' => 'Peserta',
         ];
 
         // Action

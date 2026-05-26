@@ -130,7 +130,7 @@
 
                         <x-form.input-field name="email" :label="__('visitor.email_address')" :placeholder="__('visitor.enter_email')" required="true"
                             type="email" id="email-input" />
-                        <x-form.select-field name="jabatan" id="jabatan-input" :label="__('visitor.event_role_label')" required="true"
+                        <x-form.select-field name="peran" id="peran-input" :label="__('visitor.event_role_label')" required="true"
                             :options="$eventRoleOptions" :placeholderDisabled="true" />
 
                         <div class="mt-5 mb-4">
@@ -166,12 +166,12 @@
             const namaInput = document.getElementById('nama-input');
             const emailInput = document.getElementById('email-input');
             const nomorTeleponInput = document.getElementById('nomor-telepon-input');
-            const jabatanInput = document.getElementById('jabatan-input');
+            const peranInput = document.getElementById('peran-input');
             const genderRadios = Array.from(document.querySelectorAll('input[name="jenis_kelamin"]'));
 
             if (!form || !submitBtn || !btnText || !btnLoading || !step2 || !nimNipInput || !btnLookup ||
                 !lookupBtnText || !lookupBtnLoading || !btnChangeIdentifier || !lookupFeedback || !namaInput ||
-                !emailInput || !nomorTeleponInput || !jabatanInput) {
+                !emailInput || !nomorTeleponInput || !peranInput) {
                 return;
             }
 
@@ -420,7 +420,7 @@
                 namaInput.value = '';
                 emailInput.value = '';
                 nomorTeleponInput.value = '';
-                jabatanInput.value = '';
+                peranInput.value = '';
                 genderRadios.forEach(radio => radio.checked = false);
                 unlockAllFields();
             }
@@ -472,7 +472,7 @@
 
             if (nimNipInput.value.trim() && (namaInput.value.trim() || emailInput.value.trim() || nomorTeleponInput
                     .value
-                    .trim() || jabatanInput.value.trim())) {
+                    .trim() || peranInput.value.trim())) {
                 revealStep2();
             } else {
                 hideStep2();
