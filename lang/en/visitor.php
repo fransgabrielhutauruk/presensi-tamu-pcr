@@ -118,7 +118,6 @@ return [
     'event_role_label' => 'Role in Event',
     'event_role_committee' => 'Organizing Committee',
     'event_role_speaker' => 'Speaker / Presenter',
-    'event_role_special_guest' => 'Special Guest',
     'event_role_participant' => 'Participant',
     'institution_placeholder' => 'Institution name',
     'transportation_type' => 'Vehicle/Transportation Type',

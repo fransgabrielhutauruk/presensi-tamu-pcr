@@ -118,7 +118,6 @@ return [
     'event_role_label' => 'Peran dalam Acara',
     'event_role_committee' => 'Panitia Pelaksana',
     'event_role_speaker' => 'Pengisi Acara / Narasumber',
-    'event_role_special_guest' => 'Undangan Khusus',
     'event_role_participant' => 'Peserta',
     'institution_placeholder' => 'Nama institusi',
     'transportation_type' => 'Jenis Kendaraan/Transportasi',

@@ -31,7 +31,6 @@
 
         $eventRoleOptions = [
             __('visitor.event_role_participant', [], 'id') => __('visitor.event_role_participant'),
-            __('visitor.event_role_special_guest', [], 'id') => __('visitor.event_role_special_guest'),
             __('visitor.event_role_speaker', [], 'id') => __('visitor.event_role_speaker'),
             __('visitor.event_role_committee', [], 'id') => __('visitor.event_role_committee'),
         ];
