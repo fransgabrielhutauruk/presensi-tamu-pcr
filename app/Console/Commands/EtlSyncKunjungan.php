@@ -281,6 +281,15 @@ class EtlSyncKunjungan extends Command
 
             $this->info('Mulai sync dim_kunjungan_detail.');
 
+            $pihakDitujuId = $dwh->table('dim_detail')->where('kunci', 'pihak_dituju')->value('detail_id');
+            if ($pihakDitujuId === null) {
+                $pihakDitujuId = (int) $dwh->table('dim_detail')->max('detail_id') + 1;
+                $dwh->table('dim_detail')->insert([
+                    'detail_id' => $pihakDitujuId,
+                    'kunci' => 'pihak_dituju',
+                ]);
+            }
+
             $oltp->table('kunjungan_detail')
                 ->join('kunjungan', 'kunjungan_detail.kunjungan_id', '=', 'kunjungan.kunjungan_id')
                 ->where('kunjungan.status_validasi', true)
@@ -304,6 +313,20 @@ class EtlSyncKunjungan extends Command
                         );
                     }
                 }, 'kunjungandetail_id');
+
+            $oltp->table('kunjungan')
+                ->where('status_validasi', true)
+                ->whereNull('deleted_at')
+                ->where('kategori_tujuan', 'informasi_kampus')
+                ->select('kunjungan_id')
+                ->chunkById(1000, function ($rows) use ($dwh, $pihakDitujuId) {
+                    foreach ($rows as $row) {
+                        $dwh->table('dim_kunjungan_detail')->updateOrInsert(
+                            ['kunjungan_id' => $row->kunjungan_id, 'detail_id' => $pihakDitujuId],
+                            ['nilai' => 'Penerimaan Mahasiswa Baru (PMB)']
+                        );
+                    }
+                }, 'kunjungan_id');
             $this->info('Sync dim_kunjungan_detail selesai.');
 
             return Command::SUCCESS;
