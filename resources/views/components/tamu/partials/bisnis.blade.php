@@ -14,11 +14,16 @@
     ];
 
     $companyScaleOptions = [
-        __('visitor.startup', [], 'id') => __('visitor.startup'),
-        __('visitor.small_company', [], 'id') => __('visitor.small_company'),
-        __('visitor.medium_company', [], 'id') => __('visitor.medium_company'),
-        __('visitor.large_company', [], 'id') => __('visitor.large_company'),
-        __('visitor.multinational', [], 'id') => __('visitor.multinational'),
+        __('visitor.micro_scale', [], 'id') => __('visitor.micro_scale'),
+        __('visitor.small_scale', [], 'id') => __('visitor.small_scale'),
+        __('visitor.medium_scale', [], 'id') => __('visitor.medium_scale'),
+        __('visitor.large_scale', [], 'id') => __('visitor.large_scale'),
+    ];
+
+    $companyTypeOptions = [
+        __('visitor.company_type_local_regional', [], 'id') => __('visitor.company_type_local_regional'),
+        __('visitor.company_type_national', [], 'id') => __('visitor.company_type_national'),
+        __('visitor.company_type_multi_national', [], 'id') => __('visitor.company_type_multi_national'),
     ];
 
     $jabatanOptions = [
@@ -43,6 +48,7 @@
     <x-tamu.section-header :title="__('visitor.company_data')" icon="🏢" />
     <x-form.input-field name="instansi" :label="__('visitor.company_name')" :placeholder="__('visitor.company_name_placeholder')" required="true" />
     <x-form.select-field name="kategori_instansi" :label="__('visitor.category')" required="true" :options="$companyCategoryOptions" />
+    <x-form.select-field name="jenis_perusahaan" :label="__('visitor.company_type')" required="true" :options="$companyTypeOptions" />
     <x-form.select-field name="skala_instansi" :label="__('visitor.company_scale')" required="true" :options="$companyScaleOptions" />
     <x-form.select-field name="jabatan" :label="__('visitor.position_job')" required="true" :options="$jabatanOptions" :placeholderDisabled="true" />
 </div>

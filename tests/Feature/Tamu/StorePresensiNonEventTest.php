@@ -83,6 +83,7 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'transportasi' => 'Mobil',
             'instansi' => 'PT Solusi Digital',
             'kategori_instansi' => 'Teknologi Informasi',
+            'jenis_perusahaan' => 'Nasional',
             'skala_instansi' => 'Menengah',
             'jabatan' => 'Business Development',
             'pihak_dituju' => 'Wakil Direktur',
@@ -123,7 +124,7 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'is_checkout' => false,
         ]);
 
-        $this->assertDatabaseCount('kunjungan_detail', 6);
+        $this->assertDatabaseCount('kunjungan_detail', 7);
 
         $this->get($redirectUrl)
             ->assertOk()
@@ -358,6 +359,7 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'transportasi' => 'Mobil',
             'instansi' => 'PT Solusi Digital',
             'kategori_instansi' => '',
+            'jenis_perusahaan' => 'Nasional',
             'skala_instansi' => 'Menengah',
             'jabatan' => 'Business Development',
             'pihak_dituju' => 'Wakil Direktur',

@@ -74,6 +74,7 @@ function buildPayload(kategoriTujuan) {
                 ...payload,
                 instansi: `Perusahaan ${suffix}`,
                 kategori_instansi: 'Teknologi',
+                jenis_perusahaan: 'Nasional',
                 skala_instansi: 'Menengah',
                 jabatan: 'Manager',
                 pihak_dituju: 'Staff',

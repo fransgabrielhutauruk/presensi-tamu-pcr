@@ -176,6 +176,7 @@ return [
         'hubungan_dengan_mahasiswa' => 'Hubungan dengan Mahasiswa',
         'jenis_instansi' => 'Jenis Instansi',
         'kategori_instansi' => 'Kategori Instansi',
+        'jenis_perusahaan' => 'Jenis Perusahaan',
         'skala_perusahaan' => 'Skala Perusahaan',
         'prodi_mahasiswa' => 'Program Studi Mahasiswa',
     ],

@@ -176,6 +176,7 @@ return [
         'hubungan_dengan_mahasiswa' => 'Relationship with Student',
         'jenis_instansi' => 'Institution Type',
         'kategori_instansi' => 'Institution Category',
+        'jenis_perusahaan' => 'Company Type',
         'skala_perusahaan' => 'Company Scale',
         'prodi_mahasiswa' => 'Student Study Program',
     ],

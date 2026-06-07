@@ -81,6 +81,7 @@ describe("BBT-2 Pengisian Presensi Non-Event", () => {
         isiDataDasarTamu(`${Date.now()}03`);
         cy.get('[data-cy="input-instansi"]').type("PT Solusi Digital");
         pilihOpsiPertama('[data-cy="select-kategori_instansi"]');
+        pilihOpsiPertama('[data-cy="select-jenis_perusahaan"]');
         pilihOpsiPertama('[data-cy="select-skala_instansi"]');
         pilihOpsiPertama('[data-cy="select-jabatan"]');
         pilihOpsiPertama('[data-cy="select-pihak_dituju"]');

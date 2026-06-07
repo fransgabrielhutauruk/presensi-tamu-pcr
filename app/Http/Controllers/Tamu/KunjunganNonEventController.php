@@ -75,6 +75,7 @@ class KunjunganNonEventController extends Controller
             KategoriTujuanEnum::BISNIS->value => [
                 'instansi',
                 'kategori_instansi',
+                'jenis_perusahaan',
                 'skala_instansi',
                 'jabatan',
                 'pihak_dituju',
