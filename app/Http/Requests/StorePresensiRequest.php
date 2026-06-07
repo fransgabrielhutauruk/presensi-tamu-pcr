@@ -39,7 +39,7 @@ class StorePresensiRequest extends FormRequest
                 $rules = array_merge($rules, [
                     'instansi' => 'required|string|max:255',
                     'kategori_instansi' => 'required|string|max:255',
-                    'skala_instansi' => 'required|string|max:255',
+                    'skala_instansi' => 'required|string',
                     'jabatan' => 'required|string|max:255',
                     'pihak_dituju' => 'required|string|max:255',
                     'keperluan' => 'required|string|max:1000',
