@@ -150,7 +150,7 @@ return [
     'visit_purpose_placeholder' => 'Describe visit purpose',
     'estimated_duration' => 'Estimated Visit Duration (Hours)',
     'estimated_duration_placeholder' => 'Example: 2 (for 2 hours)',
-    'transportation_label' => 'Vehicle/Transportation Type',
+    'transportation_label' => 'Type of Vehicle/Transportation Used',
 
     // Institution Data
     'institution_data' => 'Institution Data',

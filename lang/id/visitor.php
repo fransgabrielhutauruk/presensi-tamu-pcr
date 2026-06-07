@@ -150,7 +150,7 @@ return [
     'visit_purpose_placeholder' => 'Jelaskan keperluan kunjungan',
     'estimated_duration' => 'Estimasi Durasi Kunjungan (Jam)',
     'estimated_duration_placeholder' => 'Contoh: 2 (untuk 2 jam)',
-    'transportation_label' => 'Jenis Kendaraan/Transportasi',
+    'transportation_label' => 'Jenis Kendaraan/Transportasi yang Digunakan',
 
     // Institution Data
     'institution_data' => 'Data Instansi',
