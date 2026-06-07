@@ -38,7 +38,7 @@
 
     <div class="row">
         <div class="col-md-6 justify-content-center mx-auto">
-            <div class="text-center mt-5">
+            <div class="text-center mt-4">
                 <x-tamu.page-header :title="__('visitor.event_attendance_form')" :subtitle="__('visitor.pcr_civitas')" />
 
                 <div class="text-start mt-3 mb-4 wow fadeInUp">

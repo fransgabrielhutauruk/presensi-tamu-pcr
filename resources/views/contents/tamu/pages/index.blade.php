@@ -1,5 +1,9 @@
 @extends('layouts.tamu.main')
 
+@php
+    $hideLogoHeader = true;
+@endphp
+
 @section('title', Str::title(__('visitor.welcome_message')))
 
 @section('content')
@@ -20,7 +24,7 @@
         ];
     @endphp
 
-    <div class="row d-flex align-items-center pt-5" style="min-height: 90vh">
+    <div class="row d-flex align-items-center pt-5" style="min-height: 80vh">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="shapes position-fixed" style="pointer-events: none; user-select: none; inset: 0; z-index: 1;"
                 aria-hidden="true" id="shapes-container">

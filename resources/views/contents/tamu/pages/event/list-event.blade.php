@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-md-6 justify-content-center mx-auto">
             <div class="text-center">
-                <div class="mb-5 mt-5">
+                <div class="mb-5 mt-3">
                     <h1 class="fw-bold wow fadeInOut fs-2" style="font-size: 1.75rem; letter-spacing: 0.025em;">
                         {{ __('visitor.select_event') }}
                     </h1>

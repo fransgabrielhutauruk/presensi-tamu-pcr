@@ -13,10 +13,10 @@
         ];
     @endphp
 
-    <div class="row pt-5 align-items-center justify-content-center" style="min-height: 90vh">
+    <div class="row pt-5 align-items-center justify-content-center" style="min-height: 80vh">
         <div class="col-md-6 col-lg-5">
             <div class="checkout-success-container">
-                <x-tamu.page-header title="{{ __('visitor.visitor_feedback') }}" img=true />
+                <x-tamu.page-header title="{{ __('visitor.visitor_feedback') }}" />
                 <div class="feedback-card wow fadeInUp my-4" data-wow-delay="0.5s">
                     <h6 class="text-center mb-0" data-cy="text-feedback-title">
                         {{ __('visitor.service_rating') }}

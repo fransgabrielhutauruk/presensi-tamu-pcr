@@ -38,7 +38,7 @@
 
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">
-            <div class="text-center mt-5">
+            <div class="text-center mt-4">
                 <x-tamu.page-header :title="$currentTujuan['title']" />
 
                 <div class="text-start mt-4">
@@ -49,9 +49,8 @@
                     </a>
                 </div>
 
-                <form id="tamu-form" class="text-start wow fadeInUp"
-                    action="{{ route('tamu.non-event.store-presensi') }}" method="POST" data-toggle="validator"
-                    novalidate data-cy="form-presensi-non-event">
+                <form id="tamu-form" class="text-start wow fadeInUp" action="{{ route('tamu.non-event.store-presensi') }}"
+                    method="POST" data-toggle="validator" novalidate data-cy="form-presensi-non-event">
                     @csrf
                     <input type="hidden" name="kategori_tujuan" value="{{ $tujuanKey }}"
                         data-cy="input-kategori-tujuan">

@@ -13,7 +13,7 @@ Konfirmasi Check-Out
 
 **Detail Kunjungan:**
 - Nama: {{ $namaTamu }}
-- Tanggal Kunjungan: {{ \Carbon\Carbon::parse($kunjungan->created_at)->format('d F Y') }}
+- Tanggal Kunjungan: {{ tanggal($kunjungan->created_at) }}
 - Waktu Kunjungan: {{ \Carbon\Carbon::parse($kunjungan->created_at)->format('H:i') }} WIB
 
 ---

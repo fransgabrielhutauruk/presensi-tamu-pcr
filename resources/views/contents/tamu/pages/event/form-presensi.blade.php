@@ -30,7 +30,7 @@
 
     <div class="row">
         <div class="col-md-5 justify-content-center mx-auto">
-            <div class="text-center mt-5">
+            <div class="text-center mt-4">
                 <x-tamu.page-header :title="__('visitor.event_attendance_form')" :subtitle="__('visitor.external_guest')" />
 
                 <div class="text-start mt-4">
@@ -50,20 +50,20 @@
                                 <div class="row">
                                     @if ($formattedEventDate)
                                         <small class="text-muted d-flex align-items-center gap-1">
-                                            <i class="fas fa-calendar"></i>
+                                            <i class="fas fa-calendar" style="font-size: 13px"></i>
                                             <span>{{ $formattedEventDate }}</span>
                                         </small>
                                     @endif
                                     @if ($formattedEventTime)
                                         <small class="text-muted d-flex align-items-center gap-1">
-                                            <i class="fas fa-clock"></i>
+                                            <i class="fas fa-clock" style="font-size: 12px"></i>
                                             <span>{{ $formattedEventTime }}</span>
                                         </small>
                                     @endif
                                 </div>
                                 @if ($event->lokasi_event)
                                     <small class="text-muted d-flex align-items-center gap-1">
-                                        <i class="fas fa-map-marker-alt"></i>
+                                        <i class="fas fa-map-marker-alt" style="font-size: 15px"></i>
                                         <span>{{ $event->lokasi_event }}</span>
                                     </small>
                                 @endif

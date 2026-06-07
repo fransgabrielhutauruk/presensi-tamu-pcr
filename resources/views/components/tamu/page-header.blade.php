@@ -3,7 +3,7 @@
 <header class="text-center wow fadeInUp">
     @if ($img)
         <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"
-            class="mx-auto d-block mb-3 img-fluid mt-5" style="width:30%" />
+            class="mx-auto d-block mb-3 img-fluid mt-3" style="width:25%" />
     @endif
 
     <h1 class="fw-bold fs-2 text-uppercase" style="font-size: 1.75rem; letter-spacing: 0.025em;">

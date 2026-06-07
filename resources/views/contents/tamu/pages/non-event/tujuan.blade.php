@@ -38,7 +38,7 @@
         ];
     @endphp
 
-    <div class="row pt-5 d-flex align-items-center" style="min-height: 90vh">
+    <div class="row d-flex align-items-center" style="min-height: 80vh">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="text-center">
                 <div class="relative min-h-screen d-flex flex-column justify-content-center mx-auto">

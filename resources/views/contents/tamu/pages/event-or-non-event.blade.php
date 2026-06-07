@@ -1,6 +1,6 @@
 @extends('layouts.tamu.main')
 
-@section('title', Str::title(__('visitor.choose_visit_type')) )
+@section('title', Str::title(__('visitor.choose_visit_type')))
 
 @section('content')
     @php
@@ -22,9 +22,9 @@
         ];
     @endphp
 
-    <div class="row d-flex align-items-center" style="min-height: 90vh">
+    <div class="row d-flex align-items-center">
         <div class="col-md-10 justify-content-center mx-auto">
-            <div class="text-center mt-5">
+            <div class="text-center mt-4">
                 <x-tamu.page-header title="{{ __('visitor.choose_visit_type') }}"
                     subtitle="{{ __('visitor.select_visit_type') }}" />
                 <div class="row g-4 mt-3">

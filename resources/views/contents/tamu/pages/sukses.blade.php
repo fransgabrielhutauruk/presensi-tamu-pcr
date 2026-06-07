@@ -12,12 +12,10 @@
         $checkoutRoute = route('tamu.checkout', encid($kunjungan->kunjungan_id));
     @endphp
 
-    <div class="row justify-content-center align-items-center" style="min-height: 90vh">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh">
         <div class="col-md-5 mt-3">
             <div class="text-center">
                 <x-card class="wow fadeInUp py-2">
-                    <img src="{{ asset('theme/images/akreditasi-unggul.webp') }}" alt="Logo Akreditasi Unggul"
-                        class="mx-auto d-block mb-3 img-fluid" style="width: 30%;" />
                     <h1 class="mt-3 lh-1 fs-2" data-cy="text-terima-kasih">{{ __('visitor.thank_you') }}!</h1>
                     <p class="mt-1 lh-sm text-body" data-cy="text-registrasi-berhasil">{{ __('visitor.registration_complete') }}</p>
 

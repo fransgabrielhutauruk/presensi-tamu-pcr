@@ -20,7 +20,7 @@
         ];
     @endphp
 
-    <div class="row align-items-center" style="min-height: 90vh">
+    <div class="row align-items-center" style="min-height: 80vh">
         <div class="col-md-6 justify-content-center mx-auto">
             <div class="text-center">
                 <x-tamu.page-header :title="$event->nama_event" :question="__('visitor.non_civitas_or_civitas')" />

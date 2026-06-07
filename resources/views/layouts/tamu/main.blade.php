@@ -5,11 +5,15 @@
 @endpush
 
 @section('base-content')
-    <div class="position-fixed top-0 mt-2 end-0 p-2 pe-3" style="z-index: 20">
-        <x-tamu.language-switcher />
-    </div>
-
     <div class="d-flex flex-column min-vh-100">
+        <div class="d-flex justify-content-between mt-2 py-2 px-3">
+            @if (!isset($hideLogoHeader) || !$hideLogoHeader)
+                <x-tamu.logo-header />
+            @else
+                <div></div>
+            @endif
+            <x-tamu.language-switcher />
+        </div>
         <main class="flex-grow-1">
             <div class="container">
                 @yield('content')
