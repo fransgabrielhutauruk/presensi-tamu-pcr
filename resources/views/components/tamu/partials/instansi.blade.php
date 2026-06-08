@@ -10,18 +10,14 @@
     ];
 
     $jabatanOptions = [
-        __('visitor.job_group_leadership_management') => [
-            __('visitor.job_instansi_lead_top', [], 'id') => __('visitor.job_instansi_lead_top'),
-            __('visitor.job_instansi_management_structural', [], 'id') => __('visitor.job_instansi_management_structural'),
-        ],
-        __('visitor.job_group_functional_operational') => [
-            __('visitor.job_instansi_functional_educator_expert', [], 'id') => __('visitor.job_instansi_functional_educator_expert'),
-            __('visitor.job_instansi_operational_admin_technical', [], 'id') => __('visitor.job_instansi_operational_admin_technical'),
-        ],
-        __('visitor.job_group_support_other') => [
-            __('visitor.job_instansi_support_team', [], 'id') => __('visitor.job_instansi_support_team'),
-            __('visitor.job_other', [], 'id') => __('visitor.job_other'),
-        ],
+        __('visitor.job_top_management', [], 'id') => __('visitor.job_top_management'),
+        __('visitor.job_middle_management', [], 'id') => __('visitor.job_middle_management'),
+        __('visitor.job_operational_staff', [], 'id') => __('visitor.job_operational_staff'),
+        __('visitor.job_educator_non_structural', [], 'id') => __('visitor.job_educator_non_structural'),
+        __('visitor.job_support_team', [], 'id') => __('visitor.job_support_team'),
+        __('visitor.job_university_student', [], 'id') => __('visitor.job_university_student'),
+        __('visitor.job_school_student', [], 'id') => __('visitor.job_school_student'),
+        __('visitor.job_other', [], 'id') => __('visitor.job_other'),
     ];
 @endphp
 

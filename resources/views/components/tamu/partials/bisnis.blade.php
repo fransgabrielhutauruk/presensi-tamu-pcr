@@ -27,18 +27,14 @@
     ];
 
     $jabatanOptions = [
-        __('visitor.job_group_leadership_management') => [
-            __('visitor.job_bisnis_executive_lead', [], 'id') => __('visitor.job_bisnis_executive_lead'),
-            __('visitor.job_bisnis_management_supervisor', [], 'id') => __('visitor.job_bisnis_management_supervisor'),
-        ],
-        __('visitor.job_group_business_specialist') => [
-            __('visitor.job_bisnis_sales_partnership', [], 'id') => __('visitor.job_bisnis_sales_partnership'),
-            __('visitor.job_bisnis_technical_specialist', [], 'id') => __('visitor.job_bisnis_technical_specialist'),
-        ],
-        __('visitor.job_group_operational_other') => [
-            __('visitor.job_bisnis_operational_support', [], 'id') => __('visitor.job_bisnis_operational_support'),
-            __('visitor.job_other', [], 'id') => __('visitor.job_other'),
-        ],
+        __('visitor.job_top_management', [], 'id') => __('visitor.job_top_management'),
+        __('visitor.job_middle_management', [], 'id') => __('visitor.job_middle_management'),
+        __('visitor.job_operational_staff', [], 'id') => __('visitor.job_operational_staff'),
+        __('visitor.job_educator_non_structural', [], 'id') => __('visitor.job_educator_non_structural'),
+        __('visitor.job_support_team', [], 'id') => __('visitor.job_support_team'),
+        __('visitor.job_university_student', [], 'id') => __('visitor.job_university_student'),
+        __('visitor.job_school_student', [], 'id') => __('visitor.job_school_student'),
+        __('visitor.job_other', [], 'id') => __('visitor.job_other'),
     ];
 @endphp
 

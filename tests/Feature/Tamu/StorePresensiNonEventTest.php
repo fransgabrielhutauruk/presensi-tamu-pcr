@@ -172,7 +172,7 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'tamu_id' => $kunjungan->tamu_id,
             'nama_tamu' => 'Nuraini',
             'jenis_kelamin_tamu' => 'Perempuan',
-            'email_tamu' => null,
+            'email_tamu' => 'nuraini@example.com',
             'nomor_telepon_tamu' => '081366666666',
         ]);
 

@@ -192,27 +192,15 @@ return [
     'category' => 'Kategori',
     'email_address_optional' => 'Alamat Email (Opsional)',
 
-    // Job Group Labels
-    'job_group_leadership_management' => 'Pimpinan & Manajerial',
-    'job_group_functional_operational' => 'Fungsional & Operasional',
-    'job_group_support_other' => 'Pendukung & Lainnya',
-    'job_group_business_specialist' => 'Spesialis & Representatif Bisnis',
-    'job_group_operational_other' => 'Operasional & Lainnya',
-
-    // Job Options - Instansi
-    'job_instansi_lead_top' => 'Pimpinan Puncak (Kadis / Rektor / Direktur / Kakanwil)',
-    'job_instansi_management_structural' => 'Pejabat Struktural (Kabid / Kasi / Dekan / Kepala Sekolah)',
-    'job_instansi_functional_educator_expert' => 'Tenaga Pendidik / Ahli (Guru / Dosen / Peneliti / Auditor)',
-    'job_instansi_operational_admin_technical' => 'Staf Administrasi / Teknis / Tata Usaha',
-    'job_instansi_support_team' => 'Tim Pendukung (Ajudan / Protokoler / Supir)',
+    // job/position options for presensi non-event
+    'job_top_management' => 'Pimpinan Puncak',
+    'job_middle_management' => 'Manajemen Menengah',
+    'job_operational_staff' => 'Staf Pelaksana / Operasional',
+    'job_educator_non_structural' => 'Tenaga Pendidik / Pegawai Non-Struktural',
+    'job_support_team' => 'Tim Pendukung (Ajudan, Supir, dll)',
+    'job_university_student' => 'Mahasiswa',
+    'job_school_student' => 'Siswa',
     'job_other' => 'Lainnya',
-
-    // Job Options - Bisnis
-    'job_bisnis_executive_lead' => 'Pimpinan Perusahaan (Direktur / CEO / Founder)',
-    'job_bisnis_management_supervisor' => 'Manajer / Supervisor (Project Manager / Kepala Cabang)',
-    'job_bisnis_sales_partnership' => 'Tim Penjualan / Kemitraan (Sales / Account Executive / PR)',
-    'job_bisnis_technical_specialist' => 'Tenaga Ahli / Teknisi (IT Engineer / Teknisi Lapangan / Konsultan)',
-    'job_bisnis_operational_support' => 'Staf Pendukung (Administrasi / Logistik / Supir)',
 
     // Parent/Guardian Data
     'relation_student' => 'Hubungan dengan Mahasiswa',
