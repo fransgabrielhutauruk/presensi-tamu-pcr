@@ -7,7 +7,7 @@
     ];
 @endphp
 
-<x-tamu.partials.data-pengunjung />
+<x-tamu.partials.data-pengunjung :email-required="false" />
 
 <div>
     <x-form.select-field name="hubungan_dengan_mahasiswa" :label="__('visitor.relation_student')" required="true" :options="$relationOptions" />

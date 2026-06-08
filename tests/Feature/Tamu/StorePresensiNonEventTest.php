@@ -172,7 +172,7 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'tamu_id' => $kunjungan->tamu_id,
             'nama_tamu' => 'Nuraini',
             'jenis_kelamin_tamu' => 'Perempuan',
-            'email_tamu' => 'nuraini@example.com',
+            'email_tamu' => null,
             'nomor_telepon_tamu' => '081366666666',
         ]);
 
@@ -202,7 +202,6 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'nama' => 'Dewi Lestari',
             'jenis_kelamin' => 'Perempuan',
             'nomor_telepon' => '081377777777',
-            'email' => 'dewi@example.com',
             'kategori_tujuan' => 'informasi_kampus',
             'estimasi_durasi' => 1,
             'transportasi' => 'Online Ride',
@@ -231,7 +230,7 @@ describe('BBT-2 Pengisian Presensi Non-Event', function () {
             'tamu_id' => $kunjungan->tamu_id,
             'nama_tamu' => 'Dewi Lestari',
             'jenis_kelamin_tamu' => 'Perempuan',
-            'email_tamu' => 'dewi@example.com',
+            'email_tamu' => null,
             'nomor_telepon_tamu' => '081377777777',
         ]);
 

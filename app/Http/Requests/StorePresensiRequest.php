@@ -13,11 +13,15 @@ class StorePresensiRequest extends FormRequest
 
     public function rules(): array
     {
+        $emailRules = in_array($this->kategori_tujuan, ['ortu', 'informasi_kampus'], true)
+            ? 'nullable|email'
+            : 'required|email';
+
         $rules = [
             'nama' => 'required',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nomor_telepon' => 'required|max:20',
-            'email' => 'required|email',
+            'email' => $emailRules,
 
             'kategori_tujuan' => 'required|in:instansi,bisnis,ortu,informasi_kampus,lainnya',
             'estimasi_durasi' => 'required|integer|min:1|max:24',

@@ -3,14 +3,14 @@
     $visitSectionTitle = __('visitor.visit_data');
 @endphp
 
-<x-tamu.partials.data-pengunjung />
+<x-tamu.partials.data-pengunjung :email-required="false" />
 
 <div>
     <x-tamu.section-header
         :title="$studentSectionTitle"
         icon="🎓" />
     <x-form.input-field
-        name="asal_sekolah"
+        name="asal_sekolah"   
         :label="__('visitor.school_origin')"
         :placeholder="__('visitor.school_origin_placeholder')"
         required="true" />

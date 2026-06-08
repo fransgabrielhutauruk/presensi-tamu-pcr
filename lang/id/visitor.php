@@ -190,6 +190,7 @@ return [
     'company_name_placeholder' => 'Nama perusahaan',
     'company_scale' => 'Skala Perusahaan',
     'category' => 'Kategori',
+    'email_address_optional' => 'Alamat Email (Opsional)',
 
     // Job Group Labels
     'job_group_leadership_management' => 'Pimpinan & Manajerial',

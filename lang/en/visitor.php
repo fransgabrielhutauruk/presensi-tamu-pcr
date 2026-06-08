@@ -190,6 +190,7 @@ return [
     'company_name_placeholder' => 'Company name',
     'company_scale' => 'Company Scale',
     'category' => 'Category',
+    'email_address_optional' => 'Email Address (Optional)',
 
     // Job Group Labels
     'job_group_leadership_management' => 'Leadership & Management',
