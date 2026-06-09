@@ -6,14 +6,27 @@
     @php
         $eventCount = $events->count();
         $hasEvents = $eventCount > 0;
+        $pageTitle = match($kategoriLokasi ?? null) {
+            'dalam_kampus' => __('visitor.internal_event'),
+            'luar_kampus' => __('visitor.external_event'),
+            default => __('visitor.select_event'),
+        };
     @endphp
 
     <div class="row">
         <div class="col-md-6 justify-content-center mx-auto">
             <div class="text-center">
+                <div class="text-start mt-3 mb-2">
+                    <a href="{{ route('tamu.event-type') }}"
+                        class="btn btn-link p-0 align-items-center gap-2 text-decoration-none"
+                        style="color: var(--dark-color);" data-cy="btn-back-event-type">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>{{ __('visitor.back') }}</span>
+                    </a>
+                </div>
                 <div class="mb-5 mt-3">
                     <h1 class="fw-bold wow fadeInOut fs-2" style="font-size: 1.75rem; letter-spacing: 0.025em;">
-                        {{ __('visitor.select_event') }}
+                        {{ $pageTitle }}
                     </h1>
                     <p class="text-muted mb-2" style="font-size: 0.875rem; font-weight: 500; letter-spacing: 0.15em;">
                         POLITEKNIK CALTEX RIAU

@@ -78,10 +78,27 @@
                     @csrf
                     <input type="hidden" name="event_id" value="{{ $eventId }}" data-cy="input-event-id">
                     <x-tamu.partials.data-pengunjung />
-                    <x-form.input-field name="institusi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_placeholder')" required="true" />
-                    <x-form.select-field name="peran" :label="__('visitor.event_role_label')" required="true"
-                        :options="$eventRoleOptions" :placeholderDisabled="true" />
-                    <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
+                    <x-form.input-field name="instansi" :label="__('visitor.institution')" :placeholder="__('visitor.institution_name_placeholder')" required="true" />
+                    <x-form.select-field name="peran" :label="__('visitor.event_role_label')" required="true" :options="$eventRoleOptions"
+                        :placeholderDisabled="true" />
+
+                    @if ($event->jenis_kegiatan !== 'pmb')
+                        <x-form.select-field name="transportasi" :label="__('visitor.transportation_type')" required="true" :options="$transportationOptions" />
+                    @endif
+
+                    @if ($event->jenis_kegiatan === 'pmb')
+                        <div class="mt-4">
+                            <x-tamu.section-header :title="__('visitor.event_pmb_program')" icon="🎓" />
+                            <x-form.radio-group name="minat_masuk_pcr" :label="__('visitor.willing_to_join_pcr')" :required="true"
+                                :options="[
+                                    __('visitor.yes', [], 'id') => __('visitor.yes'),
+                                    __('visitor.no', [], 'id') => __('visitor.no'),
+                                    __('visitor.hesitant', [], 'id') => __('visitor.hesitant'),
+                                ]" />
+                            <x-form.select-field name="prodi_diminati" :label="__('visitor.interested_programs')" required="true" :options="$prodiOptions"
+                                :multiple="true" />
+                        </div>
+                    @endif
 
                     <div class="mt-5 mb-4">
                         <button type="submit" id="submitBtn" class="btn-default w-100" data-cy="btn-submit-presensi-event">

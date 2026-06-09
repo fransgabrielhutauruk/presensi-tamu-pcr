@@ -9,6 +9,7 @@ use App\Models\Dimension\DmPegawai;
 use App\Models\Event;
 use App\Models\Kunjungan;
 use App\Models\KunjunganDetail;
+use App\Models\MstOpsiKunjungan;
 use App\Models\Tamu;
 use App\Services\CypressTestingService;
 use Illuminate\Http\JsonResponse;
@@ -42,12 +43,17 @@ class KunjunganEventController extends Controller
 
         $currentDate = now()->format('Y-m-d');
 
-        $events = Event::query()
-            ->where('tanggal_event', '=', $currentDate)
-            ->orderBy('waktu_mulai_event', 'asc')
-            ->get();
+        $query = Event::query()
+            ->where('tanggal_event', '=', $currentDate);
 
-        return view('contents.tamu.pages.event.list-event', compact('events'));
+        if ($request->has('kategori_lokasi') && in_array($request->kategori_lokasi, ['dalam_kampus', 'luar_kampus'])) {
+            $query->where('kategori_lokasi', $request->kategori_lokasi);
+        }
+
+        $events = $query->orderBy('waktu_mulai_event', 'asc')->get();
+        $kategoriLokasi = $request->get('kategori_lokasi');
+
+        return view('contents.tamu.pages.event.list-event', compact('events', 'kategoriLokasi'));
     }
 
     public function identitas(Request $request, $eventId)
@@ -76,7 +82,12 @@ class KunjunganEventController extends Controller
                 return redirect()->route('tamu.home')->with('warning', 'Event ini sudah berakhir.');
             }
 
-            return view('contents.tamu.pages.event.form-presensi', compact('event', 'eventId'));
+            $prodiOptions = [];
+            if ($event->jenis_kegiatan === 'pmb') {
+                $prodiOptions = MstOpsiKunjungan::getDropdownOptions('prodi', app()->getLocale());
+            }
+
+            return view('contents.tamu.pages.event.form-presensi', compact('event', 'eventId', 'prodiOptions'));
         } catch (Throwable $exception) {
             return redirect()->route('tamu.home')->with('warning', 'Event tidak ditemukan.');
         }
@@ -84,16 +95,31 @@ class KunjunganEventController extends Controller
 
     public function storePresensiNonCivitas(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $rules = [
             'event_id' => 'required',
             'nama' => 'required',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nomor_telepon' => 'required|max:20',
             'email' => 'required|email',
-            'institusi' => 'required',
+            'instansi' => 'required',
             'peran' => 'required',
-            'transportasi' => 'required',
-        ]);
+        ];
+
+        try {
+            $event = $this->findEventByHashedIdOrFail($request->event_id);
+
+            if ($event->jenis_kegiatan === 'pmb') {
+                $rules['minat_masuk_pcr'] = 'required|in:Ya,Tidak,Ragu-ragu';
+                $rules['prodi_diminati'] = 'required|array|min:1';
+                $rules['prodi_diminati.*'] = 'string|max:255';
+            } else {
+                $rules['transportasi'] = 'required';
+            }
+        } catch (Throwable $exception) {
+            return redirect()->back()->withInput()->with('error', 'Event tidak ditemukan.');
+        }
+
+        $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return redirect()->back()
                 ->withErrors($validator)
@@ -102,14 +128,12 @@ class KunjunganEventController extends Controller
         }
 
         try {
-            $event = $this->findEventByHashedIdOrFail($request->event_id);
-
             $kunjungan = DB::transaction(function () use ($request, $event) {
                 $tamu = Tamu::create($this->buildTamuData($request));
 
                 $kunjungan = Kunjungan::create($this->buildNonCivitasKunjunganData($request, $event, $tamu->tamu_id));
 
-                $this->storeKunjunganDetails($kunjungan->kunjungan_id, $this->buildNonCivitasDetailData($request));
+                $this->storeKunjunganDetails($kunjungan->kunjungan_id, $this->buildNonCivitasDetailData($request, $event));
 
                 return $kunjungan;
             });
@@ -448,12 +472,19 @@ class KunjunganEventController extends Controller
         ];
     }
 
-    private function buildNonCivitasDetailData(Request $request): array
+    private function buildNonCivitasDetailData(Request $request, Event $event): array
     {
-        return [
-            'institusi' => $request->institusi,
+        $data = [
+            'instansi' => $request->instansi,
             'peran' => $request->peran,
         ];
+
+        if ($event->jenis_kegiatan === 'pmb') {
+            $data['minat_masuk_pcr'] = $request->minat_masuk_pcr;
+            $data['prodi_diminati'] = implode(', ', (array) $request->prodi_diminati);
+        }
+
+        return $data;
     }
 
     private function buildCivitasKunjunganData(Event $event, int $civitasId): array
@@ -527,5 +558,4 @@ class KunjunganEventController extends Controller
 
         return response()->json($payload, 500);
     }
-
 }

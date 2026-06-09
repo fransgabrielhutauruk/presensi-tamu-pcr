@@ -111,6 +111,8 @@ class EtlSyncKunjungan extends Command
                             ['event_id' => $row->event_id],
                             [
                                 'eventkategori_id' => $row->eventkategori_id,
+                                'kategori_lokasi' => $row->kategori_lokasi,
+                                'jenis_kegiatan' => $row->jenis_kegiatan,
                                 'nama_event' => $row->nama_event,
                                 'tanggal' => $row->tanggal_event,
                                 'waktu_mulai' => $row->waktu_mulai_event,

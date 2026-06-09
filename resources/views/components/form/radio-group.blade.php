@@ -1,7 +1,7 @@
 @props(['name', 'label', 'options' => [], 'required' => false, 'value' => null, 'dataCyPrefix' => null])
 
 @php
-    $requiredErrorMessage = __('visitor.field_required', ['field' => $label]);
+    $requiredErrorMessage = __('visitor.select_required', ['field' => $label]);
     $radioDataCyPrefix = $dataCyPrefix ?: 'radio-' . $name;
 @endphp
 
@@ -20,7 +20,7 @@
                     {{ old($name, $value) == $optionValue ? 'checked' : '' }} {{ $required ? 'required' : '' }}
                     data-error="{{ $requiredErrorMessage }}"
                     data-cy="{{ $radioDataCyPrefix }}-{{ \Illuminate\Support\Str::slug($optionValue) }}">
-                <label class="form-check-label" for="{{ $name }}_{{ $loop->index }}">
+                <label class="form-check-label text-black" for="{{ $name }}_{{ $loop->index }}">
                     {{ $optionLabel }}
                 </label>
             </div>

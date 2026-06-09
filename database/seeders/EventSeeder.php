@@ -17,6 +17,8 @@ class EventSeeder extends Seeder
             [
                 'eventkategori_id' => 1,
                 'nama_event' => 'Kunjungan SMKN 4 Pekanbaru',
+                'kategori_lokasi' => 'dalam_kampus',
+                'jenis_kegiatan' => 'non_pmb',
                 'tanggal_event' => '2025-11-02',
                 'waktu_mulai_event' => '07:00:00',
                 'waktu_selesai_event' => '12:00:00',

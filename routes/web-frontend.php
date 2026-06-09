@@ -13,6 +13,7 @@ Route::name('tamu.')->group(function () {
     Route::controller(KunjunganController::class)->group(function () {
         Route::get('/', 'index')->name('home');
         Route::get('/event-or-non-event', 'eventOrNonEvent')->name('event-or-non-event');
+        Route::get('/event-type', 'eventType')->name('event-type');
         Route::get('/sukses/{kunjunganId}', 'sukses')->name('sukses');
         Route::get('/checkout/{kunjunganId}', 'checkout')->name('checkout');
         Route::post('/checkout/{kunjunganId}', 'storeCheckout')->name('checkout-store');

@@ -128,10 +128,29 @@ class CypressTestingService
             ],
             [
                 'eventkategori_id' => $eventKategori->eventkategori_id,
+                'kategori_lokasi' => 'dalam_kampus',
+                'jenis_kegiatan' => 'non_pmb',
                 'deskripsi_event' => 'Event dummy untuk pengujian presensi event',
                 'waktu_mulai_event' => '09:00:00',
                 'waktu_selesai_event' => '12:00:00',
                 'lokasi_event' => 'Kampus PCR',
+                'link_dokumentasi_event' => null,
+            ]
+        );
+
+        Event::firstOrCreate(
+            [
+                'nama_event' => 'Event Luar Kampus PMB Cypress',
+                'tanggal_event' => now()->toDateString(),
+            ],
+            [
+                'eventkategori_id' => $eventKategori->eventkategori_id,
+                'kategori_lokasi' => 'luar_kampus',
+                'jenis_kegiatan' => 'pmb',
+                'deskripsi_event' => 'Event luar kampus PMB dummy untuk pengujian',
+                'waktu_mulai_event' => '09:00:00',
+                'waktu_selesai_event' => '12:00:00',
+                'lokasi_event' => 'Gedung Serbaguna Pekanbaru',
                 'link_dokumentasi_event' => null,
             ]
         );

@@ -22,6 +22,11 @@ class KunjunganController extends Controller
         return view('contents.tamu.pages.event-or-non-event');
     }
 
+    public function eventType()
+    {
+        return view('contents.tamu.pages.event-type');
+    }
+
     public function sukses($kunjunganId)
     {
         try {

@@ -48,6 +48,8 @@ class EventController extends Controller
     {
         return [
             'eventkategori_id' => decid($request->post('eventkategori_id')),
+            'kategori_lokasi' => clean_post('kategori_lokasi'),
+            'jenis_kegiatan' => clean_post('jenis_kegiatan'),
             'nama_event' => clean_post('nama_event'),
             'deskripsi_event' => clean_post('deskripsi_event'),
             'tanggal_event' => clean_post('tanggal_event'),
@@ -82,6 +84,7 @@ class EventController extends Controller
                 Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
                 Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
+                Column::make(['title' => 'Kategori Lokasi', 'data' => 'kategori_lokasi', 'orderable' => true]),
                 Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
                 Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
                 Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true]),
@@ -199,6 +202,8 @@ class EventController extends Controller
             validate_and_response([
                 'nama_event' => ['Nama Event', 'required'],
                 'eventkategori_id' => ['Kategori Event', 'required'],
+                'kategori_lokasi' => ['Kategori Lokasi', 'required|in:dalam_kampus,luar_kampus'],
+                'jenis_kegiatan' => ['Jenis Kegiatan', 'required|in:pmb,non_pmb'],
                 'tanggal_event' => ['Tanggal Event', 'required|date|after_or_equal:today'],
                 'waktu_mulai_event' => ['Waktu Mulai', 'required|date_format:H:i'],
                 'waktu_selesai_event' => ['Waktu Selesai', 'required|date_format:H:i'],
@@ -250,6 +255,8 @@ class EventController extends Controller
                 'id' => ['Parameter data', 'required'],
                 'nama_event' => ['Nama Event', 'required'],
                 'eventkategori_id' => ['Kategori Event', 'required'],
+                'kategori_lokasi' => ['Kategori Lokasi', 'required|in:dalam_kampus,luar_kampus'],
+                'jenis_kegiatan' => ['Jenis Kegiatan', 'required|in:pmb,non_pmb'],
                 'tanggal_event' => ['Tanggal Event', 'required|date'],
                 'link_dokumentasi_event' => ['Link Dokumentasi', 'nullable|url'],
             ]);
@@ -364,6 +371,13 @@ class EventController extends Controller
                 $dt['waktu_selesai_event'] = $value['waktu_selesai_event']  ? date('H:i', strtotime($value['waktu_selesai_event'])) : '-';
                 $dt['lokasi_event'] = $value['lokasi_event'] ?? '-';
                 $dt['nama_kategori'] = $value['nama_kategori'] ?? '-';
+
+                $jenisLabel = match($value['kategori_lokasi'] ?? null) {
+                    'dalam_kampus' => '<span class="badge badge-primary">Dalam Kampus</span>',
+                    'luar_kampus' => '<span class="badge badge-info">Luar Kampus</span>',
+                    default => '-',
+                };
+                $dt['kategori_lokasi'] = $jenisLabel;
 
                 $id = encid($value['event_id']);
 

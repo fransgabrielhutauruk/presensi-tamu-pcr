@@ -124,6 +124,14 @@ class MstOpsiKunjunganSeeder extends Seeder
                     [
                         'id' => 'Bisnis Digital (BD)',
                         'en' => 'Digital Business'
+                    ],
+                    [
+                        'id' => 'Animasi',
+                        'en' => 'Animation'
+                    ],
+                    [
+                        'id' => 'Kecerdasan Buatan dan Robotika',
+                        'en' => 'Artificial Intelligence and Robotics'
                     ]
                 ]
             ]

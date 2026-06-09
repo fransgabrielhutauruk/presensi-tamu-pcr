@@ -18,7 +18,8 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.event.tabs')
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="event" jf-list="datatable" data-cy="table-event-list">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="event" jf-list="datatable"
+            data-cy="table-event-list">
             @slot('action')
                 @if ($hiddenFromCivitas)
                     <select id="filterKategori" class="form-select form-select-sm me-2" style="max-width: 250px;"
@@ -39,7 +40,8 @@
         </x-table.dttable>
     </div>
 
-    <x-modal id="modalForm" type="centered" :static="true" size="lg" jf-modal="event" title="Event" data-cy="modal-event-form">
+    <x-modal id="modalForm" type="centered" :static="true" size="lg" jf-modal="event" title="Event"
+        data-cy="modal-event-form">
         <form id="formData" class="needs-validation" jf-form="event" data-cy="form-create-event">
             <input type="hidden" name="id" value="">
             <div class="mb-4">
@@ -56,22 +58,32 @@
                 </x-form.select>
             </div>
             <div class="row">
-                <div class="col-md-4 mb-4">
-                    <x-form.input type="date" label="Tanggal Event" name="tanggal_event" value=""
-                        required data-cy="input-tanggal_event"></x-form.input>
+                <div class="col-md-6 mb-4">
+                    <x-form.radio-group name="kategori_lokasi" label="Kategori Lokasi" required :options="['dalam_kampus' => 'Dalam Kampus', 'luar_kampus' => 'Luar Kampus']"
+                        data-cy-prefix="radio-kategori_lokasi" />
                 </div>
-                <div class="col-md-4 mb-4">
-                    <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value=""
-                        required data-cy="input-waktu_mulai_event"></x-form.input>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value=""
-                        required data-cy="input-waktu_selesai_event"></x-form.input>
+                <div class="col-md-6 mb-4">
+                    <x-form.radio-group name="jenis_kegiatan" label="Jenis Kegiatan" required :options="['non_pmb' => 'Non PMB', 'pmb' => 'Sosialisasi PMB']"
+                        data-cy-prefix="radio-jenis_kegiatan" />
                 </div>
             </div>
             <div class="mb-4">
-                <x-form.input type="text" label="Lokasi Event" name="lokasi_event" value=""
-                    required data-cy="input-lokasi_event"></x-form.input>
+                <x-form.input type="text" label="Lokasi Event" name="lokasi_event" value="" required
+                    data-cy="input-lokasi_event"></x-form.input>
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <x-form.input type="date" label="Tanggal Event" name="tanggal_event" value="" required
+                        data-cy="input-tanggal_event"></x-form.input>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value="" required
+                        data-cy="input-waktu_mulai_event"></x-form.input>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value="" required
+                        data-cy="input-waktu_selesai_event"></x-form.input>
+                </div>
             </div>
             <div class="mb-4" id="field-link-dokumentasi" style="display: none;">
                 <x-form.input type="url" label="Link Dokumentasi (Google Drive)" name="link_dokumentasi_event"
@@ -80,8 +92,8 @@
                 <div class="form-text">Link dokumentasi event. Contoh: https://drive.google.com/drive/folders/tes</div>
             </div>
             <div class="mb-4">
-                <x-form.textarea label="Deskripsi Event" name="deskripsi_event" value=""
-                    rows="4" data-cy="textarea-deskripsi_event"></x-form.textarea>
+                <x-form.textarea label="Deskripsi Event" name="deskripsi_event" value="" rows="4"
+                    data-cy="textarea-deskripsi_event"></x-form.textarea>
             </div>
         </form>
         @slot('action')
@@ -124,6 +136,17 @@
 
         $(document).on('click', '[jf-add]', function() {
             toggleDocumentationField(false);
+            $('input[name="kategori_lokasi"]').prop('checked', false);
+            $('input[name="jenis_kegiatan"]').prop('checked', false);
+        });
+
+        $(document).on('jform:detail:loaded', function(e, data) {
+            if (data && data.kategori_lokasi) {
+                $('input[name="kategori_lokasi"][value="' + data.kategori_lokasi + '"]').prop('checked', true);
+            }
+            if (data && data.jenis_kegiatan) {
+                $('input[name="jenis_kegiatan"][value="' + data.jenis_kegiatan + '"]').prop('checked', true);
+            }
         });
 
         $('#filterKategori').on('change', function() {

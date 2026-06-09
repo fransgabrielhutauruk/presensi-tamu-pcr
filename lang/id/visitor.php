@@ -15,6 +15,7 @@ return [
 
     // Validation Messages
     'field_required' => ':field harus diisi',
+    'select_required' => ':field harus dipilih',
     'email_format_invalid' => 'Format email tidak valid',
     'phone_pattern_error' => 'Nomor telepon harus berupa angka',
     'nim_pattern_error' => 'NIM harus berupa angka',
@@ -93,6 +94,10 @@ return [
     // Search and Events
     'search_event_placeholder' => 'Cari event berdasarkan nama',
     'events_available' => 'event tersedia',
+    'event_type_selection_title' => 'Pilih Jenis Event',
+    'event_type_selection_desc' => 'Pilih event dalam kampus atau event luar kampus',
+    'internal_event' => 'Event Dalam Kampus',
+    'external_event' => 'Event Luar Kampus',
     'no_events_found' => 'Tidak ada event yang ditemukan',
     'try_different_keywords' => 'Coba gunakan kata kunci yang berbeda',
     'no_events_today' => 'Belum ada event hari ini',
@@ -100,6 +105,7 @@ return [
 
     // Event Form Pages
     'event_attendance_form' => 'Form Presensi Event',
+    'external_event_attendance_form' => 'Form Presensi Event Luar Kampus',
     'external_guest' => 'Non-Civitas',
     'pcr_civitas' => 'Civitas PCR',
     'back' => 'Kembali',
@@ -121,6 +127,17 @@ return [
     'event_role_participant' => 'Peserta',
     'institution_placeholder' => 'Nama institusi',
     'transportation_type' => 'Jenis Kendaraan/Transportasi',
+    'attendance_type' => 'Jenis Presensi',
+    'event_inside_campus' => 'Event yang diselenggarakan di dalam kampus PCR',
+    'event_outside_campus' => 'Event yang diselenggarakan di luar kampus PCR',
+    'event_pmb_program' => 'Sosialisasi PMB',
+    'event_non_pmb_program' => 'Kegiatan Non PMB',
+    'willing_to_join_pcr' => 'Apakah Anda berminat masuk PCR?',
+    'yes' => 'Ya',
+    'no' => 'Tidak',
+    'hesitant' => 'Ragu-ragu',
+    'interested_programs' => 'Prodi yang Paling Diminati',
+    'select_multiple_programs' => 'Pilih satu atau lebih program studi',
     'development_mode' => 'Mode Development - Auto Fill untuk Testing',
 
     // Event Identity Page

@@ -24,6 +24,8 @@ return new class extends Migration
             $table->integer('event_id')->primary();
             $table->integer('eventkategori_id')->nullable();
             $table->string('nama_event');
+            $table->string('kategori_lokasi');
+            $table->string('jenis_kegiatan');
             $table->date('tanggal');
             $table->time('waktu_mulai')->nullable();
             $table->time('waktu_selesai')->nullable();

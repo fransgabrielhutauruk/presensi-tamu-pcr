@@ -45,6 +45,8 @@ class Event extends Model
      */
     public $fillable = [
         'eventkategori_id',
+        'kategori_lokasi',
+        'jenis_kegiatan',
         'nama_event',
         'deskripsi_event',
         'tanggal_event',
@@ -195,6 +197,8 @@ class Event extends Model
         $query = DB::table('event')
             ->selectRaw('
                 a.event_id,
+                a.kategori_lokasi,
+                a.jenis_kegiatan,
                 a.nama_event,
                 a.deskripsi_event,
                 a.tanggal_event,

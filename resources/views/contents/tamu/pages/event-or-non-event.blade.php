@@ -16,13 +16,13 @@
                 'icon' => 'fa-calendar-alt',
                 'title' => __('visitor.event_visit_title'),
                 'description' => __('visitor.event_visit_desc'),
-                'route' => route('tamu.event.list'),
+                'route' => route('tamu.event-type'),
                 'buttonClass' => 'btn-default w-100 mt-1',
             ],
         ];
     @endphp
 
-    <div class="row d-flex align-items-center">
+    <div class="row d-flex align-items-center" style="min-height: 80vh">
         <div class="col-md-10 justify-content-center mx-auto">
             <div class="text-center mt-4">
                 <x-tamu.page-header title="{{ __('visitor.choose_visit_type') }}"

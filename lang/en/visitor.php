@@ -15,6 +15,7 @@ return [
 
     // Validation Messages
     'field_required' => ':field is required',
+    'select_required' => ':field  must be selected',
     'email_format_invalid' => 'Invalid email format',
     'phone_pattern_error' => 'Phone number must be numeric',
     'nim_pattern_error' => 'Student ID must be numeric',
@@ -93,6 +94,10 @@ return [
     // Search and Events
     'search_event_placeholder' => 'Search events by name',
     'events_available' => 'events available',
+    'event_type_selection_title' => 'Choose Event Type',
+    'event_type_selection_desc' => 'Choose an on-campus event or an off-campus event',
+    'internal_event' => 'On-Campus Event',
+    'external_event' => 'Off-Campus Event',
     'no_events_found' => 'No events found',
     'try_different_keywords' => 'Try using different keywords',
     'no_events_today' => 'No events today',
@@ -100,6 +105,7 @@ return [
 
     // Event Form Pages
     'event_attendance_form' => 'Event Attendance Form',
+    'external_event_attendance_form' => 'Off-Campus Event Attendance Form',
     'external_guest' => 'Non-Civitas',
     'pcr_civitas' => 'PCR Civitas',
     'back' => 'Back',
@@ -121,6 +127,17 @@ return [
     'event_role_participant' => 'Participant',
     'institution_placeholder' => 'Institution name',
     'transportation_type' => 'Vehicle/Transportation Type',
+    'attendance_type' => 'Attendance Type',
+    'event_inside_campus' => 'Events held on the PCR campus',
+    'event_outside_campus' => 'Events held outside the PCR campus',
+    'event_pmb_program' => 'PMB Outreach',
+    'event_non_pmb_program' => 'Non-PMB Activity',
+    'willing_to_join_pcr' => 'Are you interested in joining PCR?',
+    'yes' => 'Yes',
+    'no' => 'No',
+    'hesitant' => 'Unsure',
+    'interested_programs' => 'Most Desired Study Programs',
+    'select_multiple_programs' => 'Choose one or more study programs',
     'development_mode' => 'Development Mode - Auto Fill for Testing',
 
     // Event Identity Page
