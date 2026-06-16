@@ -106,12 +106,16 @@ class EtlSyncKunjungan extends Command
                 })
                 ->select('event.*')
                 ->chunkById(1000, function ($rows) use ($dwh) {
+                    $kategoriLokasiMap = [
+                        'dalam_kampus' => 'Dalam Kampus',
+                        'luar_kampus'  => 'Luar Kampus',
+                    ];
                     foreach ($rows as $row) {
                         $dwh->table('dim_event')->updateOrInsert(
                             ['event_id' => $row->event_id],
                             [
                                 'eventkategori_id' => $row->eventkategori_id,
-                                'kategori_lokasi' => $row->kategori_lokasi,
+                                'kategori_lokasi' => $kategoriLokasiMap[$row->kategori_lokasi] ?? $row->kategori_lokasi,
                                 'jenis_kegiatan' => $row->jenis_kegiatan,
                                 'nama_event' => $row->nama_event,
                                 'tanggal' => $row->tanggal_event,

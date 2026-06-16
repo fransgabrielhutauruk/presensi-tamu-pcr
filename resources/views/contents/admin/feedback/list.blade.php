@@ -11,7 +11,23 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="feedback" jf-list="datatable"
-            data-cy="table-feedback-list">
+            data-cy="table-feedback-list" :server_side="true" :default_order="[[2, 'desc']]">
+            @slot('filter')
+                <div class="row">
+                    <div class="col-md-3">
+                        <label class="form-label form-label-sm mb-1">Rating</label>
+                        <select id="filterRating" class="form-select form-select-sm" data-control="select2"
+                            data-allow-clear="true" data-placeholder="Semua Rating" data-cy="select-filter-rating-feedback">
+                            <option value="">Semua Rating</option>
+                            <option value="5">⭐⭐⭐⭐⭐ (5)</option>
+                            <option value="4">⭐⭐⭐⭐ (4)</option>
+                            <option value="3">⭐⭐⭐ (3)</option>
+                            <option value="2">⭐⭐ (2)</option>
+                            <option value="1">⭐ (1)</option>
+                        </select>
+                    </div>
+                </div>
+            @endslot
             @slot('action')
                 <x-btn.refresh-datatable />
             @endslot
@@ -19,8 +35,7 @@
     </div>
 
     <x-modal id="modalDetail" type="centered" :static="true" size="lg" jf-detail-modal="feedback"
-        data-cy="modal-feedback-detail"
-        title="Detail Feedback">
+        data-cy="modal-feedback-detail" title="Detail Feedback">
         <div class="mb-7">
             <h5 class="mb-4">Data Tamu</h5>
             <div class="row">
@@ -78,7 +93,8 @@
                 </div>
                 <div class="col-md-12 mb-3">
                     <label class="fw-bold text-muted">Komentar:</label>
-                    <div data-field="komentar" data-cy="field-feedback-komentar" class="fw-bold bg-light p-4 rounded">-</div>
+                    <div data-field="komentar" data-cy="field-feedback-komentar" class="fw-bold bg-light p-4 rounded">-
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,6 +130,21 @@
                 }
                 $('[data-field="rating"]').html(stars);
             }
+        });
+
+        $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
+            var vals = {
+                filter_rating: $('#filterRating').val() || '',
+            };
+            $.extend(data, vals);
+
+            var count = Object.values(vals).filter(v => v !== '').length;
+            $(`.dataTableBuilder-trigger_filter #filter-count`).text(count > 0 ? '(' + count + ')' : '');
+        });
+
+        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
+            $('#filterRating').val('').trigger('change');
+            $('#dataTableBuilder').DataTable().ajax.reload(null, false);
         });
     </script>
 @endpush

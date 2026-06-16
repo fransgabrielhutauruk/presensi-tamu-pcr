@@ -18,24 +18,57 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.event.tabs')
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="event" jf-list="datatable"
-            data-cy="table-event-list">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false"
+            :server_side="true" :default_order="[[2, 'desc']]"
+            jf-data="event" jf-list="datatable" data-cy="table-event-list">
             @slot('action')
-                @if ($hiddenFromCivitas)
-                    <select id="filterKategori" class="form-select form-select-sm me-2" style="max-width: 250px;"
-                        data-cy="select-filter-kategori-event">
-                        <option value="">Semua Kategori</option>
-                        @foreach ($kategoriOptions as $row)
-                            <option value="{{ $row['id'] }}">{{ $row['text'] }}</option>
-                        @endforeach
-                    </select>
-                @endif
                 <x-btn type="primary" class="act-add me-2" jf-add="event" data-cy="btn-tambah-event">
                     <i class="bi bi-plus fs-2"></i> Tambah Event
                 </x-btn>
                 @if ($hiddenFromCivitas)
                     <x-btn.refresh-datatable />
                 @endif
+            @endslot
+            @slot('filter')
+                <div class="row g-4">
+                    @if ($hiddenFromCivitas)
+                        <div class="col-md-3">
+                            <label class="form-label fs-7 fw-semibold">Kategori Event</label>
+                            <select id="filterKategori" name="filter_kategori"
+                                class="form-select form-select-sm" data-control="select2"
+                                data-placeholder="Semua Kategori" data-allow-clear="true"
+                                data-cy="select-filter-kategori-event">
+                                <option value="">Semua Kategori</option>
+                                @foreach ($kategoriOptions as $row)
+                                    <option value="{{ $row['id'] }}">{{ $row['text'] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Kategori Lokasi</label>
+                        <select id="filter_kategori_lokasi_event" name="filter_kategori_lokasi"
+                            class="form-select form-select-sm" data-control="select2"
+                            data-placeholder="Semua Kategori Lokasi" data-allow-clear="true"
+                            data-cy="select-filter-event-kategori-lokasi">
+                            <option value="">Semua Kategori Lokasi</option>
+                            <option value="dalam_kampus">Dalam Kampus</option>
+                            <option value="luar_kampus">Luar Kampus</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Status</label>
+                        <select id="filter_status_event" name="filter_status"
+                            class="form-select form-select-sm" data-control="select2"
+                            data-placeholder="Semua Status" data-allow-clear="true"
+                            data-cy="select-filter-event-status">
+                            <option value="">Semua Status</option>
+                            <option value="mendatang">Mendatang</option>
+                            <option value="berlangsung">Berlangsung</option>
+                            <option value="selesai">Selesai</option>
+                        </select>
+                    </div>
+                </div>
             @endslot
         </x-table.dttable>
     </div>
@@ -149,8 +182,26 @@
             }
         });
 
-        $('#filterKategori').on('change', function() {
-            filterEventTable($(this).val());
+        $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
+            var vals = {
+                filter_kategori:        $('#filterKategori').val()                || '',
+                filter_kategori_lokasi: $('#filter_kategori_lokasi_event').val() || '',
+                filter_status:          $('#filter_status_event').val()          || '',
+            };
+            $.extend(data, vals);
+
+            var activeCount = Object.values(vals).filter(function(v) { return v !== ''; }).length;
+            var $badge = $('#dataTableBuilder-filter-badge');
+            if (activeCount > 0) {
+                $badge.text(activeCount).removeClass('d-none');
+            } else {
+                $badge.addClass('d-none');
+            }
+        });
+
+        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
+            $('#filterKategori, #filter_kategori_lokasi_event, #filter_status_event').val('').trigger('change');
+            $('#dataTableBuilder-filter-badge').addClass('d-none');
         });
     </script>
 @endpush

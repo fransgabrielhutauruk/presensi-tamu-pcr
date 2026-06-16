@@ -81,16 +81,17 @@ class EventController extends Controller
         $dataTable = $builder->serverSide(true)
             ->ajax(route('app.event.data') . '/list')
             ->columns([
-                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'Waktu Dibuat', 'data' => 'waktu_dibuat', 'orderable' => true]),
                 Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
-                Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
-                Column::make(['title' => 'Kategori Lokasi', 'data' => 'kategori_lokasi', 'orderable' => true]),
+                Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => false]),
+                Column::make(['title' => 'Kategori Lokasi', 'data' => 'kategori_lokasi', 'orderable' => false]),
                 Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
                 Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
                 Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true]),
-                Column::make(['width' => '10%', 'title' => 'Status', 'data' => 'status', 'orderable' => true]),
-                Column::make(['width' => '10%', 'title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
-                Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'Status', 'data' => 'status', 'orderable' => false]),
+                Column::make(['title' => 'Dokumentasi', 'data' => 'dokumentasi', 'orderable' => false, 'className' => 'text-center']),
             ]);
 
         $this->dataView([
@@ -115,10 +116,10 @@ class EventController extends Controller
 
             $builder = app('datatables.html');
             $dataTable = $builder->serverSide(true)->ajax(route('app.event.data') . '/kategori-list')->columns([
+                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
                 Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Nama Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
-                Column::make(['title' => 'Deskripsi', 'data' => 'deskripsi_kategori', 'orderable' => true]),
-                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'Deskripsi', 'data' => 'deskripsi_kategori', 'orderable' => true])
             ]);
 
             $this->dataView([
@@ -146,42 +147,39 @@ class EventController extends Controller
                     'searchable' => false
                 ]),
                 Column::make([
-                    'title' => 'No',
-                    'data' => 'no',
-                    'orderable' => false,
-                    'className' => 'text-center'
-                ]),
-                Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
-                Column::make([
-                    'title' => 'Jenis Kelamin',
-                    'data' => 'jenis_kelamin',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
-                Column::make([
-                    'title' => 'Identitas',
-                    'data' => 'identitas',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Waktu Kunjungan',
-                    'data' => 'waktu_kunjungan',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Status',
-                    'data' => 'status',
-                    'orderable' => true,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
                     'title' => 'Aksi',
                     'data' => 'action',
                     'orderable' => false,
                     'className' => 'text-nowrap text-center'
                 ]),
+                Column::make([
+                    'title' => 'No',
+                    'data' => 'no',
+                    'orderable' => false,
+                ]),
+                Column::make([
+                    'title' => 'Waktu Kunjungan',
+                    'data' => 'waktu_kunjungan',
+                    'orderable' => true,
+                ]),
+                Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
+                Column::make([
+                    'title' => 'Jenis Kelamin',
+                    'data' => 'jenis_kelamin',
+                    'orderable' => false,
+                ]),
+                Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
+                Column::make([
+                    'title' => 'Identitas',
+                    'data' => 'identitas',
+                    'orderable' => false,
+                ]),
+                Column::make([
+                    'title' => 'Status',
+                    'data' => 'status',
+                    'orderable' => false,
+                    'className' => 'text-center'
+                ])
             ]);
 
             $this->dataView([
@@ -342,96 +340,182 @@ class EventController extends Controller
     public function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $filter = [];
+            $filterKategoriLokasi = $req->input('filter_kategori_lokasi', '');
+            $filterStatus         = $req->input('filter_status', '');
+            $filterKategori       = $req->input('filter_kategori', '');
 
             $rolesCanViewAll = UserRole::getAdminEksekutifSecurityRoles();
             $activeRole = getActiveRole();
+            $tz  = config('app.timezone', 'Asia/Jakarta');
+            $now = Carbon::now()->setTimezone($tz);
 
-            if (!in_array($activeRole, $rolesCanViewAll)) {
-                $filter['a.created_by'] = userId();
-            }
+            $query = Event::select([
+                'event.event_id',
+                'event.nama_event',
+                'event.deskripsi_event',
+                'event.tanggal_event',
+                'event.waktu_mulai_event',
+                'event.waktu_selesai_event',
+                'event.lokasi_event',
+                'event.kategori_lokasi',
+                'event.jenis_kegiatan',
+                'event.link_dokumentasi_event',
+                'event.created_by',
+                'event.created_at',
+                'event.eventkategori_id',
+                'event_kategori.nama_kategori',
+            ])
+                ->join('event_kategori', 'event.eventkategori_id', '=', 'event_kategori.eventkategori_id')
+                ->when(!in_array($activeRole, $rolesCanViewAll), function ($q) {
+                    $q->where('event.created_by', userId());
+                })
+                ->when(!empty($filterKategori), function ($q) use ($filterKategori) {
+                    $q->where('event.eventkategori_id', decid($filterKategori));
+                })
+                ->when(!empty($filterKategoriLokasi), function ($q) use ($filterKategoriLokasi) {
+                    $q->where('event.kategori_lokasi', $filterKategoriLokasi);
+                })
+                ->when(!empty($filterStatus), function ($q) use ($filterStatus, $now) {
+                    $nowStr = $now->format('Y-m-d H:i:s');
+                    match ($filterStatus) {
+                        'mendatang' => $q->whereRaw(
+                            "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) > ?",
+                            [$nowStr]
+                        ),
+                        'berlangsung' => $q->whereRaw(
+                            "? BETWEEN CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) AND CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME)",
+                            [$nowStr]
+                        ),
+                        'selesai' => $q->whereRaw(
+                            "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME) < ?",
+                            [$nowStr]
+                        ),
+                        default => null,
+                    };
+                });
 
-            if (!empty($req->query('kategori'))) {
-                $filter['a.eventkategori_id'] = decid($req->query('kategori'));
-            }
+            $start = (int) $req->input('start', 0);
 
-            $data = DataTables::of(Event::getDataDetail($filter, get: true))->toArray();
+            return DataTables::of($query)
+                ->addColumn('no', function () use (&$start) {
+                    return ++$start;
+                })
+                ->addColumn('waktu_dibuat', function ($row) {
+                    return $row->created_at ? tanggal($row->created_at) . ' ' . Carbon::parse($row->created_at)->format('H:i') : '-';
+                })
+                ->addColumn('nama_event', fn($row) => $row->nama_event ?? '-')
+                ->addColumn('nama_kategori', fn($row) => $row->nama_kategori ?? '-')
+                ->addColumn('kategori_lokasi', function ($row) {
+                    return match ($row->kategori_lokasi) {
+                        'dalam_kampus' => '<span class="badge badge-primary">Dalam Kampus</span>',
+                        'luar_kampus'  => '<span class="badge badge-info">Luar Kampus</span>',
+                        default        => '-',
+                    };
+                })
+                ->addColumn('lokasi_event', fn($row) => $row->lokasi_event ?? '-')
+                ->addColumn('tanggal_event', fn($row) => $row->tanggal_event ? tanggal($row->tanggal_event) : '-')
+                ->addColumn('waktu_event', function ($row) {
+                    $raw_mulai   = $row->getRawOriginal('waktu_mulai_event');
+                    $raw_selesai = $row->getRawOriginal('waktu_selesai_event');
+                    $mulai   = $raw_mulai   ? date('H:i', strtotime($raw_mulai))   : '-';
+                    $selesai = $raw_selesai ? date('H:i', strtotime($raw_selesai)) : '-';
+                    return "{$mulai} s/d {$selesai}";
+                })
+                ->addColumn('status', function ($row) use ($tz) {
+                    try {
+                        $tanggal = $row->getRawOriginal('tanggal_event');
+                        $mulai   = $row->getRawOriginal('waktu_mulai_event');
+                        $selesai = $row->getRawOriginal('waktu_selesai_event');
 
-            $start = $req->input('start');
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-
-                $dt['no'] = ++$start;
-                $dt['event_id'] = $value['event_id'] ?? '-';
-                $dt['nama_event'] = $value['nama_event'] ?? '-';
-                $dt['deskripsi_event'] = $value['deskripsi_event'] ? substr($value['deskripsi_event'], 0, 100) . '...' : '-';
-                $dt['tanggal_event'] = $value['tanggal_event'] ? date('d/m/Y', strtotime($value['tanggal_event'])) : '-';
-                $dt['waktu_mulai_event'] = $value['waktu_mulai_event'] ? date('H:i', strtotime($value['waktu_mulai_event'])) : '-';
-                $dt['waktu_selesai_event'] = $value['waktu_selesai_event']  ? date('H:i', strtotime($value['waktu_selesai_event'])) : '-';
-                $dt['lokasi_event'] = $value['lokasi_event'] ?? '-';
-                $dt['nama_kategori'] = $value['nama_kategori'] ?? '-';
-
-                $jenisLabel = match($value['kategori_lokasi'] ?? null) {
-                    'dalam_kampus' => '<span class="badge badge-primary">Dalam Kampus</span>',
-                    'luar_kampus' => '<span class="badge badge-info">Luar Kampus</span>',
-                    default => '-',
-                };
-                $dt['kategori_lokasi'] = $jenisLabel;
-
-                $id = encid($value['event_id']);
-
-                $dt['tanggal_event'] = tanggal($value['tanggal_event']) ?? '-';
-                $dt['waktu_event'] = ($value['waktu_mulai_event'] ?
-                    date('H:i', strtotime($value['waktu_mulai_event'])) : '-') .
-                    ' s/d ' .
-                    ($value['waktu_selesai_event'] ? date('H:i', strtotime($value['waktu_selesai_event'])) : '-');
-
-                try {
-                    $now = Carbon::now()->setTimezone(config('app.timezone'));
-                    if (!empty($value['tanggal_event'])) {
-                        $eventStartAt = !empty($value['waktu_mulai_event']) ? \Carbon\Carbon::parse($value['tanggal_event'] . ' ' . $value['waktu_mulai_event'])->setTimezone(config('app.timezone')) : \Carbon\Carbon::parse($value['tanggal_event'])->startOfDay()->setTimezone(config('app.timezone'));
-                        $eventEndAt = !empty($value['waktu_selesai_event']) ? \Carbon\Carbon::parse($value['tanggal_event'] . ' ' . $value['waktu_selesai_event'])->setTimezone(config('app.timezone')) : \Carbon\Carbon::parse($value['tanggal_event'])->endOfDay()->setTimezone(config('app.timezone'));
-
-                        if ($now->lt($eventStartAt)) {
-                            $dt['status'] = '<span class="badge badge-warning">Mendatang</span>';
-                        } elseif ($now->between($eventStartAt, $eventEndAt)) {
-                            $dt['status'] = '<span class="badge badge-success">Berlangsung</span>';
-                        } else {
-                            $dt['status'] = '<span class="badge badge-secondary">Selesai</span>';
+                        if (empty($tanggal)) {
+                            return '<span class="badge badge-light">-</span>';
                         }
-                    } else {
-                        $dt['status'] = '<span class="badge badge-light">-</span>';
+
+                        $nowCarbon    = Carbon::now()->setTimezone($tz);
+                        $eventStartAt = !empty($mulai)
+                            ? Carbon::parse($tanggal . ' ' . $mulai)->setTimezone($tz)
+                            : Carbon::parse($tanggal)->startOfDay()->setTimezone($tz);
+                        $eventEndAt   = !empty($selesai)
+                            ? Carbon::parse($tanggal . ' ' . $selesai)->setTimezone($tz)
+                            : Carbon::parse($tanggal)->endOfDay()->setTimezone($tz);
+
+                        if ($nowCarbon->lt($eventStartAt)) {
+                            return '<span class="badge badge-warning">Mendatang</span>';
+                        } elseif ($nowCarbon->between($eventStartAt, $eventEndAt)) {
+                            return '<span class="badge badge-success">Berlangsung</span>';
+                        } else {
+                            return '<span class="badge badge-secondary">Selesai</span>';
+                        }
+                    } catch (\Throwable $e) {
+                        return '<span class="badge badge-light">-</span>';
                     }
-                } catch (\Throwable $e) {
-                    $dt['status'] = '<span class="badge badge-light">-</span>';
-                }
-
-                if (!empty($value['link_dokumentasi_event'])) {
-                    $dt['dokumentasi'] = '<a href="' . $value['link_dokumentasi_event'] . '" target="_blank" class="text-primary" data-cy="link-dokumentasi-event-' . $id . '">Lihat</a>';
-                } else {
-                    $dt['dokumentasi'] = '<a href="javascript:;" class="text-warning" jf-edit="' . $id . '" data-cy="link-tambah-dokumentasi-event-' . $id . '">Tambah</a>';
-                }
-
-                $dataAction = [
-                    'id'  => $id,
-                    'btn' => [
-                        ['action' => 'qrcode', 'title' => 'QR Code Presensi', 'link' => route('app.event.qr-code', $id)],
-                        ['action' => 'check', 'title' => 'Validasi Kunjungan', 'link' => route(
-                            'app.event.show',
-                            ['param1' => 'validasi-kunjungan', 'param2' => $id]
-                        )],
-                        ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
-                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-                $resp[] = $dt;
-            }
-            $data['data'] = $resp;
-
-            return response()->json($data);
+                })
+                ->addColumn('dokumentasi', function ($row) {
+                    $id = encid($row->event_id);
+                    if (!empty($row->link_dokumentasi_event)) {
+                        return '<a href="' . $row->link_dokumentasi_event . '" target="_blank" class="text-primary" data-cy="link-dokumentasi-event-' . $id . '">Lihat</a>';
+                    }
+                    return '<a href="javascript:;" class="text-warning" jf-edit="' . $id . '" data-cy="link-tambah-dokumentasi-event-' . $id . '">Tambah</a>';
+                })
+                ->addColumn('action', function ($row) {
+                    $id         = encid($row->event_id);
+                    $dataAction = [
+                        'id'  => $id,
+                        'btn' => [
+                            ['action' => 'qrcode', 'title' => 'QR Code Presensi', 'link' => route('app.event.qr-code', $id)],
+                            ['action' => 'check',  'title' => 'Validasi Kunjungan', 'link' => route('app.event.show', ['param1' => 'validasi-kunjungan', 'param2' => $id])],
+                            ['action' => 'edit',   'attr'  => ['jf-edit' => $id]],
+                            ['action' => 'delete', 'attr'  => ['jf-delete' => $id]],
+                        ]
+                    ];
+                    return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                })
+                ->rawColumns(['kategori_lokasi', 'status', 'dokumentasi', 'action'])
+                ->orderColumn('waktu_dibuat', 'created_at $1')
+                ->orderColumn('nama_event',      'event.nama_event $1')
+                ->orderColumn('nama_kategori',   'event_kategori.nama_kategori $1')
+                ->orderColumn('kategori_lokasi', 'event.kategori_lokasi $1')
+                ->orderColumn('lokasi_event',    'event.lokasi_event $1')
+                ->orderColumn('tanggal_event',   'event.tanggal_event $1')
+                ->orderColumn('waktu_event',     'event.waktu_mulai_event $1')
+                ->orderColumn('status',          'event.tanggal_event $1')
+                ->filterColumn('nama_event', fn($query, $keyword) =>
+                $query->where('event.nama_event', 'like', "%{$keyword}%"))
+                ->filterColumn('nama_kategori', fn($query, $keyword) =>
+                $query->where('event_kategori.nama_kategori', 'like', "%{$keyword}%"))
+                ->filterColumn('kategori_lokasi', fn($query, $keyword) =>
+                $query->where('event.kategori_lokasi', 'like', "%{$keyword}%"))
+                ->filterColumn('lokasi_event', fn($query, $keyword) =>
+                $query->where('event.lokasi_event', 'like', "%{$keyword}%"))
+                ->filterColumn('tanggal_event', fn($query, $keyword) =>
+                dtFilterByDateKeyword($query, $keyword, 'event.tanggal_event', 10))
+                ->filterColumn('waktu_event', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->whereRaw("CONVERT(VARCHAR(8), event.waktu_mulai_event, 108) LIKE ?",   ["%{$keyword}%"])
+                            ->orWhereRaw("CONVERT(VARCHAR(8), event.waktu_selesai_event, 108) LIKE ?", ["%{$keyword}%"]);
+                    });
+                })
+                ->filterColumn('status', function ($query, $keyword) use ($now) {
+                    $lc     = strtolower(trim($keyword));
+                    $nowStr = $now->format('Y-m-d H:i:s');
+                    if (str_contains($lc, 'mendatang')) {
+                        $query->whereRaw(
+                            "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) > ?",
+                            [$nowStr]
+                        );
+                    } elseif (str_contains($lc, 'berlangsung')) {
+                        $query->whereRaw(
+                            "? BETWEEN CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) AND CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME)",
+                            [$nowStr]
+                        );
+                    } elseif (str_contains($lc, 'selesai')) {
+                        $query->whereRaw(
+                            "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME) < ?",
+                            [$nowStr]
+                        );
+                    }
+                })
+                ->toJson();
         } else if ($param1 == 'detail') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
@@ -486,51 +570,122 @@ class EventController extends Controller
 
             return response()->json($data);
         } else if ($param1 == 'validasi-kunjungan-list') {
-            $eventId = decid($param2);
-            $filter = ['event_id' => $eventId];
+            $eventId               = decid($param2);
+            $filterJK              = $req->input('filter_jenis_kelamin', '');
+            $filterStatusValidasi  = $req->input('filter_status_validasi', '');
+            $filterIdentitas       = $req->input('filter_identitas', '');
 
-            $query = Kunjungan::with(['tamu', 'civitas', 'details', 'event'])->where($filter)->latest()->get();
-            $data = DataTables::of($query)->toArray();
+            $query = Kunjungan::select([
+                'kunjungan.kunjungan_id',
+                'kunjungan.tamu_id',
+                'kunjungan.civitas_id',
+                'kunjungan.identitas',
+                'kunjungan.is_vip',
+                'kunjungan.status_validasi',
+                'kunjungan.created_at',
+                'tamu.nama_tamu',
+                'tamu.jenis_kelamin_tamu',
+                'tamu.email_tamu',
+                'civitas.nama_civitas',
+                'civitas.jenis_kelamin as jenis_kelamin_civitas',
+                'civitas.email as email_civitas',
+            ])
+                ->leftJoin('tamu', function ($join) {
+                    $join->on('kunjungan.tamu_id', '=', 'tamu.tamu_id')
+                        ->whereNull('tamu.deleted_at');
+                })
+                ->leftJoin('civitas', function ($join) {
+                    $join->on('kunjungan.civitas_id', '=', 'civitas.civitas_id')
+                        ->whereNull('civitas.deleted_at');
+                })
+                ->where('kunjungan.event_id', $eventId)
+                ->when(!empty($filterJK), function ($q) use ($filterJK) {
+                    $q->where(function ($q) use ($filterJK) {
+                        $q->where('tamu.jenis_kelamin_tamu', $filterJK)
+                            ->orWhere('civitas.jenis_kelamin', $filterJK);
+                    });
+                })
+                ->when(!empty($filterStatusValidasi), function ($q) use ($filterStatusValidasi) {
+                    match ($filterStatusValidasi) {
+                        'belum_validasi' => $q->where('kunjungan.status_validasi', false),
+                        'tervalidasi'    => $q->where('kunjungan.status_validasi', true),
+                        default          => null,
+                    };
+                })
+                ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
+                    $q->where('kunjungan.identitas', $filterIdentitas);
+                });
 
-            $start = $req->input('start');
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-                $id = encid($value['kunjungan_id']);
-                $statusValidasi = $value['status_validasi'] ?? false;
+            $start = (int) $req->input('start', 0);
 
-                if (!$statusValidasi) {
-                    $dt['checkbox'] = '<div class="form-check form-check-sm form-check-custom form-check-solid">
-                        <input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '" data-cy="checkbox-row-validasi-event-' . $id . '">
-                    </div>';
-                } else {
-                    $dt['checkbox'] = '<div class="text-center">-</div>';
-                }
-
-                $dt['no'] = ++$start;
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
-                $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
-                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
-
-                $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .
-                    Carbon::parse($value['created_at'])->setTimezone(config('app.timezone'))->format('H:i') : '-';
-
-                $dt['status'] = Kunjungan::getStatusValidasiBadge($statusValidasi);
-                $actionButtons = [
-                    ['action' => 'detail', 'attr' => ['jf-detail-modal' => 'kunjungan-event-validasi', 'jf-detail' => $id]]
-                ];
-
-                $dataAction = ['id' => $id, 'btn' => $actionButtons];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-
-                $resp[] = $dt;
-            }
-
-            $data['data'] = $resp;
-
-            return response()->json($data);
+            return DataTables::of($query)
+                ->addColumn('checkbox', function ($row) {
+                    $id = encid($row->kunjungan_id);
+                    if (!$row->status_validasi) {
+                        return '<div class="form-check form-check-sm form-check-custom form-check-solid">
+                            <input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '" data-cy="checkbox-row-validasi-event-' . $id . '">
+                        </div>';
+                    }
+                    return '<div class="text-center">-</div>';
+                })
+                ->addColumn('no', function () use (&$start) {
+                    return ++$start;
+                })
+                ->addColumn('nama', fn($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
+                ->addColumn('jenis_kelamin', fn($row) => $row->jenis_kelamin_tamu ?? $row->jenis_kelamin_civitas ?? '-')
+                ->addColumn('email', fn($row) => $row->email_tamu ?? $row->email_civitas ?? '-')
+                ->addColumn('identitas', fn($row) => Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip))
+                ->addColumn('waktu_kunjungan', function ($row) {
+                    return $row->created_at
+                        ? tanggal($row->created_at) . ' ' . Carbon::parse($row->created_at)->setTimezone(config('app.timezone'))->format('H:i')
+                        : '-';
+                })
+                ->addColumn('status', fn($row) => Kunjungan::getStatusValidasiBadge($row->status_validasi))
+                ->addColumn('action', function ($row) {
+                    $id         = encid($row->kunjungan_id);
+                    $dataAction = [
+                        'id'  => $id,
+                        'btn' => [
+                            ['action' => 'detail', 'attr' => ['jf-detail-modal' => 'kunjungan-event-validasi', 'jf-detail' => $id]],
+                        ]
+                    ];
+                    return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                })
+                ->rawColumns(['checkbox', 'identitas', 'status', 'action'])
+                ->orderColumn('nama', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+                ->orderColumn('email', 'COALESCE(tamu.email_tamu, civitas.email) $1')
+                ->orderColumn('waktu_kunjungan', 'kunjungan.created_at $1')
+                ->filterColumn('nama', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.nama_tamu',      'like', "%{$keyword}%")
+                            ->orWhere('civitas.nama_civitas', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('jenis_kelamin', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.jenis_kelamin_tamu', 'like', "%{$keyword}%")
+                            ->orWhere('civitas.jenis_kelamin',  'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('email', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.email_tamu', 'like', "%{$keyword}%")
+                            ->orWhere('civitas.email',      'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('identitas', fn($query, $keyword) =>
+                $query->where('kunjungan.identitas', 'like', "%{$keyword}%"))
+                ->filterColumn('waktu_kunjungan', fn($query, $keyword) =>
+                dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
+                ->filterColumn('status', function ($query, $keyword) {
+                    $lc = strtolower(trim($keyword));
+                    if (str_contains($lc, 'belum')) {
+                        $query->where('kunjungan.status_validasi', false);
+                    } elseif (str_contains($lc, 'tervalid') || str_contains($lc, 'sudah')) {
+                        $query->where('kunjungan.status_validasi', true);
+                    }
+                })
+                ->toJson();
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }
@@ -631,5 +786,4 @@ class EventController extends Controller
             ]);
         }
     }
-
 }

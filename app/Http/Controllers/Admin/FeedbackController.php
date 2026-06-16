@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Feedback;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\Facades\DataTables;
 use Yajra\DataTables\Html\Column;
 
 class FeedbackController extends Controller
@@ -27,14 +29,13 @@ class FeedbackController extends Controller
         $dataTable = $builder->serverSide(true)
             ->ajax(route('app.feedback.data') . '/list')
             ->columns([
-                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
-                Column::make(['title' => 'Nama Tamu', 'data' => 'nama_tamu', 'orderable' => true]),
-                Column::make(['width' => '10%', 'title' => 'Rating', 'data' => 'rating', 'orderable' => true, 'className' => 'text-center']),
-                Column::make(['title' => 'Komentar', 'data' => 'komentar', 'orderable' => true]),
-                Column::make(['title' => 'Event', 'data' => 'nama_event', 'orderable' => true]),
-                Column::make(['title' => 'Waktu Kunjungan', 'data' => 'waktu_kunjungan', 'orderable' => true]),
+                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Dikirim Pada', 'data' => 'feedback_created_at', 'orderable' => true]),
-                Column::make(['width' => '12%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'Nama Tamu', 'data' => 'nama_tamu', 'orderable' => true]),
+                Column::make(['title' => 'Rating', 'data' => 'rating', 'orderable' => true, 'className' => 'text-center']),
+                Column::make(['title' => 'Komentar', 'data' => 'komentar', 'orderable' => false]),
+                Column::make(['title' => 'Event', 'data' => 'nama_event', 'orderable' => true]),
             ]);
 
         $this->dataView([
@@ -47,64 +48,56 @@ class FeedbackController extends Controller
     public function data(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $start = (int) $req->input('start', 0);
-            $query = Feedback::query()
-                ->with(['kunjungan.tamu', 'kunjungan.civitas', 'kunjungan.event'])
-                ->whereNull('deleted_at')
-                ->whereHas('kunjungan', function ($q) {
-                    $q->whereNull('deleted_at');
-                });
+            $start       = (int) $req->input('start', 0);
+            $filterRating = $req->input('filter_rating', '');
 
-            return app('datatables')->eloquent($query)
-                ->filter(function ($filteredQuery) use ($req) {
-                    $keyword = trim((string) $req->input('search.value', ''));
-                    if ($keyword === '') {
-                        return;
-                    }
-
-                    $likeKeyword = '%' . $keyword . '%';
-                    $filteredQuery->where(function ($searchQuery) use ($likeKeyword) {
-                        $searchQuery->where('komentar', 'like', $likeKeyword)
-                            ->orWhere('rating', 'like', $likeKeyword)
-                            ->orWhereHas('kunjungan.tamu', function ($q) use ($likeKeyword) {
-                                $q->where('nama_tamu', 'like', $likeKeyword);
-                            })
-                            ->orWhereHas('kunjungan.civitas', function ($q) use ($likeKeyword) {
-                                $q->where('nama_civitas', 'like', $likeKeyword);
-                            })
-                            ->orWhereHas('kunjungan.event', function ($q) use ($likeKeyword) {
-                                $q->where('nama_event', 'like', $likeKeyword);
-                            });
-                    });
-                }, true)
-                ->order(function ($q) {
-                    $q->orderBy('created_at', 'desc');
+            $query = Feedback::select([
+                'feedback.feedback_id',
+                'feedback.kunjungan_id',
+                'feedback.rating',
+                'feedback.komentar',
+                'feedback.created_at',
+                'kunjungan.created_at as kunjungan_created_at',
+                'kunjungan.event_id',
+                'tamu.nama_tamu',
+                'civitas.nama_civitas',
+                'event.nama_event',
+            ])
+                ->join('kunjungan', function ($join) {
+                    $join->on('feedback.kunjungan_id', '=', 'kunjungan.kunjungan_id')
+                        ->whereNull('kunjungan.deleted_at');
                 })
+                ->leftJoin('tamu', function ($join) {
+                    $join->on('kunjungan.tamu_id', '=', 'tamu.tamu_id')
+                        ->whereNull('tamu.deleted_at');
+                })
+                ->leftJoin('civitas', function ($join) {
+                    $join->on('kunjungan.civitas_id', '=', 'civitas.civitas_id')
+                        ->whereNull('civitas.deleted_at');
+                })
+                ->leftJoin('event', 'kunjungan.event_id', '=', 'event.event_id')
+                ->whereNull('feedback.deleted_at')
+                ->when(!empty($filterRating), fn($q) => $q->where('feedback.rating', (int) $filterRating));
+
+            return DataTables::of($query)
                 ->addColumn('no', function () use (&$start) {
                     return ++$start;
                 })
-                ->addColumn('feedback_id', function ($row) {
-                    return $row->feedback_id ?? '-';
-                })
-                ->addColumn('nama_tamu', function ($row) {
-                    return $row->kunjungan?->tamu?->nama_tamu ?? $row->kunjungan?->civitas?->nama_civitas ?? '-';
-                })
-                ->addColumn('rating', function ($row) {
-                    return $row->rating ?? 0;
-                })
+                ->addColumn('nama_tamu', fn($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
+                ->addColumn('rating', fn($row) => $row->rating ?? 0)
                 ->addColumn('komentar', function ($row) {
                     $komentar = $row->komentar ?? '-';
                     return strlen($komentar) > 100 ? substr($komentar, 0, 100) . '...' : $komentar;
                 })
                 ->addColumn('nama_event', function ($row) {
-                    $namaEvent = $row->kunjungan?->event?->nama_event;
-                    return !empty($namaEvent) ? $namaEvent : '<span class="badge badge-secondary">Non-Event</span>';
-                })
-                ->addColumn('waktu_kunjungan', function ($row) {
-                    return $row->kunjungan?->created_at ? date('d/m/Y H:i', strtotime($row->kunjungan->created_at)) : '-';
+                    return !empty($row->nama_event)
+                        ? $row->nama_event
+                        : '<span class="badge badge-secondary">Non-Event</span>';
                 })
                 ->addColumn('feedback_created_at', function ($row) {
-                    return $row->created_at ? date('d/m/Y H:i', strtotime($row->created_at)) : '-';
+                    return $row->created_at
+                        ? tanggal($row->created_at) . ' ' . Carbon::parse($row->created_at)->setTimezone(config('app.timezone'))->format('H:i')
+                        : '-';
                 })
                 ->addColumn('action', function ($row) {
                     $id = encid($row->feedback_id);
@@ -115,10 +108,27 @@ class FeedbackController extends Controller
                             ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
                         ]
                     ];
-
                     return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
                 ->rawColumns(['nama_event', 'action'])
+                ->orderColumn('nama_tamu', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+                ->orderColumn('rating', 'feedback.rating $1')
+                ->orderColumn('nama_event', 'event.nama_event $1')
+                ->orderColumn('feedback_created_at', 'feedback.created_at $1')
+                ->filterColumn('nama_tamu', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.nama_tamu',      'like', "%{$keyword}%")
+                            ->orWhere('civitas.nama_civitas', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('rating', fn($query, $keyword) =>
+                $query->where('feedback.rating', 'like', "%{$keyword}%"))
+                ->filterColumn('komentar', fn($query, $keyword) =>
+                $query->where('feedback.komentar', 'like', "%{$keyword}%"))
+                ->filterColumn('nama_event', fn($query, $keyword) =>
+                $query->where('event.nama_event', 'like', "%{$keyword}%"))
+                ->filterColumn('feedback_created_at', fn($query, $keyword) =>
+                dtFilterByDateKeyword($query, $keyword, 'feedback.created_at'))
                 ->toJson();
         } else if ($param1 == 'detail') {
             validate_and_response([

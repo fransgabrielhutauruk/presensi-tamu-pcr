@@ -418,3 +418,36 @@ function convertFileSize($size = 0, $unit = 'KB')
     // Format dengan maksimal 2 angka di belakang koma
     return number_format($size, 2) . ' ' . $unit;
 }
+
+/**
+ * Fungsi helper untuk filterColumn DataTables pada kolom tanggal/waktu dengan keyword bahasa Indonesia.
+ * Mengkonversi nama bulan Indonesia ke angka sebelum melakukan LIKE query menggunakan CONVERT SQL Server.
+ *
+ * Penggunaan:
+ *   ->filterColumn('waktu_kunjungan', fn($q, $kw) => dtFilterByDateKeyword($q, $kw, 'kunjungan.created_at'))
+ *   ->filterColumn('tanggal_event',   fn($q, $kw) => dtFilterByDateKeyword($q, $kw, 'event.tanggal_event', 10))
+ *
+ * @param  mixed  $query   Eloquent / query builder instance
+ * @param  string $keyword Keyword yang diinput user pada search DataTables
+ * @param  string $column  Ekspresi kolom SQL lengkap (mis: "kunjungan.created_at", "event.tanggal_event")
+ * @param  int    $length  Panjang VARCHAR hasil CONVERT: 20 untuk DATETIME, 10 untuk DATE saja
+ * @return void
+ */
+function dtFilterByDateKeyword($query, string $keyword, string $column, int $length = 20): void
+{
+    $months = [
+        'januari'   => 1,  'februari' => 2,  'maret'    => 3,  'april'    => 4,
+        'mei'       => 5,  'juni'     => 6,  'juli'     => 7,  'agustus'  => 8,
+        'september' => 9,  'oktober'  => 10, 'november' => 11, 'desember' => 12,
+    ];
+
+    $lc = strtolower(trim($keyword));
+    foreach ($months as $name => $num) {
+        if (str_contains($lc, $name)) {
+            $lc = str_replace($name, str_pad($num, 2, '0', STR_PAD_LEFT), $lc);
+            break;
+        }
+    }
+
+    $query->whereRaw("CONVERT(VARCHAR({$length}), {$column}, 120) LIKE ?", ["%{$lc}%"]);
+}

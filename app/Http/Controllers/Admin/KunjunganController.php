@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Kunjungan;
-use Illuminate\Http\Request;
-use App\Models\MstOpsiKunjungan;
-use Yajra\DataTables\DataTables;
 use App\Enums\KategoriTujuanEnum;
-use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Html\Column;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Kunjungan;
+use App\Models\MstOpsiKunjungan;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Html\Column;
 
 class KunjunganController extends Controller
 {
@@ -22,41 +23,47 @@ class KunjunganController extends Controller
         $this->breadCrump[] = ['title' => 'Kunjungan', 'link' => route('app.kunjungan.index')];
 
         $availableColumns = [
+            'action' => [
+                'title' => 'Aksi',
+                'data' => 'action',
+                'orderable' => false,
+                'className' => 'text-nowrap text-center',
+                'required' => true
+            ],
             'no' => [
-                'width' => '5%',
                 'title' => 'No',
                 'data' => 'no',
                 'orderable' => false,
                 'required' => true,
                 'className' => 'text-center'
             ],
+            'waktu_kunjungan' => [
+                'title' => 'Waktu Kunjungan',
+                'data' => 'waktu_kunjungan',
+                'orderable' => true,
+            ],
             'nama' => ['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true],
             'jenis_kelamin' => [
                 'title' => 'Jenis Kelamin',
                 'data' => 'jenis_kelamin',
-                'orderable' => true,
+                'orderable' => false,
             ],
             'identitas' => [
                 'title' => 'Identitas',
                 'data' => 'identitas',
-                'orderable' => true,
+                'orderable' => false,
             ],
-            'email' => ['title' => 'Email', 'data' => 'email', 'orderable' => true],
-            'nomor_telepon' => ['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true],
+            'email' => ['title' => 'Email', 'data' => 'email', 'orderable' => false],
+            'nomor_telepon' => ['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => false],
             'jenis_kunjungan' => [
                 'title' => 'Jenis Kunjungan',
                 'data' => 'jenis_kunjungan',
-                'orderable' => true,
+                'orderable' => false,
             ],
             'kategori_tujuan' => ['title' => 'Kategori Tujuan', 'data' => 'kategori_tujuan', 'orderable' => true],
             'transportasi' => [
                 'title' => 'Transportasi',
                 'data' => 'transportasi',
-                'orderable' => true,
-            ],
-            'waktu_kunjungan' => [
-                'title' => 'Waktu Kunjungan',
-                'data' => 'waktu_kunjungan',
                 'orderable' => true,
             ],
             'waktu_keluar' => [
@@ -74,19 +81,11 @@ class KunjunganController extends Controller
                 'data' => 'is_checkout',
                 'orderable' => true,
             ],
-            'event_nama' => ['title' => 'Nama Event', 'data' => 'event_nama', 'orderable' => true],
-            'event_kategori' => ['title' => 'Kategori Event', 'data' => 'event_kategori', 'orderable' => true],
-            'action' => [
-                'width' => '12%',
-                'title' => 'Aksi',
-                'data' => 'action',
-                'orderable' => false,
-                'className' => 'text-nowrap text-center',
-                'required' => true
-            ],
+            'event_nama' => ['title' => 'Nama Event', 'data' => 'event_nama', 'orderable' => false],
+            'event_kategori' => ['title' => 'Kategori Event', 'data' => 'event_kategori', 'orderable' => false]
         ];
 
-        $defaultColumns = ['no', 'nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan', 'waktu_kunjungan', 'action'];
+        $defaultColumns = ['action', 'no', 'waktu_kunjungan',  'nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan'];
 
         $selectedColumns = $defaultColumns;
 
@@ -129,27 +128,24 @@ class KunjunganController extends Controller
             $builder = app('datatables.html');
             $dataTable = $builder->serverSide(true)->ajax(route('app.kunjungan.data') . '/opsi-list')->columns([
                 Column::make([
-                    'width' => '5%',
-                    'title' => 'No',
-                    'data' => 'no',
-                    'orderable' => false,
-                    'className' => 'text-center'
-                ]),
-                Column::make(['width' => '30%', 'title' => 'Nama Opsi', 'data' => 'nama_opsi', 'orderable' => true]),
-                Column::make([
-                    'width' => '35%',
-                    'title' => 'Deskripsi',
-                    'data' => 'deskripsi_opsi',
-                    'orderable' => true
-                ]),
-                Column::make(['width' => '30%', 'title' => 'Nilai Opsi', 'data' => 'nilai_opsi', 'orderable' => false]),
-                Column::make([
-                    'width' => '10%',
                     'title' => 'Aksi',
                     'data' => 'action',
                     'orderable' => false,
                     'className' => 'text-nowrap text-center'
                 ]),
+                Column::make([
+                    'title' => 'No',
+                    'data' => 'no',
+                    'orderable' => false,
+                    'className' => 'text-center'
+                ]),
+                Column::make(['title' => 'Nama Opsi', 'data' => 'nama_opsi', 'orderable' => true]),
+                Column::make([
+                    'title' => 'Deskripsi',
+                    'data' => 'deskripsi_opsi',
+                    'orderable' => true
+                ]),
+                Column::make(['title' => 'Nilai Opsi', 'data' => 'nilai_opsi', 'orderable' => false])
             ]);
 
             $this->dataView([
@@ -316,59 +312,182 @@ class KunjunganController extends Controller
     public function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $filter = ['status_validasi' => true];
-            $query = Kunjungan::with(['tamu', 'civitas', 'details', 'event', 'event.eventKategori'])
-                ->where($filter)
-                ->latest()
-                ->get();
-            $data = DataTables::of($query)->toArray();
+            $filterJK              = $req->input('filter_jenis_kelamin', '');
+            $filterIdentitas       = $req->input('filter_identitas', '');
+            $filterJenisKunjungan  = $req->input('filter_jenis_kunjungan', '');
 
-            $start = $req->input('start');
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
+            $query = Kunjungan::select([
+                'kunjungan.kunjungan_id',
+                'kunjungan.tamu_id',
+                'tamu.nama_tamu',
+                'tamu.jenis_kelamin_tamu',
+                'kunjungan.civitas_id',
+                'civitas.nama_civitas',
+                'civitas.jenis_kelamin',
+                'kunjungan.event_id',
+                'kunjungan.identitas',
+                'kunjungan.kategori_tujuan',
+                'kunjungan.transportasi',
+                'kunjungan.waktu_keluar',
+                'kunjungan.checkout_time',
+                'kunjungan.is_checkout',
+                'kunjungan.status_validasi',
+                'kunjungan.is_vip',
+                'kunjungan.created_at',
+            ])
+                ->leftJoin('tamu', function ($join) {
+                    $join->on('kunjungan.tamu_id', '=', 'tamu.tamu_id')
+                        ->whereNull('tamu.deleted_at');
+                })
+                ->leftJoin('civitas', function ($join) {
+                    $join->on('kunjungan.civitas_id', '=', 'civitas.civitas_id')
+                        ->whereNull('civitas.deleted_at');
+                })
+                ->with(['event', 'event.eventKategori'])
+                ->where('kunjungan.status_validasi', true)
+                ->when(!empty($filterJK), function ($q) use ($filterJK) {
+                    $q->where(function ($q) use ($filterJK) {
+                        $q->where('tamu.jenis_kelamin_tamu', $filterJK)
+                            ->orWhere('civitas.jenis_kelamin', $filterJK);
+                    });
+                })
+                ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
+                    $q->where('kunjungan.identitas', $filterIdentitas);
+                })
+                ->when(!empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
+                    if ($filterJenisKunjungan === 'event') {
+                        $q->whereNotNull('kunjungan.event_id');
+                    } else {
+                        $q->whereNull('kunjungan.event_id');
+                    }
+                });
 
-                $dt['no'] = ++$start;
-                $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
-                $dt['jenis_kelamin'] = $value['tamu']['jenis_kelamin_tamu'] ?? $value['civitas']['jenis_kelamin'] ?? '-';
-                $dt['email'] = $value['tamu']['email_tamu'] ?? $value['civitas']['email'] ?? '-';
-                $dt['nomor_telepon'] = $value['tamu']['nomor_telepon_tamu'] ?? $value['civitas']['nomor_telepon'] ?? '-';
+            $start = (int) $req->input('start', 0);
 
-                $dt['kategori_tujuan'] = KategoriTujuanEnum::getDescription($value['kategori_tujuan']) ?? '-';
-                $dt['transportasi'] = $value['transportasi'] ?? '-';
-                $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
-
-                $dt['waktu_kunjungan'] = $value['created_at'] ? tanggal($value['created_at']) . ' ' .
-                    \Carbon\Carbon::parse($value['created_at'])->setTimezone(config('app.timezone'))
-                    ->format('H:i') : '-';
-                $dt['waktu_keluar'] = $value['waktu_keluar'] ? \Carbon\Carbon::parse($value['waktu_keluar'])
-                    ->format('H:i') : '-';
-                $dt['checkout_time'] = $value['checkout_time'] ? \Carbon\Carbon::parse($value['checkout_time'])
-                    ->setTimezone(config('app.timezone'))->format('H:i') : '-';
-
-                $dt['jenis_kunjungan'] = Kunjungan::getJenisKunjunganBadge($value['event_id']);
-                $dt['status_validasi'] = Kunjungan::getStatusValidasiBadge($value['status_validasi']);
-                $dt['is_checkout'] = Kunjungan::getStatusCheckoutBadge($value['is_checkout']);
-
-                $dt['event_nama'] = $value['event']['nama_event'] ?? '-';
-                $dt['event_kategori'] = $value['event']['event_kategori']['nama_kategori'] ?? '-';
-
-                $id = encid($value['kunjungan_id']);
-
-                $dataAction = [
-                    'id'  => $id,
-                    'btn' => [
-                        ['action' => 'detail', 'attr' => ['jf-detail' => $id]],
-                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-                $resp[] = $dt;
-            }
-            $data['data'] = $resp;
-
-            return response()->json($data);
+            return DataTables::of($query)
+                ->addColumn('no', function () use (&$start) {
+                    return ++$start;
+                })
+                ->addColumn('waktu_kunjungan', function ($row) {
+                    return $row->created_at ? tanggal($row->created_at) . ' ' . Carbon::parse($row->created_at)->format('H:i') : '-';
+                })
+                ->addColumn('nama', function ($row) {
+                    return $row->nama_tamu ?? $row->nama_civitas ?? '-';
+                })
+                ->addColumn('jenis_kelamin', function ($row) {
+                    return $row->jenis_kelamin_tamu ?? $row->jenis_kelamin ?? '-';
+                })
+                ->addColumn('email', function ($row) {
+                    return $row->tamu->email_tamu ?? $row->civitas->email ?? '-';
+                })
+                ->addColumn('nomor_telepon', function ($row) {
+                    return $row->tamu->nomor_telepon_tamu ?? $row->civitas->nomor_telepon ?? '-';
+                })
+                ->addColumn('kategori_tujuan', function ($row) {
+                    return KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-';
+                })
+                ->addColumn('transportasi', function ($row) {
+                    return $row->transportasi ?? '-';
+                })
+                ->addColumn('identitas', function ($row) {
+                    return Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip);
+                })
+                ->addColumn('waktu_keluar', function ($row) {
+                    return $row->waktu_keluar ? Carbon::parse($row->waktu_keluar)->format('H:i') : '-';
+                })
+                ->addColumn('checkout_time', function ($row) {
+                    return $row->checkout_time ? Carbon::parse($row->checkout_time)->format('H:i') : '-';
+                })
+                ->addColumn('jenis_kunjungan', function ($row) {
+                    return Kunjungan::getJenisKunjunganBadge($row->event_id);
+                })
+                ->addColumn('status_validasi', function ($row) {
+                    return Kunjungan::getStatusValidasiBadge($row->status_validasi);
+                })
+                ->addColumn('is_checkout', function ($row) {
+                    return Kunjungan::getStatusCheckoutBadge($row->is_checkout);
+                })
+                ->addColumn('event_nama', function ($row) {
+                    return $row->event->nama_event ?? '-';
+                })
+                ->addColumn('event_kategori', function ($row) {
+                    return $row->event->eventKategori->nama_kategori ?? '-';
+                })
+                ->addColumn('action', function ($row) {
+                    $id = encid($row->kunjungan_id);
+                    $dataAction = [
+                        'id'  => $id,
+                        'btn' => [
+                            ['action' => 'detail', 'attr' => ['jf-detail' => $id]],
+                            ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
+                        ]
+                    ];
+                    return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                })
+                ->rawColumns(['identitas', 'jenis_kunjungan', 'status_validasi', 'is_checkout', 'action'])
+                ->orderColumn('waktu_kunjungan', 'created_at $1')
+                ->orderColumn('nama',            'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+                ->orderColumn('is_checkout',     'is_checkout $1')
+                ->orderColumn('kategori_tujuan', 'kategori_tujuan $1')
+                ->orderColumn('transportasi',    'transportasi $1')
+                ->orderColumn('waktu_keluar',    'waktu_keluar $1')
+                ->orderColumn('checkout_time',   'checkout_time $1')
+                ->filterColumn('waktu_kunjungan', fn($query, $keyword) =>
+                dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
+                ->filterColumn('nama', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.nama_tamu',       'like', "%{$keyword}%")
+                            ->orWhere('civitas.nama_civitas', 'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('jenis_kelamin', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.jenis_kelamin_tamu', 'like', "%{$keyword}%")
+                            ->orWhere('civitas.jenis_kelamin',  'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('email', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.email_tamu', 'like', "%{$keyword}%")
+                            ->orWhere('civitas.email',   'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('nomor_telepon', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.nomor_telepon_tamu', 'like', "%{$keyword}%")
+                            ->orWhere('civitas.nomor_telepon',  'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('identitas',       function ($query, $keyword) {
+                    $query->where('kunjungan.identitas', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('kategori_tujuan', function ($query, $keyword) {
+                    $query->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('transportasi',    function ($query, $keyword) {
+                    $query->where('kunjungan.transportasi', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('waktu_keluar',    function ($query, $keyword) {
+                    $query->where('kunjungan.waktu_keluar', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('checkout_time',   function ($query, $keyword) {
+                    $query->where('kunjungan.checkout_time', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('jenis_kunjungan', function ($query, $keyword) {
+                    if (stripos('event', $keyword) !== false) {
+                        $query->whereNotNull('kunjungan.event_id');
+                    } elseif (stripos('non', $keyword) !== false) {
+                        $query->whereNull('kunjungan.event_id');
+                    }
+                })
+                ->filterColumn('is_checkout',     function ($query, $keyword) {
+                    $isChecked = stripos($keyword, 'sudah') !== false ? true
+                        : (stripos($keyword, 'belum') !== false ? false : null);
+                    if ($isChecked !== null) {
+                        $query->where('kunjungan.is_checkout', $isChecked);
+                    }
+                })
+                ->toJson();
         } else if ($param1 == 'detail') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
@@ -402,6 +521,12 @@ class KunjunganController extends Controller
 
                 'event_nama' => $currData->event->nama_event ?? '-',
                 'event_kategori' => $currData->event->eventKategori->nama_kategori ?? '-',
+                'event_kategori_lokasi' => match ($currData->event?->kategori_lokasi) {
+                    'dalam_kampus' => 'Dalam Kampus',
+                    'luar_kampus'  => 'Luar Kampus',
+                    default        => '-',
+                },
+                'event_lokasi' => $currData->event?->lokasi_event ?? '-',
                 'details' => []
             ];
 

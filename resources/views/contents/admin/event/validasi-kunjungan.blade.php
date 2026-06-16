@@ -38,7 +38,8 @@
             <div class="p-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap">
                     <div class="d-flex align-items-center gap-2">
-                        <span id="selectedCount" class="badge badge-light fs-7 me-2" data-cy="text-selected-count">0 dipilih</span>
+                        <span id="selectedCount" class="badge badge-light fs-7 me-2" data-cy="text-selected-count">0
+                            dipilih</span>
                         <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
                             disabled data-cy="btn-bulk-validate-event">
                             <i class="bi bi-check2-circle fs-4"></i> Validasi Terpilih
@@ -58,7 +59,41 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-event-validasi"
-            jf-list="datatable" data-cy="table-event-validasi">
+            jf-list="datatable" data-cy="table-event-validasi" :server_side="true" :default_order="[[3, 'desc']]">
+            @slot('filter')
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kelamin</label>
+                        <select id="filter_jenis_kelamin" name="filter_jenis_kelamin" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Jenis Kelamin" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-jenis-kelamin">
+                            <option value="">Semua Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Status Validasi</label>
+                        <select id="filterStatusValidasi" class="form-select form-select-sm" data-control="select2"
+                            data-allow-clear="true" data-placeholder="Semua Status"
+                            data-cy="select-filter-status-validasi-event">
+                            <option value="">Semua Status</option>
+                            <option value="belum_validasi">Belum Validasi</option>
+                            <option value="tervalidasi">Tervalidasi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Identitas</label>
+                        <select id="filter_identitas" name="filter_identitas" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Identitas" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-identitas">
+                            <option value="">Semua Identitas</option>
+                            <option value="non-civitas">Non-Civitas</option>
+                            <option value="civitas">Civitas PCR</option>
+                        </select>
+                    </div>
+                </div>
+            @endslot
             @slot('action')
             @endslot
         </x-table.dttable>
@@ -217,7 +252,24 @@
         const bulkValidasiEndpoint = @json(route('app.kunjungan.bulk-validasi'));
         const validateSingleEndpointBase = '/app/kunjungan/validate/';
         const rejectSingleEndpointBase = '/app/kunjungan/reject/';
-        const datatableSelector = 'table[jf-data="kunjungan-event-validasi"]';
+        const datatableSelector = '#dataTableBuilder';
+
+        $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
+            var vals = {
+                filter_status_validasi: $('#filterStatusValidasi').val() || '',
+                filter_identitas: $('#filter_identitas').val() || '',
+            };
+            $.extend(data, vals);
+
+            var count = Object.values(vals).filter(v => v !== '').length;
+            $(`.dataTableBuilder-trigger_filter #filter-count`).text(count > 0 ? '(' + count + ')' : '');
+        });
+
+        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
+            $('#filterStatusValidasi, #filter_identitas')
+                .val('').trigger('change');
+            $('#dataTableBuilder-filter-badge').addClass('d-none');
+        });
 
         $(document).ready(function() {
             $(document).off('click', '[jf-data="kunjungan-event-validasi"] [jf-detail]');
@@ -258,7 +310,7 @@
                 }
             });
 
-            $('#datatable').on('draw.dt', function() {
+            $('#dataTableBuilder').on('draw.dt', function() {
                 setTimeout(updateBulkActionPanel, 100);
             });
 
@@ -271,10 +323,13 @@
 
             setTimeout(updateBulkActionPanel, 500);
 
-            $(document).off('click', '#bulkValidateBtn, #bulkRejectBtn').on('click', '#bulkValidateBtn, #bulkRejectBtn', function(e) {
-                e.preventDefault(); e.stopPropagation();
-                bulkAction($(this).data('action'));
-            });
+            $(document).off('click', '#bulkValidateBtn, #bulkRejectBtn').on('click',
+                '#bulkValidateBtn, #bulkRejectBtn',
+                function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    bulkAction($(this).data('action'));
+                });
 
             $(document).off('click', '#validateSingleBtn').on('click', '#validateSingleBtn', validateSingle);
             $(document).off('click', '#rejectSingleBtn').on('click', '#rejectSingleBtn', rejectSingle);

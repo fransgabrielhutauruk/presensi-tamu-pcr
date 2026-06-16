@@ -53,11 +53,11 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-sm btn-primary me-2">
-                                    <i class="bi bi-check2-circle fs-3"></i> Terapkan
+                                <button type="button" class="btn btn-sm btn-secondary me-2" onclick="resetColumns()">
+                                    Reset Default
                                 </button>
-                                <button type="button" class="btn btn-sm btn-secondary" onclick="resetColumns()">
-                                    <i class="ki-outline ki-arrows-circle fs-3"></i> Reset Default
+                                <button type="submit" class="btn btn-sm btn-light-primary">
+                                    Terapkan
                                 </button>
                             </div>
                         </div>
@@ -66,9 +66,44 @@
             </div>
         </div>
 
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan" jf-list="datatable">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan" jf-list="datatable"
+            :server_side="true" :default_order="[[2, 'desc']]">
             @slot('action')
                 <x-btn.refresh-datatable />
+            @endslot
+            @slot('filter')
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kelamin</label>
+                        <select id="filter_jenis_kelamin" name="filter_jenis_kelamin" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Jenis Kelamin" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-jenis-kelamin">
+                            <option value="">Semua Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Identitas</label>
+                        <select id="filter_identitas" name="filter_identitas" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Identitas" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-identitas">
+                            <option value="">Semua Identitas</option>
+                            <option value="non-civitas">Non-Civitas</option>
+                            <option value="civitas">Civitas PCR</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kunjungan</label>
+                        <select id="filter_jenis_kunjungan" name="filter_jenis_kunjungan" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Jenis Kunjungan" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-jenis-kunjungan">
+                            <option value="">Semua Jenis Kunjungan</option>
+                            <option value="event">Event</option>
+                            <option value="non_event">Non-Event</option>
+                        </select>
+                    </div>
+                </div>
             @endslot
         </x-table.dttable>
     </div>
@@ -94,12 +129,7 @@
                 ],
                 [
                     'title' => 'Data Waktu',
-                    'fields' => [
-                        'tanggal_kunjungan',
-                        'waktu_kunjungan',
-                        'waktu_keluar',
-                        'checkout_time',
-                    ],
+                    'fields' => ['tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time'],
                 ],
             ];
 
@@ -146,6 +176,14 @@
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Kategori Event:</label>
                     <div data-field="event_kategori" class="fw-bold">-</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Kategori Lokasi Event:</label>
+                    <div data-field="event_kategori_lokasi" class="fw-bold">-</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Lokasi Event:</label>
+                    <div data-field="event_lokasi" class="fw-bold">-</div>
                 </div>
             </div>
         </div>
@@ -232,7 +270,7 @@
 
 @push('scripts')
     <script>
-        const DEFAULT_COLUMNS = ['nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan', 'waktu_kunjungan',
+        const DEFAULT_COLUMNS = ['waktu_kunjungan', 'nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan',
             'status_validasi'
         ];
 
@@ -257,7 +295,7 @@
             const detailFields = ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
                 'kategori_tujuan', 'transportasi', 'status_validasi', 'is_checkout', 'identitas',
                 'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time', 'event_nama',
-                'event_kategori'
+                'event_kategori', 'event_kategori_lokasi', 'event_lokasi'
             ];
             detailFields.forEach(field => setDetailField(field, data[field]));
         }
@@ -328,5 +366,30 @@
             updateCheckAllState();
             $('#columnForm').submit();
         }
+
+        $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
+            var vals = {
+                filter_jenis_kelamin: $('#filter_jenis_kelamin').val() || '',
+                filter_identitas: $('#filter_identitas').val() || '',
+                filter_jenis_kunjungan: $('#filter_jenis_kunjungan').val() || '',
+            };
+            $.extend(data, vals);
+
+            var activeCount = Object.values(vals).filter(function(v) {
+                return v !== '';
+            }).length;
+            var $badge = $('#dataTableBuilder-filter-badge');
+            if (activeCount > 0) {
+                $badge.text(activeCount).removeClass('d-none');
+            } else {
+                $badge.addClass('d-none');
+            }
+        });
+
+        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
+            $('#filter_jenis_kelamin, #filter_identitas, #filter_jenis_kunjungan')
+                .val('').trigger('change');
+            $('#dataTableBuilder-filter-badge').addClass('d-none');
+        });
     </script>
 @endpush

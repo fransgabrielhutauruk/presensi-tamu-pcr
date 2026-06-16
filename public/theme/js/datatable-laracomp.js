@@ -130,7 +130,7 @@ var CustomToolsLaravelDatatable = function (tableId) {
             var dataOrder = []
             for (var i = 0; i < formElements.length; i++) {
                 var element = formElements[i];
-                if (element.name && element.value && element.value != '0') dataOrder.push([element.name, element.value])
+                if (element.name && element.value && element.value != '0') dataOrder.push([parseInt(element.name, 10), element.value])
             }
 
             $(`.${table}-trigger_order #order-count`).html(`${dataOrder.length > 0 ? '('+dataOrder.length+')' : ''}`)

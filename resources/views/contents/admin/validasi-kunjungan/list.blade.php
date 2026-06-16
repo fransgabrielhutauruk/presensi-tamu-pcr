@@ -15,7 +15,8 @@
             <div class="p-3">
                 <div class="d-flex align-items-center justify-content-between flex-wrap">
                     <div class="d-flex align-items-center">
-                        <span id="selectedCount" class="badge badge-light fs-7" data-cy="text-selected-count-validasi-kunjungan">0 dipilih</span>
+                        <span id="selectedCount" class="badge badge-light fs-7"
+                            data-cy="text-selected-count-validasi-kunjungan">0 dipilih</span>
                     </div>
                     <div class="d-flex gap-2">
                         <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
@@ -31,10 +32,44 @@
             </div>
         </div>
 
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-validasi"
-            jf-list="datatable" data-cy="table-validasi-kunjungan">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" :server_side="true" :default_order="[[2, 'desc']]"
+            jf-data="kunjungan-validasi" jf-list="datatable" data-cy="table-validasi-kunjungan">
             @slot('action')
                 <x-btn.refresh-datatable />
+            @endslot
+            @slot('filter')
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kelamin</label>
+                        <select id="filter_jenis_kelamin_validasi" name="filter_jenis_kelamin"
+                            class="form-select form-select-sm" data-control="select2" data-placeholder="Semua Jenis Kelamin"
+                            data-allow-clear="true" data-cy="select-filter-validasi-jenis-kelamin">
+                            <option value="">Semua Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Identitas</label>
+                        <select id="filter_identitas_validasi" name="filter_identitas" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Identitas" data-allow-clear="true"
+                            data-cy="select-filter-validasi-identitas">
+                            <option value="">Semua Identitas</option>
+                            <option value="non-civitas">Non-Civitas</option>
+                            <option value="civitas">Civitas PCR</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kunjungan</label>
+                        <select id="filter_jenis_kunjungan_validasi" name="filter_jenis_kunjungan"
+                            class="form-select form-select-sm" data-control="select2" data-placeholder="Semua Jenis Kunjungan"
+                            data-allow-clear="true" data-cy="select-filter-validasi-jenis-kunjungan">
+                            <option value="">Semua Jenis Kunjungan</option>
+                            <option value="event">Event</option>
+                            <option value="non_event">Non-Event</option>
+                        </select>
+                    </div>
+                </div>
             @endslot
         </x-table.dttable>
     </div>
@@ -125,6 +160,14 @@
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Kategori Event:</label>
                     <div data-field="event_kategori" class="fw-bold">-</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Kategori Lokasi Event:</label>
+                    <div data-field="event_kategori_lokasi" class="fw-bold">-</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Lokasi Event:</label>
+                    <div data-field="event_lokasi" class="fw-bold">-</div>
                 </div>
             </div>
         </div>
@@ -288,7 +331,9 @@
                 'waktu_keluar',
                 'checkout_time',
                 'event_nama',
-                'event_kategori'
+                'event_kategori',
+                'event_kategori_lokasi',
+                'event_lokasi'
             ];
 
             detailFields.forEach(field => {
@@ -477,5 +522,34 @@
                 failMessage: 'Terjadi kesalahan saat menolak kunjungan.'
             });
         }
+    </script>
+@endpush
+
+@push('scripts')
+    <script>
+        $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
+            var vals = {
+                filter_jenis_kelamin: $('#filter_jenis_kelamin_validasi').val() || '',
+                filter_identitas: $('#filter_identitas_validasi').val() || '',
+                filter_jenis_kunjungan: $('#filter_jenis_kunjungan_validasi').val() || '',
+            };
+            $.extend(data, vals);
+
+            var activeCount = Object.values(vals).filter(function(v) {
+                return v !== '';
+            }).length;
+            var $badge = $('#dataTableBuilder-filter-badge');
+            if (activeCount > 0) {
+                $badge.text(activeCount).removeClass('d-none');
+            } else {
+                $badge.addClass('d-none');
+            }
+        });
+
+        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
+            $('#filter_jenis_kelamin_validasi, #filter_identitas_validasi, #filter_jenis_kunjungan_validasi')
+                .val('').trigger('change');
+            $('#dataTableBuilder-filter-badge').addClass('d-none');
+        });
     </script>
 @endpush
