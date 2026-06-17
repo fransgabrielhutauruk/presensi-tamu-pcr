@@ -11,6 +11,8 @@
                 'title' => __('visitor.internal_event'),
                 'description' => __('visitor.event_inside_campus'),
                 'route' => route('tamu.event.list', ['kategori_lokasi' => 'dalam_kampus']),
+                'bg-color' => '#008080',
+                'buttonStyle' => '--btn-bg: #008080; --btn-hover-bg: #006666;',
             ],
             [
                 'type' => 'luar_kampus',
@@ -18,6 +20,7 @@
                 'title' => __('visitor.external_event'),
                 'description' => __('visitor.event_outside_campus'),
                 'route' => route('tamu.event.list', ['kategori_lokasi' => 'luar_kampus']),
+                'buttonStyle' => '--btn-bg: #9467BD; --btn-hover-bg: #7A4F9E;',
             ],
         ];
     @endphp
@@ -30,17 +33,21 @@
                 <div class="row g-4 mt-3">
                     @foreach ($eventTypeCards as $card)
                         <div class="col-md-6">
-                            <a href="{{ $card['route'] }}" class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp"
-                                style="cursor: pointer; text-decoration: none; color: inherit;">
+                            <div class="card border-0 shadow-sm h-100 position-relative overflow-hidden wow fadeInUp"
+                                style="color: inherit;">
                                 <div class="card-body d-flex flex-column justify-content-center text-center p-4">
                                     <div class="mb-2">
                                         <h5><i class="fas {{ $card['icon'] }} fa-2x mb-1"></i></h5>
                                     </div>
                                     <h4 class="card-title mb-1 fw-bold">{{ $card['title'] }}</h4>
                                     <p class="card-text text-muted mb-2 flex-grow-1">{{ $card['description'] }}</p>
-                                    <span class="btn btn-default w-100 mt-1 fs-6">{{ $card['title'] }}</span>
+                                    <a href="{{ $card['route'] }}"
+                                        class="btn btn-default btn-custom-card btn btn-sm btn-custom-card w-100 mt-1 fs-6 "
+                                        style="{{ $card['buttonStyle'] }}">
+                                        {{ $card['title'] }}
+                                    </a>
                                 </div>
-                            </a>
+                            </div>
                         </div>
                     @endforeach
                 </div>

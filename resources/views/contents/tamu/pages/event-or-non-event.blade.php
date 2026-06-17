@@ -10,14 +10,16 @@
                 'title' => __('visitor.non_event_visit_title'),
                 'description' => __('visitor.non_event_visit_desc'),
                 'route' => route('tamu.non-event.tujuan'),
-                'buttonClass' => 'btn-default w-100 mt-1 fs-6',
+                'buttonClass' => 'btn-default btn-custom-card w-100 mt-1 fs-6',
+                'buttonStyle' => '--btn-bg: #1F77B4; --btn-hover-bg: #195F90;',
             ],
             [
                 'icon' => 'fa-calendar-alt',
                 'title' => __('visitor.event_visit_title'),
                 'description' => __('visitor.event_visit_desc'),
                 'route' => route('tamu.event-type'),
-                'buttonClass' => 'btn-default w-100 mt-1',
+                'buttonClass' => 'btn-default btn-custom-card w-100 mt-1',
+                'buttonStyle' => '--btn-bg: #FF7F0E; --btn-hover-bg: #D96B0B;',
             ],
         ];
     @endphp
@@ -40,7 +42,7 @@
                                         {{ $card['description'] }}
                                     </p>
                                     <a href="{{ $card['route'] }}"
-                                        class="{{ $card['buttonClass'] }}">{{ $card['title'] }}</a>
+                                        class="{{ $card['buttonClass'] }}" style="{{ $card['buttonStyle'] }}">{{ $card['title'] }}</a>
                                 </div>
                             </div>
                         </div>

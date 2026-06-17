@@ -383,6 +383,17 @@ body {
     right: auto;
 }
 
+.btn-custom-card {
+    background-color: var(--btn-bg) !important;
+    color: #ffffff !important;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn-custom-card:hover {
+    background-color: var(--btn-hover-bg) !important;
+    color: #ffffff !important;
+}
+
 .cb-cursor:before {
     background: var(--accent-color);
 }
