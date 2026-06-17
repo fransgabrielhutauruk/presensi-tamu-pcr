@@ -96,7 +96,7 @@
                         data-cy-prefix="radio-kategori_lokasi" />
                 </div>
                 <div class="col-md-6 mb-4">
-                    <x-form.radio-group name="jenis_kegiatan" label="Jenis Kegiatan" required :options="['non_pmb' => 'Non PMB', 'pmb' => 'Sosialisasi PMB']"
+                    <x-form.radio-group name="jenis_kegiatan" label="Jenis Kegiatan" required :options="['pmb' => 'PMB', 'non_pmb' => 'Non PMB']"
                         data-cy-prefix="radio-jenis_kegiatan" />
                 </div>
             </div>
