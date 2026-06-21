@@ -118,10 +118,6 @@
                     <div data-field="status_validasi" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Status Checkout:</label>
-                    <div data-field="is_checkout" class="fw-bold">-</div>
-                </div>
-                <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Identitas:</label>
                     <div data-field="identitas" class="fw-bold">-</div>
                 </div>
@@ -140,12 +136,12 @@
                     <div data-field="waktu_kunjungan" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Waktu Keluar (Estimasi):</label>
-                    <div data-field="waktu_keluar" class="fw-bold">-</div>
+                    <label class="fw-bold text-muted">Waktu Estimasi Keluar:</label>
+                    <div data-field="waktu_estimasi_keluar" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Waktu Checkout:</label>
-                    <div data-field="checkout_time" class="fw-bold">-</div>
+                    <div data-field="waktu_checkout" class="fw-bold">-</div>
                 </div>
             </div>
         </div>
@@ -324,12 +320,11 @@
                 'kategori_tujuan',
                 'transportasi',
                 'status_validasi',
-                'is_checkout',
                 'identitas',
                 'tanggal_kunjungan',
                 'waktu_kunjungan',
-                'waktu_keluar',
-                'checkout_time',
+                'waktu_estimasi_keluar',
+                'waktu_checkout',
                 'event_nama',
                 'event_kategori',
                 'event_kategori_lokasi',

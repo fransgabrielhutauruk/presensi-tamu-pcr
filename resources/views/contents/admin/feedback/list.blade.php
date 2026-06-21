@@ -78,8 +78,8 @@
                     <div data-field="jenis_kunjungan" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Nama Event:</label>
-                    <div data-field="event_nama" class="fw-bold">-</div>
+                    <label class="fw-bold text-muted">Detail Kunjungan:</label>
+                    <div data-field="detail_kunjungan" class="fw-bold">-</div>
                 </div>
             </div>
         </div>

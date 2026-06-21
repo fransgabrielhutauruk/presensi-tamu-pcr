@@ -65,6 +65,7 @@ class AuthController extends Controller
 
             activity()
                 ->causedBy($user)
+                ->event('login')
                 ->withProperties([
                     'ip' => request()->ip(),
                     'user_agent' => request()->header('User-Agent')

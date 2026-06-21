@@ -28,19 +28,21 @@ class UserController extends Controller
         $this->breadCrump[] = ['title' => 'Pengguna', 'link' => url()->current()];
 
         $roles = Role::whereIn('name', UserRole::getAdminEksekutifSecurityRoles())->get();
+        $allRoles = Role::orderBy('name')->get();
 
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)->ajax(route('app.user.data') . '/list')->columns([
             Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
             Column::make(['title' => 'Nama', 'data' => 'name']),
             Column::make(['title' => 'Email', 'data' => 'email']),
-            Column::make(['title' => 'Role', 'data' => 'role', 'orderable' => false, 'searchable' => false]),
+            Column::make(['title' => 'Role', 'data' => 'role', 'orderable' => true, 'searchable' => true]),
             Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
         ]);
 
         $this->dataView([
             'dataTable' => $dataTable,
-            'roles' => $roles
+            'roles' => $roles,
+            'allRoles' => $allRoles
         ]);
 
         return $this->view('admin.pengguna.list');
@@ -49,45 +51,59 @@ class UserController extends Controller
     public function data(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $filter = [];
-            $data = DataTables::of(User::getDataDetail($filter, get: false))->toArray();
+            $filterRole = $req->input('filter_role', '');
+            $query = User::with('roles')
+                ->select('users.*')
+                ->withMin('roles', 'name')
+                ->when(!empty($filterRole), function ($q) use ($filterRole) {
+                    $q->whereHas('roles', function ($sq) use ($filterRole) {
+                        $sq->where('name', $filterRole);
+                    });
+                });
 
             $start = (int) $req->input('start', 0);
-            $resp = [];
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
 
-                $dt['no']       = ++$start;
-                $dt['name']     = $value['name'] ?? '-';
-                $dt['email']    = $value['email'] ?? '-';
-
-                $user = User::find($value['id']);
-                $userRoles = $user ? $user->roles()->pluck('name')->toArray() : [];
-                $dt['role'] = !empty($userRoles) ? implode(', ', $userRoles) : 'No Role';
-
-                $id = encid($value['id']);
-
-                $dataAction = [
-                    'id'  => $id,
-                    'btn' => [
-                        ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
-                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
-                    ]
-                ];
-
-                $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-                $resp[] = $dt;
-            }
-
-            $data['data'] = $resp;
-
-            return response()->json($data);
+            return DataTables::of($query)
+                ->addColumn('no', function () use (&$start) {
+                    return ++$start;
+                })
+                ->addColumn('role', function ($row) {
+                    $userRoles = $row->roles->pluck('name')->toArray();
+                    return !empty($userRoles) ? implode(', ', $userRoles) : 'No Role';
+                })
+                ->addColumn('action', function ($row) {
+                    $id = encid($row->id);
+                    $dataAction = [
+                        'id'  => $id,
+                        'btn' => [
+                            ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
+                            ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
+                        ]
+                    ];
+                    return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                })
+                ->rawColumns(['action'])
+                ->orderColumn('name', 'users.name $1')
+                ->orderColumn('email', 'users.email $1')
+                ->orderColumn('role', 'roles_min_name $1')
+                ->filterColumn('name', function ($query, $keyword) {
+                    $query->where('users.name', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('email', function ($query, $keyword) {
+                    $query->where('users.email', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('role', function ($query, $keyword) {
+                    $query->whereHas('roles', function ($q) use ($keyword) {
+                        $q->where('name', 'like', "%{$keyword}%");
+                    });
+                })
+                ->toJson();
         } else if ($param1 === 'detail') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
             ]);
             $currData = User::findOrFail(decid($req->input('id')));
-            
+
             $userData = $currData->toArray();
             $userData['roles'] = $currData->roles()->whereIn('name', ['Admin', 'Eksekutif'])->pluck('name')->toArray();
 
@@ -118,7 +134,7 @@ class UserController extends Controller
             DB::beginTransaction();
             try {
                 $inserted = User::create($data);
-                
+
                 $roles = $req->input('roles', []);
                 if (!empty($roles)) {
                     $validRoles = array_intersect($roles, ['Admin', 'Eksekutif', 'Security']);
@@ -126,7 +142,7 @@ class UserController extends Controller
                         $inserted->assignRole($validRoles);
                     }
                 }
-                
+
                 DB::commit();
                 return response()->json([
                     'status' => true,
@@ -150,7 +166,7 @@ class UserController extends Controller
             ]);
 
             $currData = User::findOrFail(decid($req->input('id')));
-            
+
             DB::beginTransaction();
             try {
                 $currData->delete();
@@ -181,7 +197,7 @@ class UserController extends Controller
 
             $id = $req->input('id');
             $currData = User::findOrFail($id);
-            
+
             $data['name'] = clean_post('name');
             $data['email'] = clean_post('email');
             $newRoles = $req->input('roles', []);
@@ -189,12 +205,12 @@ class UserController extends Controller
             DB::beginTransaction();
             try {
                 $currData->update($data);
-                
+
                 $baseRoles = $currData->roles()->whereIn('name', ['Mahasiswa', 'Staf'])->pluck('name')->toArray();
-                
+
                 $validAdminRoles = array_intersect($newRoles, ['Admin', 'Eksekutif', 'Security']);
                 $allRoles = array_merge($baseRoles, $validAdminRoles);
-                
+
                 $currData->syncRoles($allRoles);
                 DB::commit();
                 return response()->json([

@@ -123,13 +123,12 @@
                         'kategori_tujuan',
                         'transportasi',
                         'status_validasi',
-                        'is_checkout',
                         'identitas',
                     ],
                 ],
                 [
                     'title' => 'Data Waktu',
-                    'fields' => ['tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time'],
+                    'fields' => ['tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar', 'waktu_checkout'],
                 ],
             ];
 
@@ -142,12 +141,11 @@
                 'kategori_tujuan' => 'Kategori Tujuan',
                 'transportasi' => 'Transportasi',
                 'status_validasi' => 'Status Validasi',
-                'is_checkout' => 'Status Checkout',
                 'identitas' => 'Identitas',
                 'tanggal_kunjungan' => 'Tanggal Kunjungan',
                 'waktu_kunjungan' => 'Waktu Kunjungan',
-                'waktu_keluar' => 'Waktu Keluar (Estimasi)',
-                'checkout_time' => 'Waktu Checkout',
+                'waktu_estimasi_keluar' => 'Waktu Estimasi Keluar',
+                'waktu_checkout' => 'Waktu Checkout',
             ];
         @endphp
 
@@ -270,7 +268,7 @@
 
 @push('scripts')
     <script>
-        const DEFAULT_COLUMNS = ['waktu_kunjungan', 'nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan',
+        const DEFAULT_COLUMNS = ['action', 'waktu_kunjungan', 'identitas', 'nama', 'jenis_kelamin', 'jenis_kunjungan',
             'status_validasi'
         ];
 
@@ -293,8 +291,8 @@
 
         function populateDetailFields(data) {
             const detailFields = ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
-                'kategori_tujuan', 'transportasi', 'status_validasi', 'is_checkout', 'identitas',
-                'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar', 'checkout_time', 'event_nama',
+                'kategori_tujuan', 'transportasi', 'status_validasi', 'identitas',
+                'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar', 'checkout_time', 'event_nama',
                 'event_kategori', 'event_kategori_lokasi', 'event_lokasi'
             ];
             detailFields.forEach(field => setDetailField(field, data[field]));

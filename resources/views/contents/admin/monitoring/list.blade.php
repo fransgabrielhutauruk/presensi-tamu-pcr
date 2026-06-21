@@ -22,8 +22,8 @@
                     <div class="card-header py-5">
                         <div class="card-title d-flex flex-column">
                             <div class="d-flex align-items-center">
-                                <span
-                                    class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2" data-cy="text-total-kunjungan-hari-ini">{{ $pageData->totalKunjunganHariIni }}</span>
+                                <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2"
+                                    data-cy="text-total-kunjungan-hari-ini">{{ $pageData->totalKunjunganHariIni }}</span>
                             </div>
                             <span class="text-gray-400 pt-1 fw-semibold fs-6">Kunjungan Hari Ini</span>
                         </div>
@@ -36,8 +36,8 @@
                     <div class="card-header py-5">
                         <div class="card-title d-flex flex-column">
                             <div class="d-flex align-items-center">
-                                <span
-                                    class="fs-2hx fw-bold text-primary me-2 lh-1 ls-n2" data-cy="text-kunjungan-sudah-checkout">{{ $pageData->kunjunganSudahCheckout }}</span>
+                                <span class="fs-2hx fw-bold text-primary me-2 lh-1 ls-n2"
+                                    data-cy="text-kunjungan-sudah-checkout">{{ $pageData->kunjunganSudahCheckout }}</span>
                             </div>
                             <span class="text-gray-400 pt-1 fw-semibold fs-6">Sudah Checkout</span>
                         </div>
@@ -47,7 +47,50 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-monitoring"
-            jf-list="datatable" data-cy="table-monitoring-kunjungan">
+            jf-list="datatable" data-cy="table-monitoring-kunjungan" :server_side="true" :default_order="[[2, 'desc']]">
+            @slot('filter')
+                <div class="row g-4">
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Status Checkout</label>
+                        <select id="filterIsCheckout" class="form-select form-select-sm" data-control="select2"
+                            data-allow-clear="true" data-placeholder="Semua Status" data-cy="select-filter-checkout-monitoring">
+                            <option value="">Semua Status</option>
+                            <option value="0">Belum Checkout</option>
+                            <option value="1">Sudah Checkout</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Identitas</label>
+                        <select id="filter_identitas" name="filter_identitas" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Identitas" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-identitas">
+                            <option value="">Semua Identitas</option>
+                            <option value="non-civitas">Non-Civitas</option>
+                            <option value="civitas">Civitas PCR</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kelamin</label>
+                        <select id="filter_jenis_kelamin" name="filter_jenis_kelamin" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Jenis Kelamin" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-jenis-kelamin">
+                            <option value="">Semua Jenis Kelamin</option>
+                            <option value="Laki-laki">Laki-laki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fs-7 fw-semibold">Jenis Kunjungan</label>
+                        <select id="filter_jenis_kunjungan" name="filter_jenis_kunjungan" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Jenis Kunjungan" data-allow-clear="true"
+                            data-cy="select-filter-kunjungan-jenis-kunjungan">
+                            <option value="">Semua Jenis Kunjungan</option>
+                            <option value="event">Event</option>
+                            <option value="non_event">Non-Event</option>
+                        </select>
+                    </div>
+                </div>
+            @endslot
             @slot('action')
                 <x-btn.refresh-datatable />
             @endslot
@@ -64,15 +107,9 @@
                     'kategori_tujuan',
                     'transportasi',
                     'status_validasi',
-                    'is_checkout',
                     'identitas',
                 ],
-                'Data Waktu' => [
-                    'tanggal_kunjungan',
-                    'waktu_kunjungan',
-                    'waktu_keluar',
-                    'checkout_time',
-                ],
+                'Data Waktu' => ['tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar', 'waktu_checkout'],
             ];
         @endphp
 
@@ -101,6 +138,14 @@
                     <label class="fw-bold text-muted">Kategori Event:</label>
                     <div data-field="event_kategori" class="fw-bold">-</div>
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Kategori Lokasi Event:</label>
+                    <div data-field="event_kategori_lokasi" class="fw-bold">-</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Lokasi Event:</label>
+                    <div data-field="event_lokasi" class="fw-bold">-</div>
+                </div>
             </div>
         </div>
 
@@ -127,9 +172,9 @@
             statsUrl: `{{ route('app.kunjungan.monitoring.stats') }}`,
             autoRefreshInterval: 300000, // 5 minutes
             detailFields: ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
-                'kategori_tujuan', 'transportasi', 'status_validasi', 'is_checkout',
-                'identitas', 'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_keluar',
-                'checkout_time', 'event_nama', 'event_kategori'
+                'kategori_tujuan', 'transportasi', 'status_validasi',
+                'identitas', 'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar',
+                'waktu_checkout', 'event_nama', 'event_kategori', 'event_kategori_lokasi', 'event_lokasi'
             ]
         };
 
@@ -220,9 +265,27 @@
 
             // Auto-refresh every 5 minutes
             setInterval(function() {
-                $('table[jf-data="kunjungan-monitoring"]').DataTable().ajax.reload(null, false);
+                $('#dataTableBuilder').DataTable().ajax.reload(null, false);
                 updateStats();
             }, JFORM_CONFIG.autoRefreshInterval);
+        });
+
+        $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
+            var vals = {
+                filter_jenis_kunjungan: $('#filter_jenis_kunjungan').val() || '',
+                filter_is_checkout: $('#filterIsCheckout').val() || '',
+                filter_jenis_kelamin: $('#filter_jenis_kelamin').val() || '',
+                filter_identitas: $('#filter_identitas').val() || '',
+            };
+            $.extend(data, vals);
+
+            var count = Object.values(vals).filter(v => v !== '').length;
+            $(`.dataTableBuilder-trigger_filter #filter-count`).text(count > 0 ? '(' + count + ')' : '');
+        });
+
+        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
+            $('#filterJenisKunjungan, #filterIsCheckout', '#filter_identitas', '#filter_jenis_kelamin').val('')
+                .trigger('change');
         });
     </script>
 @endpush

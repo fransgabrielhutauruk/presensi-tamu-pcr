@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md">
                 <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="log_aktivitas"
-                    jf-list="datatable" data-cy="table-log-aktivitas-list">
+                    jf-list="datatable" data-cy="table-log-aktivitas-list" :server_side="true" :default_order="[[2, 'desc']]">
                     @slot('filter')
                         <div class="row g-4">
                             <div class="col-md-2">
@@ -118,6 +118,26 @@
 
 @push('scripts')
     <script>
+        $(document).ready(function() {
+            $('#dataTableBuilder').on('preXhr.dt', function (e, settings, data) {
+                var vals = {
+                    filter_user:      $('#filter_user').val() || '',
+                    filter_event:     $('#filter_event').val() || '',
+                    filter_subject:   $('#filter_subject').val() || '',
+                    filter_date_from: $('#filter_date_from').val() || '',
+                    filter_date_to:   $('#filter_date_to').val() || '',
+                };
+                $.extend(data, vals);
+
+                var count = Object.values(vals).filter(v => v !== '').length;
+                $(`.dataTableBuilder-trigger_filter #filter-count`).text(count > 0 ? '(' + count + ')' : '');
+            });
+
+            $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function () {
+                $('#filter_user, #filter_event, #filter_subject, #filter_date_from, #filter_date_to').val('').trigger('change');
+            });
+        });
+
         function viewDetail(id) {
             $.ajax({
                 url: '{{ route('app.log-aktivitas.data') }}/detail',

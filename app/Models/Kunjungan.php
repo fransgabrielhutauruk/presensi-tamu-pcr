@@ -77,9 +77,9 @@ class Kunjungan extends Model
     public static function getIdentitasBadge($identitas, $is_vip = false): string
     {
         if ($identitas == 'non-civitas' && $is_vip == false) {
-            return '<span class="badge badge-warning">Non-Civitas</span>';
+            return '<span class="badge badge-primary">Non-Civitas</span>';
         } elseif ($identitas == 'civitas') {
-            return '<span class="badge badge-primary">Civitas PCR</span>';
+            return '<span class="badge badge-secondary">Civitas PCR</span>';
         } elseif ($is_vip == true) {
             return '<span class="badge badge-info">VIP</span>';
         } else {
@@ -90,9 +90,9 @@ class Kunjungan extends Model
     public static function getJenisKunjunganBadge($eventId): string
     {
         if (!empty($eventId)) {
-            return '<span class="badge badge-info">Event</span>';
+            return '<span class="badge badge-warning">Event</span>';
         } else {
-            return '<span class="badge badge-secondary">Non-Event</span>';
+            return '<span class="badge badge-primary">Non-Event</span>';
         }
     }
 

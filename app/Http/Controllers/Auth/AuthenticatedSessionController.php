@@ -38,6 +38,7 @@ class AuthenticatedSessionController extends Controller
     {
         activity()
             ->causedBy(Auth::user())
+            ->event('logout')
             ->withProperties([
                 'ip' => $request->ip(),
                 'user_agent' => request()->header('User-Agent')

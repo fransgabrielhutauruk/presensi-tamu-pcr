@@ -85,8 +85,7 @@ class EventController extends Controller
                 Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Waktu Dibuat', 'data' => 'waktu_dibuat', 'orderable' => true]),
                 Column::make(['title' => 'Nama Event', 'data' => 'nama_event', 'orderable' => true]),
-                Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => false]),
-                Column::make(['title' => 'Kategori Lokasi', 'data' => 'kategori_lokasi', 'orderable' => false]),
+                Column::make(['title' => 'Kategori', 'data' => 'nama_kategori', 'orderable' => true]),
                 Column::make(['title' => 'Lokasi', 'data' => 'lokasi_event', 'orderable' => true]),
                 Column::make(['title' => 'Tanggal Event', 'data' => 'tanggal_event', 'orderable' => true]),
                 Column::make(['title' => 'Waktu Event', 'data' => 'waktu_event', 'orderable' => true]),
@@ -412,7 +411,15 @@ class EventController extends Controller
                         default        => '-',
                     };
                 })
-                ->addColumn('lokasi_event', fn($row) => $row->lokasi_event ?? '-')
+                ->addColumn('lokasi_event', function ($row) {
+                    $lokasi = $row->lokasi_event ?? '-';
+                    $badgeKategori = match ($row->kategori_lokasi) {
+                        'dalam_kampus' => '<span class="badge badge-primary">Dalam Kampus</span>',
+                        'luar_kampus'  => '<span class="badge badge-info">Luar Kampus</span>',
+                        default        => '',
+                    };
+                    return $badgeKategori !== '' ? "{$lokasi} <br/> {$badgeKategori}" : $lokasi;
+                })
                 ->addColumn('tanggal_event', fn($row) => $row->tanggal_event ? tanggal($row->tanggal_event) : '-')
                 ->addColumn('waktu_event', function ($row) {
                     $raw_mulai   = $row->getRawOriginal('waktu_mulai_event');
@@ -470,21 +477,15 @@ class EventController extends Controller
                     ];
                     return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
-                ->rawColumns(['kategori_lokasi', 'status', 'dokumentasi', 'action'])
+                ->rawColumns(['lokasi_event', 'status', 'dokumentasi', 'action'])
                 ->orderColumn('waktu_dibuat', 'created_at $1')
                 ->orderColumn('nama_event',      'event.nama_event $1')
                 ->orderColumn('nama_kategori',   'event_kategori.nama_kategori $1')
-                ->orderColumn('kategori_lokasi', 'event.kategori_lokasi $1')
                 ->orderColumn('lokasi_event',    'event.lokasi_event $1')
                 ->orderColumn('tanggal_event',   'event.tanggal_event $1')
                 ->orderColumn('waktu_event',     'event.waktu_mulai_event $1')
-                ->orderColumn('status',          'event.tanggal_event $1')
                 ->filterColumn('nama_event', fn($query, $keyword) =>
                 $query->where('event.nama_event', 'like', "%{$keyword}%"))
-                ->filterColumn('nama_kategori', fn($query, $keyword) =>
-                $query->where('event_kategori.nama_kategori', 'like', "%{$keyword}%"))
-                ->filterColumn('kategori_lokasi', fn($query, $keyword) =>
-                $query->where('event.kategori_lokasi', 'like', "%{$keyword}%"))
                 ->filterColumn('lokasi_event', fn($query, $keyword) =>
                 $query->where('event.lokasi_event', 'like', "%{$keyword}%"))
                 ->filterColumn('tanggal_event', fn($query, $keyword) =>

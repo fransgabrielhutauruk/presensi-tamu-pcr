@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\KategoriTujuanEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use App\Models\Kunjungan;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -32,10 +34,11 @@ class FeedbackController extends Controller
                 Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
                 Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Dikirim Pada', 'data' => 'feedback_created_at', 'orderable' => true]),
+                Column::make(['title' => 'Identitas', 'data' => 'identitas', 'orderable' => true]),
                 Column::make(['title' => 'Nama Tamu', 'data' => 'nama_tamu', 'orderable' => true]),
+                Column::make(['title' => 'Tujuan Kunjungan', 'data' => 'tujuan_kunjungan', 'orderable' => true]),
                 Column::make(['title' => 'Rating', 'data' => 'rating', 'orderable' => true, 'className' => 'text-center']),
-                Column::make(['title' => 'Komentar', 'data' => 'komentar', 'orderable' => false]),
-                Column::make(['title' => 'Event', 'data' => 'nama_event', 'orderable' => true]),
+                Column::make(['title' => 'Komentar', 'data' => 'komentar', 'orderable' => true]),
             ]);
 
         $this->dataView([
@@ -59,6 +62,9 @@ class FeedbackController extends Controller
                 'feedback.created_at',
                 'kunjungan.created_at as kunjungan_created_at',
                 'kunjungan.event_id',
+                'kunjungan.identitas',
+                'kunjungan.is_vip',
+                'kunjungan.kategori_tujuan',
                 'tamu.nama_tamu',
                 'civitas.nama_civitas',
                 'event.nama_event',
@@ -83,16 +89,19 @@ class FeedbackController extends Controller
                 ->addColumn('no', function () use (&$start) {
                     return ++$start;
                 })
+                ->addColumn('identitas', fn($row) => Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip))
                 ->addColumn('nama_tamu', fn($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
                 ->addColumn('rating', fn($row) => $row->rating ?? 0)
                 ->addColumn('komentar', function ($row) {
                     $komentar = $row->komentar ?? '-';
                     return strlen($komentar) > 100 ? substr($komentar, 0, 100) . '...' : $komentar;
                 })
-                ->addColumn('nama_event', function ($row) {
-                    return !empty($row->nama_event)
-                        ? $row->nama_event
-                        : '<span class="badge badge-secondary">Non-Event</span>';
+                ->addColumn('tujuan_kunjungan', function ($row) {
+                    $detail = $row->event_id
+                        ? ($row->event?->nama_event ?? $row->nama_event)
+                        : (KategoriTujuanEnum::getDescription($row->kategori_tujuan ?? '-'));
+                    $badge = Kunjungan::getJenisKunjunganBadge($row->event_id);
+                    return "{$detail}<br/>{$badge}";
                 })
                 ->addColumn('feedback_created_at', function ($row) {
                     return $row->created_at
@@ -110,11 +119,14 @@ class FeedbackController extends Controller
                     ];
                     return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
-                ->rawColumns(['nama_event', 'action'])
-                ->orderColumn('nama_tamu', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
-                ->orderColumn('rating', 'feedback.rating $1')
-                ->orderColumn('nama_event', 'event.nama_event $1')
+                ->rawColumns(['nama_event', 'action', 'identitas', 'tujuan_kunjungan'])
                 ->orderColumn('feedback_created_at', 'feedback.created_at $1')
+                ->orderColumn('identitas', 'kunjungan.identitas $1')
+                ->orderColumn('nama_tamu', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+                ->orderColumn('tujuan_kunjungan', 'kunjungan.event_id $1')
+                ->orderColumn('rating', 'feedback.rating $1')
+                ->orderColumn('komentar', 'feedback.komentar $1')
+                ->orderColumn('nama_event', 'event.nama_event $1')
                 ->filterColumn('nama_tamu', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
                         $q->where('tamu.nama_tamu',      'like', "%{$keyword}%")
@@ -155,6 +167,10 @@ class FeedbackController extends Controller
 
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => \App\Enums\KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
+                'detail_kunjungan' => ($currData->event_id
+                    ? ($currData->event?->nama_event ?? '-')
+                    : (\App\Enums\KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-'))
+                    . '<br/>' . Kunjungan::getJenisKunjunganBadge($currData->event_id),
                 'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar'
                     : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
                 'transportasi' => $currData->transportasi ?? '',

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\KategoriTujuanEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Kunjungan;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Blade;
-use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use Yajra\DataTables\Html\Column;
 
 class KunjunganMonitoringController extends Controller
@@ -28,55 +29,22 @@ class KunjunganMonitoringController extends Controller
         $dataTable = $builder->serverSide(true)
             ->ajax(route('app.kunjungan.data') . '/' . self::PARAM_MONITORING)
             ->columns([
-                Column::make([
-                    'title' => 'No',
-                    'data' => 'no',
-                    'orderable' => false,
-                    'className' => 'text-center'
-                ]),
-                Column::make([
-                    'title' => 'Nama Tamu',
-                    'data' => 'nama',
-                    'orderable' => true
-                ]),
-                Column::make([
-                    'title' => 'Identitas',
-                    'data' => 'identitas',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Jenis Kunjungan',
-                    'data' => 'jenis_kunjungan',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Waktu Kunjungan',
-                    'data' => 'waktu_kunjungan',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Waktu Keluar (Estimasi)',
-                    'data' => 'waktu_keluar',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Waktu Checkout',
-                    'data' => 'waktu_checkout',
-                    'orderable' => true,
-                ]),
-                Column::make([
-                    'title' => 'Aksi',
-                    'data' => 'action',
-                    'orderable' => false,
-                    'className' => 'text-nowrap text-center'
-                ]),
+                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
+                Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'Jam Kedatangan', 'data' => 'jam_kedatangan', 'orderable' => true]),
+                Column::make(['width' => '10%', 'title' => 'Estimasi Jam Kepulangan', 'data' => 'waktu_keluar', 'orderable' => true]),
+                Column::make(['title' => 'Jam Checkout', 'data' => 'waktu_checkout', 'orderable' => true]),
+                Column::make(['title' => 'Identitas', 'data' => 'identitas', 'orderable' => true]),
+                Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
+                Column::make(['title' => 'Jenis Kelamin', 'data' => 'jenis_kelamin', 'orderable' => true]),
+                Column::make(['title' => 'Tujuan Kunjungan', 'data' => 'jenis_kunjungan', 'orderable' => true]),
             ]);
 
         $this->dataView([
-            'dataTable' => $dataTable,
-            'totalKunjunganHariIni' => $stats['total'],
-            'kunjunganSudahCheckout' => $stats['checkout'],
-            'tanggalHariIni' => tanggal($today->toDateString()),
+            'dataTable'               => $dataTable,
+            'totalKunjunganHariIni'   => $stats['total'],
+            'kunjunganSudahCheckout'  => $stats['checkout'],
+            'tanggalHariIni'          => tanggal($today->toDateString()),
         ]);
 
         return $this->view('admin.monitoring.list');
@@ -88,39 +56,157 @@ class KunjunganMonitoringController extends Controller
             abort(404, 'Halaman tidak ditemukan');
         }
 
-        $query = $this->getTodayKunjunganQuery();
-        $data = DataTables::of($query)->toArray();
+        $today                = Carbon::today();
+        $filterJenisKunjungan = $req->input('filter_jenis_kunjungan', '');
+        $filterCheckout       = $req->input('filter_is_checkout', '');
+        $filterJK             = $req->input('filter_jenis_kelamin', '');
+        $filterIdentitas      = $req->input('filter_identitas', '');
+        $start                = (int) $req->input('start', 0);
 
-        $start = $req->input('start');
-        $resp = [];
-        foreach ($data['data'] as $key => $value) {
-            $dt = [];
-            $dt['no'] = ++$start;
-            $dt['waktu_kunjungan'] = $value['created_at'] ? Carbon::parse($value['created_at'])
-                ->setTimezone(config('app.timezone'))->format('H:i') : '-';
-            $dt['nama'] = $value['tamu']['nama_tamu'] ?? $value['civitas']['nama_civitas'] ?? '-';
+        $query = Kunjungan::select([
+            'kunjungan.kunjungan_id',
+            'kunjungan.tamu_id',
+            'tamu.jenis_kelamin_tamu',
+            'kunjungan.civitas_id',
+            'civitas.jenis_kelamin',
+            'kunjungan.event_id',
+            'event.nama_event',
+            'kunjungan.kategori_tujuan',
+            'kunjungan.identitas',
+            'kunjungan.is_vip',
+            'kunjungan.is_checkout',
+            'kunjungan.waktu_keluar',
+            'kunjungan.checkout_time',
+            'kunjungan.created_at',
+            'tamu.nama_tamu',
+            'civitas.nama_civitas',
+        ])
+            ->leftJoin('tamu', function ($join) {
+                $join->on('kunjungan.tamu_id', '=', 'tamu.tamu_id')
+                    ->whereNull('tamu.deleted_at');
+            })
+            ->leftJoin('civitas', function ($join) {
+                $join->on('kunjungan.civitas_id', '=', 'civitas.civitas_id')
+                    ->whereNull('civitas.deleted_at');
+            })
+            ->leftJoin('event', function ($join) {
+                $join->on('kunjungan.event_id', '=', 'event.event_id')
+                    ->whereNull('event.deleted_at');
+            })
+            ->whereDate('kunjungan.created_at', $today)
+            ->when(!empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
+                match ($filterJenisKunjungan) {
+                    'event'     => $q->whereNotNull('kunjungan.event_id'),
+                    'non_event' => $q->whereNull('kunjungan.event_id'),
+                    default     => null,
+                };
+            })
+            ->when($filterCheckout === '1' || $filterCheckout === '0', function ($q) use ($filterCheckout) {
+                $q->where('kunjungan.is_checkout', $filterCheckout === '1');
+            })
+            ->when(!empty($filterJK), function ($q) use ($filterJK) {
+                $q->where(function ($q) use ($filterJK) {
+                    $q->where('tamu.jenis_kelamin_tamu', $filterJK)
+                        ->orWhere('civitas.jenis_kelamin', $filterJK);
+                });
+            })
+            ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
+                $q->where('kunjungan.identitas', $filterIdentitas);
+            });
 
-            $dt['identitas'] = Kunjungan::getIdentitasBadge($value['identitas'], $value['is_vip']);
-            $dt['jenis_kunjungan'] = Kunjungan::getJenisKunjunganBadge($value['event_id']);
-            $dt['waktu_keluar'] = $value['waktu_keluar'] ? Carbon::parse($value['waktu_keluar'])
-                ->format('H:i') : '-';
-            $dt['waktu_checkout'] = $value['is_checkout'] ? Carbon::parse($value['checkout_time'])
-                ->setTimezone(config('app.timezone'))->format('H:i') : '<span class="badge badge-warning">Belum Checkout</span>';
+        return DataTables::of($query)
+            ->addColumn('no', function () use (&$start) {
+                return ++$start;
+            })
+            ->addColumn('nama', fn($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
+            ->addColumn('jenis_kelamin', function ($row) {
+                return $row->jenis_kelamin_tamu ?? $row->jenis_kelamin ?? '-';
+            })
+            ->addColumn('identitas', fn($row) => Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip))
+            ->addColumn('jenis_kunjungan', function ($row) {
+                $detail = $row->event_id
+                    ? ($row->event?->nama_event ?? $row->nama_event)
+                    : (KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-');
+                $badge = Kunjungan::getJenisKunjunganBadge($row->event_id);
+                return "{$detail}<br/>{$badge}";
+            })
+            ->addColumn('jam_kedatangan', function ($row) {
+                return $row->created_at
+                    ? Carbon::parse($row->created_at)->setTimezone(config('app.timezone'))->format('H:i')
+                    : '-';
+            })
+            ->addColumn('waktu_keluar', function ($row) {
+                return $row->waktu_keluar
+                    ? Carbon::parse($row->waktu_keluar)->format('H:i')
+                    : '-';
+            })
+            ->addColumn('waktu_checkout', function ($row) {
+                return $row->is_checkout
+                    ? Carbon::parse($row->checkout_time)->setTimezone(config('app.timezone'))->format('H:i')
+                    : '<span class="badge badge-secondary">Belum Checkout</span>';
+            })
+            ->addColumn('action', function ($row) {
+                $id         = encid($row->kunjungan_id);
+                $dataAction = [
+                    'id'  => $id,
+                    'btn' => [
+                        ['action' => 'detail', 'title' => 'Lihat Detail', 'attr' => ['jf-detail' => $id]],
+                    ]
+                ];
+                return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+            })
+            ->rawColumns(['identitas', 'jenis_kunjungan', 'waktu_checkout', 'action'])
+            ->orderColumn('jam_kedatangan', 'kunjungan.created_at $1')
+            ->orderColumn('waktu_keluar', 'kunjungan.waktu_keluar $1')
+            ->orderColumn('waktu_checkout', 'kunjungan.checkout_time $1')
+            ->orderColumn('identitas', 'kunjungan.identitas $1')
+            ->orderColumn('nama', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+            ->orderColumn('jenis_kelamin', 'COALESCE(tamu.jenis_kelamin_tamu, civitas.jenis_kelamin) $1')
+            ->orderColumn('jenis_kunjungan', 'kunjungan.event_id $1')
+            ->filterColumn('nama', function ($query, $keyword) {
+                $query->where(function ($q) use ($keyword) {
+                    $q->where('tamu.nama_tamu',      'like', "%{$keyword}%")
+                        ->orWhere('civitas.nama_civitas', 'like', "%{$keyword}%");
+                });
+            })
+            ->filterColumn('jenis_kunjungan', function ($query, $keyword) {
+                $matchedValues = [];
+                foreach (KategoriTujuanEnum::cases() as $case) {
+                    if (stripos($case->description(), $keyword) !== false || stripos($case->value, $keyword) !== false) {
+                        $matchedValues[] = $case->value;
+                    }
+                }
+                $query->where(function ($q) use ($matchedValues, $keyword) {
 
-            $id = encid($value['kunjungan_id']);
-            $dataAction = [
-                'id' => $id,
-                'btn' => [
-                    ['action' => 'detail', 'title' => 'Lihat Detail', 'attr' => ['jf-detail' => $id]],
-                ]
-            ];
+                    if (!empty($matchedValues)) {
+                        $q->whereIn('kunjungan.kategori_tujuan', $matchedValues);
+                    } else {
+                        $q->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
+                    }
 
-            $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-            $resp[] = $dt;
-        }
+                    $q->orWhere('event.nama_event', 'like', "%{$keyword}%");
 
-        $data['data'] = $resp;
-        return response()->json($data);
+                    if (stripos('event', $keyword) !== false) {
+                        $q->orWhereNotNull('kunjungan.event_id');
+                    } elseif (stripos('non-event', $keyword) !== false) {
+                        $q->orWhereNull('kunjungan.event_id');
+                    }
+                });
+            })
+            ->filterColumn('jam_kedatangan', fn($query, $keyword) =>
+            $query->whereRaw("CONVERT(VARCHAR(8), kunjungan.created_at, 108) LIKE ?", ["%{$keyword}%"]))
+            ->filterColumn('waktu_keluar', fn($query, $keyword) =>
+            $query->whereRaw("CONVERT(VARCHAR(5), kunjungan.waktu_keluar, 108) LIKE ?", ["%{$keyword}%"]))
+            ->filterColumn('waktu_checkout', function ($query, $keyword) {
+                $lc = strtolower(trim($keyword));
+                if (str_contains($lc, 'belum')) {
+                    $query->where('kunjungan.is_checkout', false);
+                } else {
+                    $query->where('kunjungan.is_checkout', true)
+                        ->whereRaw("CONVERT(VARCHAR(8), kunjungan.checkout_time, 108) LIKE ?", ["%{$keyword}%"]);
+                }
+            })
+            ->toJson();
     }
 
     public function getStats(): JsonResponse
@@ -128,8 +214,8 @@ class KunjunganMonitoringController extends Controller
         $stats = $this->getTodayStatistics();
 
         return response()->json([
-            'success' => true,
-            'totalKunjunganHariIni' => $stats['total'],
+            'success'                => true,
+            'totalKunjunganHariIni'  => $stats['total'],
             'kunjunganSudahCheckout' => $stats['checkout'],
         ]);
     }
@@ -140,18 +226,8 @@ class KunjunganMonitoringController extends Controller
         $totalQuery = Kunjungan::whereDate('created_at', $today);
 
         return [
-            'total' => $totalQuery->count(),
+            'total'    => $totalQuery->count(),
             'checkout' => (clone $totalQuery)->where('is_checkout', true)->count(),
         ];
-    }
-
-    private function getTodayKunjunganQuery()
-    {
-        $today = Carbon::today();
-
-        return Kunjungan::with(['tamu', 'civitas', 'details', 'event', 'event.eventKategori'])
-            ->whereDate('created_at', $today)
-            ->latest()
-            ->get();
     }
 }

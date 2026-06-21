@@ -42,25 +42,24 @@ class KunjunganController extends Controller
                 'data' => 'waktu_kunjungan',
                 'orderable' => true,
             ],
+            'identitas' => [
+                'title' => 'Identitas',
+                'data' => 'identitas',
+                'orderable' => true,
+            ],
             'nama' => ['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true],
             'jenis_kelamin' => [
                 'title' => 'Jenis Kelamin',
                 'data' => 'jenis_kelamin',
-                'orderable' => false,
+                'orderable' => true,
             ],
-            'identitas' => [
-                'title' => 'Identitas',
-                'data' => 'identitas',
-                'orderable' => false,
-            ],
-            'email' => ['title' => 'Email', 'data' => 'email', 'orderable' => false],
-            'nomor_telepon' => ['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => false],
+            'email' => ['title' => 'Email', 'data' => 'email', 'orderable' => true],
+            'nomor_telepon' => ['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true],
             'jenis_kunjungan' => [
-                'title' => 'Jenis Kunjungan',
+                'title' => 'Tujuan Kunjungan',
                 'data' => 'jenis_kunjungan',
-                'orderable' => false,
+                'orderable' => true,
             ],
-            'kategori_tujuan' => ['title' => 'Kategori Tujuan', 'data' => 'kategori_tujuan', 'orderable' => true],
             'transportasi' => [
                 'title' => 'Transportasi',
                 'data' => 'transportasi',
@@ -81,21 +80,21 @@ class KunjunganController extends Controller
                 'data' => 'is_checkout',
                 'orderable' => true,
             ],
-            'event_nama' => ['title' => 'Nama Event', 'data' => 'event_nama', 'orderable' => false],
-            'event_kategori' => ['title' => 'Kategori Event', 'data' => 'event_kategori', 'orderable' => false]
+            'event_nama' => ['title' => 'Nama Event', 'data' => 'event_nama', 'orderable' => true],
+            'event_kategori' => ['title' => 'Kategori Event', 'data' => 'event_kategori', 'orderable' => true]
         ];
 
-        $defaultColumns = ['action', 'no', 'waktu_kunjungan',  'nama', 'jenis_kelamin', 'identitas', 'jenis_kunjungan'];
+        $defaultColumns = ['action', 'no', 'waktu_kunjungan', 'identitas', 'nama', 'jenis_kelamin',  'jenis_kunjungan'];
 
         $selectedColumns = $defaultColumns;
 
         if ($request->has('columns')) {
             $selectedColumns = $request->input('columns', []);
+            if (!in_array('action', $selectedColumns)) {
+                array_unshift($selectedColumns, 'action');
+            }
             if (!in_array('no', $selectedColumns)) {
                 array_unshift($selectedColumns, 'no');
-            }
-            if (!in_array('action', $selectedColumns)) {
-                $selectedColumns[] = 'action';
             }
         }
 
@@ -334,6 +333,7 @@ class KunjunganController extends Controller
                 'kunjungan.status_validasi',
                 'kunjungan.is_vip',
                 'kunjungan.created_at',
+                'event.nama_event',
             ])
                 ->leftJoin('tamu', function ($join) {
                     $join->on('kunjungan.tamu_id', '=', 'tamu.tamu_id')
@@ -343,7 +343,14 @@ class KunjunganController extends Controller
                     $join->on('kunjungan.civitas_id', '=', 'civitas.civitas_id')
                         ->whereNull('civitas.deleted_at');
                 })
-                ->with(['event', 'event.eventKategori'])
+                ->leftJoin('event', function ($join) {
+                    $join->on('kunjungan.event_id', '=', 'event.event_id')
+                        ->whereNull('event.deleted_at');
+                })
+                ->leftJoin('event_kategori', function ($join) {
+                    $join->on('event_kategori.eventkategori_id', '=', 'event.eventkategori_id')
+                        ->whereNull('event_kategori.deleted_at');
+                })
                 ->where('kunjungan.status_validasi', true)
                 ->when(!empty($filterJK), function ($q) use ($filterJK) {
                     $q->where(function ($q) use ($filterJK) {
@@ -383,9 +390,6 @@ class KunjunganController extends Controller
                 ->addColumn('nomor_telepon', function ($row) {
                     return $row->tamu->nomor_telepon_tamu ?? $row->civitas->nomor_telepon ?? '-';
                 })
-                ->addColumn('kategori_tujuan', function ($row) {
-                    return KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-';
-                })
                 ->addColumn('transportasi', function ($row) {
                     return $row->transportasi ?? '-';
                 })
@@ -399,7 +403,11 @@ class KunjunganController extends Controller
                     return $row->checkout_time ? Carbon::parse($row->checkout_time)->format('H:i') : '-';
                 })
                 ->addColumn('jenis_kunjungan', function ($row) {
-                    return Kunjungan::getJenisKunjunganBadge($row->event_id);
+                    $detail = $row->event_id
+                        ? ($row->event?->nama_event ?? $row->nama_event)
+                        : (KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-');
+                    $badge = Kunjungan::getJenisKunjunganBadge($row->event_id);
+                    return "{$detail}<br/>{$badge}";
                 })
                 ->addColumn('status_validasi', function ($row) {
                     return Kunjungan::getStatusValidasiBadge($row->status_validasi);
@@ -426,12 +434,19 @@ class KunjunganController extends Controller
                 })
                 ->rawColumns(['identitas', 'jenis_kunjungan', 'status_validasi', 'is_checkout', 'action'])
                 ->orderColumn('waktu_kunjungan', 'created_at $1')
+                ->orderColumn('identitas', 'kunjungan.identitas $1')
                 ->orderColumn('nama',            'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+                ->orderColumn('jenis_kelamin', 'COALESCE(tamu.jenis_kelamin_tamu, civitas.jenis_kelamin) $1')
+                ->orderColumn('email', 'COALESCE(tamu.email_tamu, civitas.email) $1')
+                ->orderColumn('nomor_telepon', 'COALESCE(tamu.nomor_telepon_tamu, civitas.nomor_telepon) $1')
+                ->orderColumn('jenis_kunjungan', 'kunjungan.event_id $1')
+                ->orderColumn('jenis_kunjungan', 'kunjungan.event_id $1')
                 ->orderColumn('is_checkout',     'is_checkout $1')
-                ->orderColumn('kategori_tujuan', 'kategori_tujuan $1')
                 ->orderColumn('transportasi',    'transportasi $1')
                 ->orderColumn('waktu_keluar',    'waktu_keluar $1')
                 ->orderColumn('checkout_time',   'checkout_time $1')
+                ->orderColumn('event_nama',      'event.nama_event $1')
+                ->orderColumn('event_kategori',   'event_kategori.nama_kategori $1')
                 ->filterColumn('waktu_kunjungan', fn($query, $keyword) =>
                 dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
                 ->filterColumn('nama', function ($query, $keyword) {
@@ -461,9 +476,6 @@ class KunjunganController extends Controller
                 ->filterColumn('identitas',       function ($query, $keyword) {
                     $query->where('kunjungan.identitas', 'like', "%{$keyword}%");
                 })
-                ->filterColumn('kategori_tujuan', function ($query, $keyword) {
-                    $query->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
-                })
                 ->filterColumn('transportasi',    function ($query, $keyword) {
                     $query->where('kunjungan.transportasi', 'like', "%{$keyword}%");
                 })
@@ -474,11 +486,28 @@ class KunjunganController extends Controller
                     $query->where('kunjungan.checkout_time', 'like', "%{$keyword}%");
                 })
                 ->filterColumn('jenis_kunjungan', function ($query, $keyword) {
-                    if (stripos('event', $keyword) !== false) {
-                        $query->whereNotNull('kunjungan.event_id');
-                    } elseif (stripos('non', $keyword) !== false) {
-                        $query->whereNull('kunjungan.event_id');
+                    $matchedValues = [];
+                    foreach (KategoriTujuanEnum::cases() as $case) {
+                        if (stripos($case->description(), $keyword) !== false || stripos($case->value, $keyword) !== false) {
+                            $matchedValues[] = $case->value;
+                        }
                     }
+                    $query->where(function ($q) use ($matchedValues, $keyword) {
+
+                        if (!empty($matchedValues)) {
+                            $q->whereIn('kunjungan.kategori_tujuan', $matchedValues);
+                        } else {
+                            $q->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
+                        }
+
+                        $q->orWhere('event.nama_event', 'like', "%{$keyword}%");
+
+                        if (stripos('event', $keyword) !== false) {
+                            $q->orWhereNotNull('kunjungan.event_id');
+                        } elseif (stripos('non-event', $keyword) !== false) {
+                            $q->orWhereNull('kunjungan.event_id');
+                        }
+                    });
                 })
                 ->filterColumn('is_checkout',     function ($query, $keyword) {
                     $isChecked = stripos($keyword, 'sudah') !== false ? true
@@ -507,17 +536,19 @@ class KunjunganController extends Controller
 
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
-                'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar'
-                    : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
+                'identitas' => match ($currData->identitas) {
+                    'civitas'  => 'Civitas PCR',
+                    'non-civitas'  => 'Non-Civitas',
+                    default        => $currData->identitas ?? '-',
+                },
                 'transportasi' => $currData->transportasi ?? '',
                 'status_validasi' => $currData->status_validasi ? 'Sudah validasi' : 'Belum validasi',
-                'is_checkout' => $currData->is_checkout ? 'Sudah checkout' : 'Belum checkout',
 
                 'tanggal_kunjungan' => $currData->created_at ? tanggal($currData->created_at) : '',
                 'waktu_kunjungan' => $currData->created_at ? $currData->created_at->format('H:i') : '-',
-                'waktu_keluar' => $currData->waktu_keluar ? \Carbon\Carbon::parse($currData->waktu_keluar)
+                'waktu_estimasi_keluar' => $currData->waktu_keluar ? \Carbon\Carbon::parse($currData->waktu_keluar)
                     ->format('H:i') : '-',
-                'checkout_time' => $currData->checkout_time ? $currData->checkout_time->format('H:i') : '-',
+                'waktu_checkout' => $currData->checkout_time ? $currData->checkout_time->format('H:i') : '-',
 
                 'event_nama' => $currData->event->nama_event ?? '-',
                 'event_kategori' => $currData->event->eventKategori->nama_kategori ?? '-',

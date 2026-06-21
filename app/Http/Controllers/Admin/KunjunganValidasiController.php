@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\KategoriTujuanEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Kunjungan;
 use Carbon\Carbon;
@@ -29,7 +30,7 @@ class KunjunganValidasiController extends Controller
                     'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
                     <input class="form-check-input" type="checkbox" id="checkAllValidasi" data-cy="checkbox-check-all-validasi-kunjungan"></div>',
                     'data' => 'checkbox',
-                    'orderable' => false,
+                    'orderable' => true,
                     'className' => 'text-center',
                     'searchable' => false
                 ]),
@@ -43,7 +44,6 @@ class KunjunganValidasiController extends Controller
                     'title' => 'Waktu Kunjungan',
                     'data' => 'waktu_kunjungan',
                     'orderable' => true,
-                    'className' => 'text-center'
                 ]),
                 Column::make([
                     'width' => '5%',
@@ -52,25 +52,23 @@ class KunjunganValidasiController extends Controller
                     'orderable' => false,
                     'className' => 'text-center'
                 ]),
+                Column::make([
+                    'title' => 'Identitas',
+                    'data' => 'identitas',
+                    'orderable' => true,
+                ]),
                 Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
                 Column::make([
                     'title' => 'Jenis Kelamin',
                     'data' => 'jenis_kelamin',
-                    'orderable' => false,
-                    'className' => 'text-center'
+                    'orderable' => true,
                 ]),
                 Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
                 Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
                 Column::make([
-                    'title' => 'Identitas',
-                    'data' => 'identitas',
-                    'orderable' => false,
-                ]),
-                Column::make([
-                    'title' => 'Jenis Kunjungan',
+                    'title' => 'Tujuan Kunjungan',
                     'data' => 'jenis_kunjungan',
-                    'orderable' => false,
-                    'className' => 'text-center'
+                    'orderable' => true,
                 ]),
             ]);
 
@@ -118,7 +116,12 @@ class KunjunganValidasiController extends Controller
                 $join->on('kunjungan.civitas_id', '=', 'civitas.civitas_id')
                     ->whereNull('civitas.deleted_at');
             })
+            ->leftJoin('event', function ($join) {
+                $join->on('kunjungan.event_id', '=', 'event.event_id')
+                    ->whereNull('event.deleted_at');
+            })
             ->where('kunjungan.status_validasi', false)
+            ->whereNull('kunjungan.deleted_at')
             ->when(!empty($filterJK), function ($q) use ($filterJK) {
                 $q->where(function ($q) use ($filterJK) {
                     $q->where('tamu.jenis_kelamin_tamu', $filterJK)
@@ -164,7 +167,11 @@ class KunjunganValidasiController extends Controller
                 return Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip);
             })
             ->addColumn('jenis_kunjungan', function ($row) {
-                return Kunjungan::getJenisKunjunganBadge($row->event_id);
+                $detail = $row->event_id
+                    ? ($row->event?->nama_event ?? $row->nama_event)
+                    : (KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-');
+                $badge = Kunjungan::getJenisKunjunganBadge($row->event_id);
+                return "{$detail}<br/>{$badge}";
             })
             ->addColumn('waktu_kunjungan', function ($row) {
                 return $row->created_at ? tanggal($row->created_at) . ' ' . Carbon::parse($row->created_at)->setTimezone(config('app.timezone'))->format('H:i') : '-';
@@ -181,20 +188,21 @@ class KunjunganValidasiController extends Controller
             })
             ->rawColumns(['checkbox', 'identitas', 'jenis_kunjungan', 'action'])
             ->orderColumn('waktu_kunjungan', 'created_at $1')
+            ->orderColumn('identitas', 'kunjungan.identitas $1')
             ->orderColumn('nama', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+            ->orderColumn('jenis_kelamin', 'COALESCE(tamu.jenis_kelamin_tamu, civitas.jenis_kelamin) $1')
+            ->orderColumn('email', 'COALESCE(tamu.email_tamu, civitas.email) $1')
             ->orderColumn('nomor_telepon', 'COALESCE(tamu.nomor_telepon_tamu, civitas.nomor_telepon) $1')
+            ->orderColumn('jenis_kunjungan', 'kunjungan.event_id $1')
             ->filterColumn('waktu_kunjungan', fn($query, $keyword) =>
-                dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
+            dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
+            ->filterColumn('identitas', function ($query, $keyword) {
+                $query->where('kunjungan.identitas', 'like', "%{$keyword}%");
+            })
             ->filterColumn('nama', function ($query, $keyword) {
                 $query->where(function ($q) use ($keyword) {
                     $q->where('tamu.nama_tamu', 'like', "%{$keyword}%")
                         ->orWhere('civitas.nama_civitas', 'like', "%{$keyword}%");
-                });
-            })
-            ->filterColumn('jenis_kelamin', function ($query, $keyword) {
-                $query->where(function ($q) use ($keyword) {
-                    $q->where('tamu.jenis_kelamin_tamu', 'like', "%{$keyword}%")
-                        ->orWhere('civitas.jenis_kelamin',   'like', "%{$keyword}%");
                 });
             })
             ->filterColumn('email', function ($query, $keyword) {
@@ -209,15 +217,29 @@ class KunjunganValidasiController extends Controller
                         ->orWhere('civitas.nomor_telepon', 'like', "%{$keyword}%");
                 });
             })
-            ->filterColumn('identitas', function ($query, $keyword) {
-                $query->where('kunjungan.identitas', 'like', "%{$keyword}%");
-            })
             ->filterColumn('jenis_kunjungan', function ($query, $keyword) {
-                if (stripos('event', $keyword) !== false) {
-                    $query->whereNotNull('kunjungan.event_id');
-                } elseif (stripos('non', $keyword) !== false) {
-                    $query->whereNull('kunjungan.event_id');
+                $matchedValues = [];
+                foreach (KategoriTujuanEnum::cases() as $case) {
+                    if (stripos($case->description(), $keyword) !== false || stripos($case->value, $keyword) !== false) {
+                        $matchedValues[] = $case->value;
+                    }
                 }
+                $query->where(function ($q) use ($matchedValues, $keyword) {
+
+                    if (!empty($matchedValues)) {
+                        $q->whereIn('kunjungan.kategori_tujuan', $matchedValues);
+                    } else {
+                        $q->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
+                    }
+
+                    $q->orWhere('event.nama_event', 'like', "%{$keyword}%");
+
+                    if (stripos('event', $keyword) !== false) {
+                        $q->orWhereNotNull('kunjungan.event_id');
+                    } elseif (stripos('non-event', $keyword) !== false) {
+                        $q->orWhereNull('kunjungan.event_id');
+                    }
+                });
             })
             ->toJson();
     }

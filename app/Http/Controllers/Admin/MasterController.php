@@ -21,10 +21,7 @@ class MasterController extends Controller
         $this->breadCrump[] = ['title' => 'Master', 'link' => url('')];
     }
 
-    function index()
-    {
-
-    }
+    function index() {}
 
     public function show($param1 = '', $param2 = '')
     {
@@ -35,8 +32,7 @@ class MasterController extends Controller
 
             $builder   = app('datatables.html');
             $dataTable = $builder->serverSide(true)->ajax(route('app.master.data') . '/pegawai-list')->columns([
-                Column::make(['width' => '', 'title' => '', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-end']),
-                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
+                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
                 Column::make(['width' => '15%', 'title' => 'NIP', 'data' => 'nip']),
                 Column::make(['width' => '40%', 'title' => 'Nama Pegawai', 'data' => 'nama']),
                 Column::make(['width' => '35%', 'title' => 'Email', 'data' => 'email']),
@@ -86,9 +82,7 @@ class MasterController extends Controller
                     'message' => 'Terjadi kesalahan: ' . $e->getMessage()
                 ], 500);
             }
-        }
-
-        else {
+        } else {
             abort(404, 'Halaman tidak ditemukan');
         }
     }
@@ -96,35 +90,36 @@ class MasterController extends Controller
     function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
         if ($param1 === 'pegawai-list') {
-            $filter = [];
-
-            $data = DataTables::of(DmPegawai::getDataDetail($filter, get: true))->toArray();
+            $query = DmPegawai::select('dm_pegawai.*');
 
             $start = (int) $req->input('start', 0);
-            $resp  = [];
 
-            foreach ($data['data'] as $key => $value) {
-                $dt = [];
-
-                $dt['no']       = ++$start;
-                $dt['nip']      = $value['nip'];
-                $dt['nama']     = $value['nama'];
-                $dt['email']    = $value['email'] ?? '-';
-
-                $id = encid($value['pegawai_id']);
-
-                $dataAction = [
-                    'id'  => $id,
-                    'btn' => []
-                ];
-
-                $dt['action'] = (string) Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
-
-                $resp[] = $dt;
-            }
-            $data['data'] = $resp;
-
-            return response()->json($data);
+            return DataTables::of($query)
+                ->addColumn('no', function () use (&$start) {
+                    return ++$start;
+                })
+                ->addColumn('action', function ($row) {
+                    $id = encid($row->pegawai_id);
+                    $dataAction = [
+                        'id'  => $id,
+                        'btn' => []
+                    ];
+                    return (string) Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
+                })
+                ->rawColumns(['action'])
+                ->orderColumn('nip', 'dm_pegawai.nip $1')
+                ->orderColumn('nama', 'dm_pegawai.nama $1')
+                ->orderColumn('email', 'dm_pegawai.email $1')
+                ->filterColumn('nip', function ($query, $keyword) {
+                    $query->where('dm_pegawai.nip', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('nama', function ($query, $keyword) {
+                    $query->where('dm_pegawai.nama', 'like', "%{$keyword}%");
+                })
+                ->filterColumn('email', function ($query, $keyword) {
+                    $query->where('dm_pegawai.email', 'like', "%{$keyword}%");
+                })
+                ->toJson();
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }

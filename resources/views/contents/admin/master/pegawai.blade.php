@@ -10,7 +10,7 @@
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="pegawai" jf-list="datatable">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="pegawai" jf-list="datatable" :server_side="true" :default_order="[[2, 'asc']]">
             @slot('action')
                 <x-btn type="success" id="btn-sync-pegawai">
                     <i class="bi bi-arrow-repeat fs-2"></i> Sync Data Pegawai

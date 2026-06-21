@@ -160,8 +160,8 @@
                     <div data-field="waktu_kunjungan" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Waktu Keluar (Estimasi):</label>
-                    <div data-field="waktu_keluar" class="fw-bold">-</div>
+                    <label class="fw-bold text-muted">Waktu Estimasi Keluar:</label>
+                    <div data-field="waktu_estimasi_keluar" class="fw-bold">-</div>
                 </div>
             </div>
         </div>
@@ -401,8 +401,8 @@
             setDetailField('identitas', data.identitas);
             setDetailField('tanggal_kunjungan', data.tanggal_kunjungan);
             setDetailField('waktu_kunjungan', data.waktu_kunjungan);
-            setDetailField('waktu_keluar', data.waktu_keluar);
-
+            setDetailField('waktu_estimasi_keluar', data.waktu_estimasi_keluar);
+            
             var statusBadge = $('[data-field="status_badge"]');
             console.log('this', data.status_validasi)
             if (data.status_validasi == 'Sudah validasi') {
