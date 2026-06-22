@@ -88,6 +88,8 @@ class KunjunganValidasiController extends Controller
         $filterJK             = $req->input('filter_jenis_kelamin', '');
         $filterIdentitas      = $req->input('filter_identitas', '');
         $filterJenisKunjungan = $req->input('filter_jenis_kunjungan', '');
+        $filterDateFrom       = $req->input('filter_date_from', '');
+        $filterDateTo         = $req->input('filter_date_to', '');
 
         $query = Kunjungan::select([
             'kunjungan.kunjungan_id',
@@ -137,7 +139,9 @@ class KunjunganValidasiController extends Controller
                 } else {
                     $q->whereNull('kunjungan.event_id');
                 }
-            });
+            })
+            ->when(!empty($filterDateFrom), fn($q) => $q->whereDate('kunjungan.created_at', '>=', $filterDateFrom))
+            ->when(!empty($filterDateTo), fn($q) => $q->whereDate('kunjungan.created_at', '<=', $filterDateTo));
 
         $start = (int) $req->input('start', 0);
 
