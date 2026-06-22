@@ -66,13 +66,13 @@
                     </div>
                     <div class="col-md-2">
                         <label class="form-label fs-7 fw-semibold">Dari Tanggal</label>
-                        <input type="date" id="filter_date_from" name="filter_date_from"
-                            class="form-control form-control-sm" data-cy="input-filter-event-date-from" />
+                        <input type="date" id="filter_date_from" name="filter_date_from" class="form-control form-control-sm"
+                            data-cy="input-filter-event-date-from" />
                     </div>
                     <div class="col-md-2">
                         <label class="form-label fs-7 fw-semibold">Sampai Tanggal</label>
-                        <input type="date" id="filter_date_to" name="filter_date_to"
-                            class="form-control form-control-sm" data-cy="input-filter-event-date-to" />
+                        <input type="date" id="filter_date_to" name="filter_date_to" class="form-control form-control-sm"
+                            data-cy="input-filter-event-date-to" />
                     </div>
                 </div>
             @endslot
@@ -116,7 +116,7 @@
                         <label class="form-label fs-7 fw-semibold mb-0 required">Tanggal Event</label>
                         <div class="form-check form-switch form-check-custom form-check-solid form-check-sm">
                             <input class="form-check-input border border-gray-400" type="checkbox" id="is_range"
-                                value="1" />
+                                style="height: 1.9rem" value="1" />
                             <label class="form-check-label fs-8 text-black" for="is_range">Lebih dari 1 Hari?</label>
                         </div>
                     </div>
