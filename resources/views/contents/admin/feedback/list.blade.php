@@ -15,7 +15,7 @@
             @slot('filter')
                 <div class="row">
                     <div class="col-md-3">
-                        <label class="form-label form-label-sm mb-1">Rating</label>
+                        <label class="form-label fs-7 fw-semibold">Rating</label>
                         <select id="filterRating" class="form-select form-select-sm" data-control="select2"
                             data-allow-clear="true" data-placeholder="Semua Rating" data-cy="select-filter-rating-feedback">
                             <option value="">Semua Rating</option>
@@ -25,6 +25,16 @@
                             <option value="2">⭐⭐ (2)</option>
                             <option value="1">⭐ (1)</option>
                         </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fs-7 fw-semibold">Dari Tanggal</label>
+                        <input type="date" id="filter_date_from" name="filter_date_from" class="form-control form-control-sm"
+                            data-cy="input-filter-event-date-from" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fs-7 fw-semibold">Sampai Tanggal</label>
+                        <input type="date" id="filter_date_to" name="filter_date_to" class="form-control form-control-sm"
+                            data-cy="input-filter-event-date-to" />
                     </div>
                 </div>
             @endslot
@@ -135,6 +145,8 @@
         $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
             var vals = {
                 filter_rating: $('#filterRating').val() || '',
+                filter_date_from: $('#filter_date_from').val() || '',
+                filter_date_to: $('#filter_date_to').val() || '',
             };
             $.extend(data, vals);
 

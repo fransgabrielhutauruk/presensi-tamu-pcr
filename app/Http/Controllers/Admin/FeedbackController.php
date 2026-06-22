@@ -51,8 +51,10 @@ class FeedbackController extends Controller
     public function data(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 == 'list') {
-            $start       = (int) $req->input('start', 0);
+            $start = (int) $req->input('start', 0);
             $filterRating = $req->input('filter_rating', '');
+            $filterDateFrom = $req->input('filter_date_from', '');
+            $filterDateTo = $req->input('filter_date_to', '');
 
             $query = Feedback::select([
                 'feedback.feedback_id',
@@ -83,7 +85,9 @@ class FeedbackController extends Controller
                 })
                 ->leftJoin('event', 'kunjungan.event_id', '=', 'event.event_id')
                 ->whereNull('feedback.deleted_at')
-                ->when(!empty($filterRating), fn($q) => $q->where('feedback.rating', (int) $filterRating));
+                ->when(!empty($filterRating), fn($q) => $q->where('feedback.rating', (int) $filterRating))
+                ->when(!empty($filterDateFrom), fn($q) => $q->whereDate('feedback.created_at', '>=', $filterDateFrom))
+                ->when(!empty($filterDateTo), fn($q) => $q->whereDate('feedback.created_at', '<=', $filterDateTo));
 
             return DataTables::of($query)
                 ->addColumn('no', function () use (&$start) {
