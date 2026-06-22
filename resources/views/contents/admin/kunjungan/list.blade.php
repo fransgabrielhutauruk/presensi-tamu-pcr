@@ -73,7 +73,7 @@
             @endslot
             @slot('filter')
                 <div class="row g-4">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label class="form-label fs-7 fw-semibold">Jenis Kelamin</label>
                         <select id="filter_jenis_kelamin" name="filter_jenis_kelamin" class="form-select form-select-sm"
                             data-control="select2" data-placeholder="Semua Jenis Kelamin" data-allow-clear="true"
@@ -103,6 +103,16 @@
                             <option value="non_event">Non-Event</option>
                         </select>
                     </div>
+                    <div class="col-md-2">
+                        <label class="form-label fs-7 fw-semibold">Dari Tanggal</label>
+                        <input type="date" id="filter_date_from" name="filter_date_from" class="form-control form-control-sm"
+                            data-cy="input-filter-event-date-from" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fs-7 fw-semibold">Sampai Tanggal</label>
+                        <input type="date" id="filter_date_to" name="filter_date_to" class="form-control form-control-sm"
+                            data-cy="input-filter-event-date-to" />
+                    </div>
                 </div>
             @endslot
         </x-table.dttable>
@@ -118,13 +128,7 @@
                 ],
                 [
                     'title' => 'Data Kunjungan',
-                    'fields' => [
-                        'jenis_kunjungan',
-                        'kategori_tujuan',
-                        'transportasi',
-                        'status_validasi',
-                        'identitas',
-                    ],
+                    'fields' => ['jenis_kunjungan', 'kategori_tujuan', 'transportasi', 'status_validasi', 'identitas'],
                 ],
                 [
                     'title' => 'Data Waktu',
@@ -370,6 +374,8 @@
                 filter_jenis_kelamin: $('#filter_jenis_kelamin').val() || '',
                 filter_identitas: $('#filter_identitas').val() || '',
                 filter_jenis_kunjungan: $('#filter_jenis_kunjungan').val() || '',
+                filter_date_from: $('#filter_date_from').val() || '',
+                filter_date_to: $('#filter_date_to').val() || '',
             };
             $.extend(data, vals);
 
