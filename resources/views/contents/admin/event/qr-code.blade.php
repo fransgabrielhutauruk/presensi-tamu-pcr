@@ -4,7 +4,7 @@
     use Illuminate\Support\Str;
 
     $event = $pageData->event;
-    $eventDate = $event->tanggal_event ? date('d F Y', strtotime($event->tanggal_event)) : '-';
+    $eventDate = $event->formatted_date_range;
     $eventTime = null;
     $eventCategory = $event->eventKategori->nama_kategori ?? '-';
     $eventLocation = $event->lokasi_event ?? null;

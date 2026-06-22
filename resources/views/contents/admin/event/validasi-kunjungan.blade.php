@@ -10,7 +10,7 @@
 @section('content')
     @php
         $event = $pageData->event;
-        $eventDate = tanggal($event->tanggal_event);
+        $eventDate = $event->formatted_date_range;
         $eventLocation = $event->lokasi_event ?: '-';
     @endphp
 

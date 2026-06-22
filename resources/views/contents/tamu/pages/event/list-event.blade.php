@@ -71,7 +71,7 @@
                                                                     <small
                                                                         class="text-muted d-flex align-items-center gap-1">
                                                                         <i class="fas fa-calendar"></i>
-                                                                        <span>{{ \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y') }}</span>
+                                                                        <span>{{ $event->formatted_date_range }}</span>
                                                                     </small>
                                                                 </div>
                                                             @endif

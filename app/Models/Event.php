@@ -50,6 +50,7 @@ class Event extends Model
         'nama_event',
         'deskripsi_event',
         'tanggal_event',
+        'tanggal_selesai_event',
         'waktu_mulai_event',
         'waktu_selesai_event',
         'lokasi_event',
@@ -128,7 +129,30 @@ class Event extends Model
             });
     }
 
-    // mutator (setter and getter)
+
+    public function getFormattedDateRangeAttribute()
+    {
+        if (!$this->tanggal_event) {
+            return '-';
+        }
+
+        $start = \Carbon\Carbon::parse($this->tanggal_event);
+        $end = $this->tanggal_selesai_event ? \Carbon\Carbon::parse($this->tanggal_selesai_event) : null;
+        
+        if (!$end || $start->toDateString() === $end->toDateString()) {
+            return $start->isoFormat('dddd, D MMMM Y');
+        }
+
+        if ($start->month === $end->month && $start->year === $end->year) {
+            return $start->format('d') . ' s/d ' . $end->isoFormat('d MMMM Y');
+        }
+
+        if ($start->year === $end->year) {
+            return $start->isoFormat('D MMMM') . ' s/d ' . $end->isoFormat('D MMMM Y');
+        }
+
+        return $start->isoFormat('D MMMM Y') . ' s/d ' . $end->isoFormat('D MMMM Y');
+    }
 
     /**
      * fungsi kustom, untuk proses insert multiple data row dari controller
@@ -202,6 +226,7 @@ class Event extends Model
                 a.nama_event,
                 a.deskripsi_event,
                 a.tanggal_event,
+                a.tanggal_selesai_event,
                 a.waktu_mulai_event,
                 a.waktu_selesai_event,
                 a.lokasi_event,

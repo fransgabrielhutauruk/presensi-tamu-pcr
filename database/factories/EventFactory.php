@@ -22,6 +22,7 @@ class EventFactory extends Factory
             'nama_event' => 'Event ' . fake()->unique()->word(),
             'deskripsi_event' => fake()->sentence(),
             'tanggal_event' => now()->toDateString(),
+            'tanggal_selesai_event' => now()->addDays(2)->toDateString(),
             'waktu_mulai_event' => $startTime,
             'waktu_selesai_event' => $endTime,
             'lokasi_event' => fake()->address(),

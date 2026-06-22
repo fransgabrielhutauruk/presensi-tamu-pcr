@@ -4,9 +4,7 @@
 
 @section('content')
     @php
-        $formattedEventDate = $event->tanggal_event
-            ? \Carbon\Carbon::parse($event->tanggal_event)->locale('id')->isoFormat('dddd, D MMMM Y')
-            : null;
+        $formattedEventDate = $event->formatted_date_range;
 
         $formattedEventTime = $event->waktu_mulai_event
             ? \Carbon\Carbon::parse($event->waktu_mulai_event)->format('H:i') . ' WIB'

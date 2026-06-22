@@ -46,13 +46,24 @@ class EventController extends Controller
 
     private function buildEventData(Request $request): array
     {
+        $tanggalRaw = clean_post('tanggal_event');
+        $tanggalMulai = $tanggalRaw;
+        $tanggalSelesai = null;
+
+        if (str_contains($tanggalRaw, ' s/d ')) {
+            $parts = explode(' s/d ', $tanggalRaw);
+            $tanggalMulai = $parts[0];
+            $tanggalSelesai = $parts[1] ?? null;
+        }
+
         return [
             'eventkategori_id' => decid($request->post('eventkategori_id')),
             'kategori_lokasi' => clean_post('kategori_lokasi'),
             'jenis_kegiatan' => clean_post('jenis_kegiatan'),
             'nama_event' => clean_post('nama_event'),
             'deskripsi_event' => clean_post('deskripsi_event'),
-            'tanggal_event' => clean_post('tanggal_event'),
+            'tanggal_event' => $tanggalMulai,
+            'tanggal_selesai_event' => $tanggalSelesai,
             'waktu_mulai_event' => clean_post('waktu_mulai_event'),
             'waktu_selesai_event' => clean_post('waktu_selesai_event'),
             'lokasi_event' => clean_post('lokasi_event'),
@@ -201,7 +212,7 @@ class EventController extends Controller
                 'eventkategori_id' => ['Kategori Event', 'required'],
                 'kategori_lokasi' => ['Kategori Lokasi', 'required|in:dalam_kampus,luar_kampus'],
                 'jenis_kegiatan' => ['Jenis Kegiatan', 'required|in:pmb,non_pmb'],
-                'tanggal_event' => ['Tanggal Event', 'required|date|after_or_equal:today'],
+                'tanggal_event' => ['Tanggal Event', 'required', 'string'],
                 'waktu_mulai_event' => ['Waktu Mulai', 'required|date_format:H:i'],
                 'waktu_selesai_event' => ['Waktu Selesai', 'required|date_format:H:i'],
                 'lokasi_event' => ['Lokasi Event', 'required'],
@@ -254,7 +265,7 @@ class EventController extends Controller
                 'eventkategori_id' => ['Kategori Event', 'required'],
                 'kategori_lokasi' => ['Kategori Lokasi', 'required|in:dalam_kampus,luar_kampus'],
                 'jenis_kegiatan' => ['Jenis Kegiatan', 'required|in:pmb,non_pmb'],
-                'tanggal_event' => ['Tanggal Event', 'required|date'],
+                'tanggal_event' => ['Tanggal Event', 'required', 'string'],
                 'link_dokumentasi_event' => ['Link Dokumentasi', 'nullable|url'],
             ]);
 
@@ -353,6 +364,7 @@ class EventController extends Controller
                 'event.nama_event',
                 'event.deskripsi_event',
                 'event.tanggal_event',
+                'event.tanggal_selesai_event',
                 'event.waktu_mulai_event',
                 'event.waktu_selesai_event',
                 'event.lokasi_event',
@@ -382,11 +394,11 @@ class EventController extends Controller
                             [$nowStr]
                         ),
                         'berlangsung' => $q->whereRaw(
-                            "? BETWEEN CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) AND CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME)",
+                            "? BETWEEN CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) AND CAST(CONVERT(VARCHAR(10), COALESCE(event.tanggal_selesai_event, event.tanggal_event), 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME)",
                             [$nowStr]
                         ),
                         'selesai' => $q->whereRaw(
-                            "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME) < ?",
+                            "CAST(CONVERT(VARCHAR(10), COALESCE(event.tanggal_selesai_event, event.tanggal_event), 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME) < ?",
                             [$nowStr]
                         ),
                         default => null,
@@ -420,7 +432,7 @@ class EventController extends Controller
                     };
                     return $badgeKategori !== '' ? "{$lokasi} <br/> {$badgeKategori}" : $lokasi;
                 })
-                ->addColumn('tanggal_event', fn($row) => $row->tanggal_event ? tanggal($row->tanggal_event) : '-')
+                ->addColumn('tanggal_event', fn($row) => $row->formatted_date_range)
                 ->addColumn('waktu_event', function ($row) {
                     $raw_mulai   = $row->getRawOriginal('waktu_mulai_event');
                     $raw_selesai = $row->getRawOriginal('waktu_selesai_event');
@@ -431,6 +443,7 @@ class EventController extends Controller
                 ->addColumn('status', function ($row) use ($tz) {
                     try {
                         $tanggal = $row->getRawOriginal('tanggal_event');
+                        $tanggal_selesai = $row->getRawOriginal('tanggal_selesai_event');
                         $mulai   = $row->getRawOriginal('waktu_mulai_event');
                         $selesai = $row->getRawOriginal('waktu_selesai_event');
 
@@ -442,9 +455,11 @@ class EventController extends Controller
                         $eventStartAt = !empty($mulai)
                             ? Carbon::parse($tanggal . ' ' . $mulai)->setTimezone($tz)
                             : Carbon::parse($tanggal)->startOfDay()->setTimezone($tz);
+                        
+                        $endDate = $tanggal_selesai ?? $tanggal;
                         $eventEndAt   = !empty($selesai)
-                            ? Carbon::parse($tanggal . ' ' . $selesai)->setTimezone($tz)
-                            : Carbon::parse($tanggal)->endOfDay()->setTimezone($tz);
+                            ? Carbon::parse($endDate . ' ' . $selesai)->setTimezone($tz)
+                            : Carbon::parse($endDate)->endOfDay()->setTimezone($tz);
 
                         if ($nowCarbon->lt($eventStartAt)) {
                             return '<span class="badge badge-warning">Mendatang</span>';
@@ -526,6 +541,10 @@ class EventController extends Controller
 
             $currData->id = $req->input('id');
             $currData->eventkategori_id = encid($currData->eventkategori_id);
+
+            if ($currData->tanggal_selesai_event && $currData->tanggal_event !== $currData->tanggal_selesai_event) {
+                $currData->tanggal_event = $currData->tanggal_event . ' s/d ' . $currData->tanggal_selesai_event;
+            }
 
             return response()->json(['status' => true, 'message' => 'Data loaded', 'data' => $currData]);
         } else if ($param1 == 'kategori-detail') {

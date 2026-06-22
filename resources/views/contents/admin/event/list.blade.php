@@ -18,8 +18,7 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.event.tabs')
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false"
-            :server_side="true" :default_order="[[2, 'desc']]"
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" :server_side="true" :default_order="[[2, 'desc']]"
             jf-data="event" jf-list="datatable" data-cy="table-event-list">
             @slot('action')
                 <x-btn type="primary" class="act-add me-2" jf-add="event" data-cy="btn-tambah-event">
@@ -34,9 +33,8 @@
                     @if ($hiddenFromCivitas)
                         <div class="col-md-3">
                             <label class="form-label fs-7 fw-semibold">Kategori Event</label>
-                            <select id="filterKategori" name="filter_kategori"
-                                class="form-select form-select-sm" data-control="select2"
-                                data-placeholder="Semua Kategori" data-allow-clear="true"
+                            <select id="filterKategori" name="filter_kategori" class="form-select form-select-sm"
+                                data-control="select2" data-placeholder="Semua Kategori" data-allow-clear="true"
                                 data-cy="select-filter-kategori-event">
                                 <option value="">Semua Kategori</option>
                                 @foreach ($kategoriOptions as $row)
@@ -48,9 +46,8 @@
                     <div class="col-md-3">
                         <label class="form-label fs-7 fw-semibold">Kategori Lokasi</label>
                         <select id="filter_kategori_lokasi_event" name="filter_kategori_lokasi"
-                            class="form-select form-select-sm" data-control="select2"
-                            data-placeholder="Semua Kategori Lokasi" data-allow-clear="true"
-                            data-cy="select-filter-event-kategori-lokasi">
+                            class="form-select form-select-sm" data-control="select2" data-placeholder="Semua Kategori Lokasi"
+                            data-allow-clear="true" data-cy="select-filter-event-kategori-lokasi">
                             <option value="">Semua Kategori Lokasi</option>
                             <option value="dalam_kampus">Dalam Kampus</option>
                             <option value="luar_kampus">Luar Kampus</option>
@@ -58,9 +55,8 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fs-7 fw-semibold">Status</label>
-                        <select id="filter_status_event" name="filter_status"
-                            class="form-select form-select-sm" data-control="select2"
-                            data-placeholder="Semua Status" data-allow-clear="true"
+                        <select id="filter_status_event" name="filter_status" class="form-select form-select-sm"
+                            data-control="select2" data-placeholder="Semua Status" data-allow-clear="true"
                             data-cy="select-filter-event-status">
                             <option value="">Semua Status</option>
                             <option value="mendatang">Mendatang</option>
@@ -106,16 +102,24 @@
             </div>
             <div class="row">
                 <div class="col-md-4 mb-4">
-                    <x-form.input type="date" label="Tanggal Event" name="tanggal_event" value="" required
-                        data-cy="input-tanggal_event"></x-form.input>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label class="form-label fs-7 fw-semibold mb-0 required">Tanggal Event</label>
+                        <div class="form-check form-switch form-check-custom form-check-solid form-check-sm">
+                            <input class="form-check-input border border-gray-400" type="checkbox" id="is_range"
+                                value="1" />
+                            <label class="form-check-label fs-8 text-black" for="is_range">Lebih dari 1 Hari?</label>
+                        </div>
+                    </div>
+                    <input type="text" class="form-control form-control-sm" name="tanggal_event" required
+                        data-cy="input-tanggal_event" placeholder="Pilih tanggal" />
                 </div>
                 <div class="col-md-4 mb-4">
                     <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value="" required
                         data-cy="input-waktu_mulai_event"></x-form.input>
                 </div>
                 <div class="col-md-4 mb-4">
-                    <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value="" required
-                        data-cy="input-waktu_selesai_event"></x-form.input>
+                    <x-form.input type="time" label="Waktu Selesai" name="waktu_selesai_event" value=""
+                        required data-cy="input-waktu_selesai_event"></x-form.input>
                 </div>
             </div>
             <div class="mb-4" id="field-link-dokumentasi" style="display: none;">
@@ -160,7 +164,25 @@
 
         jForm.init({
             name: "event",
-            base_url: `{{ route('app.event.index') }}`
+            base_url: `{{ route('app.event.index') }}`,
+            onEdit: function(data) {
+                if (data && data.tanggal_event) {
+                    let isRange = typeof data.tanggal_event === 'string' && data.tanggal_event.includes(
+                        ' s/d ');
+                    $('#is_range').prop('checked', isRange).trigger('change');
+
+                    let fp = document.querySelector('input[name="tanggal_event"]')._flatpickr;
+                    if (fp) {
+                        let dates = data.tanggal_event;
+                        if (isRange) {
+                            dates = dates.split(' s/d ');
+                        }
+                        fp.setDate(dates, true);
+                    } else {
+                        $('input[name="tanggal_event"]').val(data.tanggal_event);
+                    }
+                }
+            }
         });
 
         $(document).on('click', '[jf-edit]', function() {
@@ -171,26 +193,48 @@
             toggleDocumentationField(false);
             $('input[name="kategori_lokasi"]').prop('checked', false);
             $('input[name="jenis_kegiatan"]').prop('checked', false);
+            $('#is_range').prop('checked', false).trigger('change');
+            let fp = document.querySelector('input[name="tanggal_event"]')._flatpickr;
+            if (fp) fp.clear();
         });
 
-        $(document).on('jform:detail:loaded', function(e, data) {
-            if (data && data.kategori_lokasi) {
-                $('input[name="kategori_lokasi"][value="' + data.kategori_lokasi + '"]').prop('checked', true);
+        let fpInstance;
+
+        function initFlatpickr(isRange) {
+            if (fpInstance) {
+                fpInstance.destroy();
             }
-            if (data && data.jenis_kegiatan) {
-                $('input[name="jenis_kegiatan"][value="' + data.jenis_kegiatan + '"]').prop('checked', true);
-            }
+            fpInstance = $('input[name="tanggal_event"]').flatpickr({
+                mode: isRange ? 'range' : 'single',
+                altInput: true,
+                altFormat: 'd F Y',
+                dateFormat: 'Y-m-d',
+                locale: {
+                    rangeSeparator: ' s/d '
+                },
+                allowInput: true
+            });
+        }
+
+        $(document).ready(function() {
+            initFlatpickr(false);
+
+            $('#is_range').on('change', function() {
+                initFlatpickr(this.checked);
+            });
         });
 
         $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
             var vals = {
-                filter_kategori:        $('#filterKategori').val()                || '',
+                filter_kategori: $('#filterKategori').val() || '',
                 filter_kategori_lokasi: $('#filter_kategori_lokasi_event').val() || '',
-                filter_status:          $('#filter_status_event').val()          || '',
+                filter_status: $('#filter_status_event').val() || '',
             };
             $.extend(data, vals);
 
-            var activeCount = Object.values(vals).filter(function(v) { return v !== ''; }).length;
+            var activeCount = Object.values(vals).filter(function(v) {
+                return v !== '';
+            }).length;
             var $badge = $('#dataTableBuilder-filter-badge');
             if (activeCount > 0) {
                 $badge.text(activeCount).removeClass('d-none');
