@@ -353,6 +353,8 @@ class EventController extends Controller
             $filterKategoriLokasi = $req->input('filter_kategori_lokasi', '');
             $filterStatus         = $req->input('filter_status', '');
             $filterKategori       = $req->input('filter_kategori', '');
+            $filterDateFrom       = $req->input('filter_date_from', '');
+            $filterDateTo         = $req->input('filter_date_to', '');
 
             $rolesCanViewAll = UserRole::getAdminEksekutifSecurityRoles();
             $activeRole = getActiveRole();
@@ -385,6 +387,12 @@ class EventController extends Controller
                 })
                 ->when(!empty($filterKategoriLokasi), function ($q) use ($filterKategoriLokasi) {
                     $q->where('event.kategori_lokasi', $filterKategoriLokasi);
+                })
+                ->when(!empty($filterDateFrom), function ($q) use ($filterDateFrom) {
+                    $q->whereRaw("COALESCE(event.tanggal_selesai_event, event.tanggal_event) >= ?", [$filterDateFrom]);
+                })
+                ->when(!empty($filterDateTo), function ($q) use ($filterDateTo) {
+                    $q->where('event.tanggal_event', '<=', $filterDateTo);
                 })
                 ->when(!empty($filterStatus), function ($q) use ($filterStatus, $now) {
                     $nowStr = $now->format('Y-m-d H:i:s');

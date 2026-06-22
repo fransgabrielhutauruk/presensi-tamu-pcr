@@ -144,7 +144,7 @@ class Event extends Model
         }
 
         if ($start->month === $end->month && $start->year === $end->year) {
-            return $start->format('d') . ' s/d ' . $end->isoFormat('d MMMM Y');
+            return $start->format('d') . ' s/d ' . $end->isoFormat('D MMMM Y');
         }
 
         if ($start->year === $end->year) {

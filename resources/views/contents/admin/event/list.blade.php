@@ -31,7 +31,7 @@
             @slot('filter')
                 <div class="row g-4">
                     @if ($hiddenFromCivitas)
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <label class="form-label fs-7 fw-semibold">Kategori Event</label>
                             <select id="filterKategori" name="filter_kategori" class="form-select form-select-sm"
                                 data-control="select2" data-placeholder="Semua Kategori" data-allow-clear="true"
@@ -63,6 +63,16 @@
                             <option value="berlangsung">Berlangsung</option>
                             <option value="selesai">Selesai</option>
                         </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fs-7 fw-semibold">Dari Tanggal</label>
+                        <input type="date" id="filter_date_from" name="filter_date_from"
+                            class="form-control form-control-sm" data-cy="input-filter-event-date-from" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label fs-7 fw-semibold">Sampai Tanggal</label>
+                        <input type="date" id="filter_date_to" name="filter_date_to"
+                            class="form-control form-control-sm" data-cy="input-filter-event-date-to" />
                     </div>
                 </div>
             @endslot
@@ -229,6 +239,8 @@
                 filter_kategori: $('#filterKategori').val() || '',
                 filter_kategori_lokasi: $('#filter_kategori_lokasi_event').val() || '',
                 filter_status: $('#filter_status_event').val() || '',
+                filter_date_from: $('#filter_date_from').val() || '',
+                filter_date_to: $('#filter_date_to').val() || '',
             };
             $.extend(data, vals);
 
