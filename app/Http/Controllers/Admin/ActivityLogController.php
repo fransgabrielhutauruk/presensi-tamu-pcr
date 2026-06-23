@@ -4,12 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Spatie\Activitylog\Models\Activity;
 use Yajra\DataTables\Facades\DataTables;
 use Yajra\DataTables\Html\Column;
-use Illuminate\Http\JsonResponse;
-use Carbon\Carbon;
 
 class ActivityLogController extends Controller
 {
@@ -30,8 +31,8 @@ class ActivityLogController extends Controller
         $dataTable = $builder->serverSide(true)
             ->ajax(route('app.log-aktivitas.data') . '/list')
             ->columns([
-                Column::make(['width' => '10%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
-                Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
+                Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'Waktu', 'data' => 'created_at', 'orderable' => true, 'className' => 'text-nowrap']),
                 Column::make(['title' => 'User', 'data' => 'user', 'orderable' => true]),
                 Column::make(['title' => 'Aktivitas', 'data' => 'description', 'orderable' => true]),
@@ -106,9 +107,19 @@ class ActivityLogController extends Controller
                 })
                 ->addColumn('action', function ($row) {
                     $id = $row->id;
-                    return '<button type="button" class="btn btn-sm btn-light-primary" data-cy="btn-action-detail-log-' . $id . '" onclick="viewDetail(' . $id . ')">
-                        <i class="bi bi-eye"></i>
-                    </button>';
+                    $dataAction = [
+                        'id'  => $id,
+                        'btn' => [
+                            [
+                                'action' => 'detail',
+                                'attr'   => [
+                                    'onclick' => 'viewDetail(' . $id . ')',
+                                    'data-cy' => 'btn-action-detail-log-' . $id
+                                ]
+                            ],
+                        ]
+                    ];
+                    return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
                 ->rawColumns(['action'])
                 ->orderColumn('created_at', 'sys_activity_log.created_at $1')

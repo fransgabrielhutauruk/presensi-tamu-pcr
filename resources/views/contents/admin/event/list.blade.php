@@ -59,7 +59,7 @@
                             data-control="select2" data-placeholder="Semua Status" data-allow-clear="true"
                             data-cy="select-filter-event-status">
                             <option value="">Semua Status</option>
-                            <option value="mendatang">Mendatang</option>
+                            <option value="mendatang" {{ request('filter_status') == 'mendatang' ? 'selected' : '' }}>Mendatang</option>
                             <option value="berlangsung">Berlangsung</option>
                             <option value="selesai">Selesai</option>
                         </select>

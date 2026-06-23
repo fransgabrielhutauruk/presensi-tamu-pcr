@@ -33,10 +33,10 @@ class UserController extends Controller
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)->ajax(route('app.user.data') . '/list')->columns([
             Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
+            Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
             Column::make(['title' => 'Nama', 'data' => 'name']),
             Column::make(['title' => 'Email', 'data' => 'email']),
             Column::make(['title' => 'Role', 'data' => 'role', 'orderable' => true, 'searchable' => true]),
-            Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
         ]);
 
         $this->dataView([

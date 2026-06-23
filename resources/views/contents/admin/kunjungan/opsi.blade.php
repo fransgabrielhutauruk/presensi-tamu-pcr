@@ -11,7 +11,8 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.kunjungan.tabs')
-        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="opsi-kunjungan" jf-list="datatable" data-cy="table-opsi-kunjungan-list">
+        <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="opsi-kunjungan" jf-list="datatable"
+            data-cy="table-opsi-kunjungan-list">
             @slot('action')
                 <x-btn type="primary" class="act-add" jf-add="opsi-kunjungan" data-cy="btn-add-opsi-kunjungan">
                     <i class="bi bi-plus fs-2"></i> Tambah Opsi
@@ -29,7 +30,8 @@
                     placeholder="Masukkan nama opsi" data-cy="input-nama_opsi"></x-form.input>
             </div>
             <div class="mb-5">
-                <x-form.textarea name="deskripsi_opsi" label="Deskripsi Opsi" value="" data-cy="textarea-deskripsi_opsi" />
+                <x-form.textarea name="deskripsi_opsi" label="Deskripsi Opsi" value=""
+                    data-cy="textarea-deskripsi_opsi" />
             </div>
             <div class="mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -40,14 +42,14 @@
                 </div>
                 <div class="card">
                     <div class="card-body p-3">
-                        <div class="row mb-3">
-                            <div class="col-5 text-center">
+                        <div class="row mb-3 d-none d-md-flex">
+                            <div class="col-md-5 text-center">
                                 <label class="form-label fs-7 fw-semibold text-muted">Indonesia</label>
                             </div>
-                            <div class="col-5 text-center">
+                            <div class="col-md-5 text-center">
                                 <label class="form-label fs-7 fw-semibold text-muted">English</label>
                             </div>
-                            <div class="col-2 text-center">
+                            <div class="col-md-2 text-center">
                                 <label class="form-label fs-7 fw-semibold text-muted text-center">Aksi</label>
                             </div>
                         </div>
@@ -55,7 +57,8 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="nilai_opsi" id="hiddenNilaiOpsi" value="" data-cy="input-hidden-nilai_opsi">
+                <input type="hidden" name="nilai_opsi" id="hiddenNilaiOpsi" value=""
+                    data-cy="input-hidden-nilai_opsi">
             </div>
         </form>
         @slot('action')
@@ -145,21 +148,22 @@
             const normalizedOption = normalizeOption(option);
 
             return `
-                <div class="mb-3 option-item" data-index="${index}" data-cy="option-item-row-${index}">
-                    <div class="row align-items-center">
-                        <div class="col-5">
+                <div class="mb-3 option-item border-bottom border-md-0 pb-3 pb-md-0" data-index="${index}" data-cy="option-item-row-${index}">
+                    <div class="row align-items-center g-2">
+                        <div class="col-12 col-md-5">
                             <input type="text" class="form-control form-control-sm option-id required"
                                    data-cy="input-option-id-${index}"
-                                   value="${escapeHtml(normalizedOption.id)}" placeholder="e.g: Direktur">
+                                   value="${escapeHtml(normalizedOption.id)}" placeholder="Indonesia (e.g: Direktur)">
                         </div>
-                        <div class="col-5">
+                        <div class="col-12 col-md-5">
                             <input type="text" class="form-control form-control-sm option-en required"
                                    data-cy="input-option-en-${index}"
-                                   value="${escapeHtml(normalizedOption.en)}" placeholder="e.g: Director">
+                                   value="${escapeHtml(normalizedOption.en)}" placeholder="English (e.g: Director)">
                         </div>
-                        <div class="col-2 text-center">
-                            <button type="button" class="btn btn-sm btn-light-danger option-remove w-100" title="Hapus item" data-cy="btn-remove-option-item-${index}">
-                                <i class="ki-outline ki-trash fs-7"></i>
+                        <div class="col-12 col-md-2 text-center">
+                            <button type="button" class="btn btn-sm btn-light-danger option-remove w-100 mt-2 mt-md-0" title="Hapus item" data-cy="btn-remove-option-item-${index}">
+                                <i class="ki-outline ki-trash fs-7 pe-0"></i>
+                                <span class="d-md-none ms-2">Hapus Opsi</span>
                             </button>
                         </div>
                     </div>

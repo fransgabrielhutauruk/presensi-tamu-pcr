@@ -12,7 +12,7 @@
     data-delay="0">
     <div class="row">
         <div class="col-md">
-            <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="user" jf-list="datatable" data-cy="table-user-list" :server_side="true" :default_order="[[1, 'asc']]">
+            <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="user" jf-list="datatable" data-cy="table-user-list" :server_side="true" :default_order="[[2, 'asc']]">
                 @slot('filter')
                     <div class="col-auto">
                         <label class="form-label form-label-sm mb-1">Role</label>

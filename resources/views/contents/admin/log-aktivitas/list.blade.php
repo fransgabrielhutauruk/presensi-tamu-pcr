@@ -76,7 +76,7 @@
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title">Detail Log Aktivitas</h3>
+                    <h5 class="modal-title">Detail Log Aktivitas</h5>
                     <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" data-cy="btn-close-modal-log-detail-header">
                         <i class="bi bi-x-lg"></i>
                     </div>
@@ -107,9 +107,6 @@
                             <pre id="detail-properties" class="bg-light p-3 rounded" style="max-height: 300px; overflow-y: auto;"></pre>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" data-cy="btn-close-modal-log-detail">Tutup</button>
                 </div>
             </div>
         </div>

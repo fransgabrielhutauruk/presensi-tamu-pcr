@@ -109,8 +109,8 @@
                             data-control="select2" data-placeholder="Semua Jenis Kunjungan" data-allow-clear="true"
                             data-cy="select-filter-kunjungan-jenis-kunjungan">
                             <option value="">Semua Jenis Kunjungan</option>
-                            <option value="event">Event</option>
-                            <option value="non_event">Non-Event</option>
+                            <option value="event" {{ request('filter_jenis_kunjungan') == 'event' ? 'selected' : '' }}>Event</option>
+                            <option value="non_event" {{ request('filter_jenis_kunjungan') == 'non_event' ? 'selected' : '' }}>Non-Event</option>
                         </select>
                     </div>
                     <div class="col-md-2">

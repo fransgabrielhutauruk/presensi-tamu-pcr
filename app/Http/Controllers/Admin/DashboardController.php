@@ -60,14 +60,15 @@ class DashboardController extends Controller
                     'value' => \App\Models\Kunjungan::whereNotNull('event_id')->count(),
                     'icon' => 'ki-calendar-tick',
                     'color' => 'info',
-                    'link' => route('app.kunjungan.index')
+                    'link' => route('app.kunjungan.index', ['filter_jenis_kunjungan' => 'event'])
                 ],
                 [
                     'title' => 'Kunjungan Non-Event',
                     'value' => \App\Models\Kunjungan::whereNull('event_id')->count(),
                     'icon' => 'ki-user',
                     'color' => 'primary',
-                    'link' => route('app.kunjungan.index')
+                    'link' => route('app.kunjungan.index', ['filter_jenis_kunjungan' => 'non_event'])
+
                 ],
                 [
                     'title' => 'Validasi Kunjungan',
@@ -88,7 +89,7 @@ class DashboardController extends Controller
                     'value' => \App\Models\Event::whereDate('tanggal_event', '>=', today())->count(),
                     'icon' => 'ki-calendar-add',
                     'color' => 'warning',
-                    'link' => route('app.event.index')
+                    'link' => route('app.event.index', ['filter_status' => 'mendatang'])
                 ],
                 [
                     'title' => 'Total Feedback',
@@ -158,7 +159,17 @@ class DashboardController extends Controller
 
     private function getEventAktifHariIni()
     {
-        return \App\Models\Event::whereDate('tanggal_event', today())
+        $today = today();
+
+        return \App\Models\Event::where(function ($query) use ($today) {
+            $query->whereDate('tanggal_event', $today)
+                ->whereNull('tanggal_selesai_event');
+        })
+            ->orWhere(function ($query) use ($today) {
+                $query->whereNotNull('tanggal_selesai_event')
+                    ->whereDate('tanggal_event', '<=', $today)
+                    ->whereDate('tanggal_selesai_event', '>=', $today);
+            })
             ->orderBy('waktu_mulai_event', 'asc')
             ->get();
     }

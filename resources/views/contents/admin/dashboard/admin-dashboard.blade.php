@@ -2,7 +2,7 @@
     <div class="card-body p-5">
         <div class="row g-5 g-xl-8 mb-5 mb-xl-6">
             @foreach (array_slice($dashboardData['widgets'], 0, 4) as $widget)
-                <div class="col-md-6 col-lg-3">
+                <div class="col-6 col-sm-4 col-md-3">
                     <a href="{{ $widget['link'] ?? '#' }}" class="hoverable card-xl-stretch bg-white"
                         style="text-decoration: none;">
                         <div class="rounded p-5 shadow-sm">
@@ -22,7 +22,7 @@
         </div>
         <div class="row g-5 g-xl-8">
             @foreach (array_slice($dashboardData['widgets'], 4, 4) as $widget)
-                <div class="col-md-6 col-lg-3">
+                <div class="col-6 col-sm-4 col-md-3">
                     <a href="{{ $widget['link'] ?? '#' }}" class="hoverable card-xl-stretch"
                         style="text-decoration: none;">
                         <div class="rounded p-5 shadow-sm">
@@ -63,26 +63,25 @@
             <div class="card-header pt-7">
                 <h3 class="card-title align-items-start flex-column">
                     <span class="card-label fw-bold text-gray-800">Event Aktif Hari Ini</span>
-                    <span
-                        class="text-gray-400 mt-1 fw-semibold fs-6">{{ tanggal(\Carbon\Carbon::now()) }}</span>
+                    <span class="text-gray-400 mt-1 fw-semibold fs-6">{{ tanggal(\Carbon\Carbon::now()) }}</span>
                 </h3>
                 <div class="card-toolbar">
                     <a href="{{ route('app.event.index') }}" class="btn btn-sm btn-light-primary">
                         <i class="ki-outline ki-calendar fs-3"></i>
-                        Lihat Semua Event
+                        <span class="d-none d-sm-inline">Lihat Semua Event</span>
                     </a>
                 </div>
             </div>
             <div class="card-body pt-6">
                 @if ($dashboardData['charts']['eventAktifHariIni']->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-stripped align-middle gs-0 gy-4 my-0">
-                            <thead>
+                    <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table table-stripped gs-0 gy-4 my-0">
+                            <thead style="position: sticky; top: 0; background-color: var(--bs-card-bg); z-index: 1;">
                                 <tr class="fs-7 fw-bold text-gray-500 border-bottom-0">
                                     <th class="p-0 w-50px pb-1">No</th>
                                     <th class="ps-0 min-w-200px pb-1">Nama Event</th>
                                     <th class="text-center min-w-100px pb-1">Waktu</th>
-                                    <th class="text-end min-w-100px pb-1">Lokasi</th>
+                                    <th class="text-start min-w-100px pb-1">Lokasi</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -90,14 +89,9 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td class="ps-0">
-                                            <a href="{{ route('app.event.show', $event->event_id) }}"
-                                                class="text-gray-800 fw-bold text-hover-primary mb-1 fs-6">
+                                            <span class="text-gray-800 fw-bold mb-1 fs-6">
                                                 {{ $event->nama_event }}
-                                            </a>
-                                            @if ($event->deskripsi_event)
-                                                <div class="text-gray-400 fs-7">
-                                                    {{ Str::limit($event->deskripsi_event, 50) }}</div>
-                                            @endif
+                                            </span>
                                         </td>
                                         <td class="text-center">
                                             @if ($event->waktu_mulai_event)
@@ -108,7 +102,7 @@
                                                 <span class="text-gray-400">-</span>
                                             @endif
                                         </td>
-                                        <td class="text-end">
+                                        <td class="text-start">
                                             <span class="text-gray-600">{{ $event->lokasi_event ?? '-' }}</span>
                                         </td>
                                     </tr>

@@ -10,22 +10,26 @@
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
-
         <div class="card mb-5">
             <div class="p-3">
-                <div class="d-flex align-items-center justify-content-between flex-wrap">
-                    <div class="d-flex align-items-center">
-                        <span id="selectedCount" class="badge badge-light fs-7"
+                <div class="d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap gap-3">
+
+                    <div class="d-flex align-items-center justify-content-center">
+                        <span id="selectedCount" class="badge badge-light-primary fs-7 px-3 py-2 flex-shrink-0"
                             data-cy="text-selected-count-validasi-kunjungan">0 dipilih</span>
                     </div>
-                    <div class="d-flex gap-2">
+
+                    <div class="d-flex gap-2 justify-content-center">
                         <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
                             disabled data-cy="btn-bulk-validate-validasi-kunjungan">
-                            <i class="bi bi-check2-circle fs-4"></i> Validasi Terpilih
+                            <i class="bi bi-check2-circle fs-4 Combined me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Validasi Terpilih</span>
                         </button>
+
                         <button type="button" class="btn btn-danger btn-sm" id="bulkRejectBtn" data-action="reject"
                             disabled data-cy="btn-bulk-reject-validasi-kunjungan">
-                            <i class="bi bi-x-circle fs-4"></i> Hapus Terpilih
+                            <i class="bi bi-x-circle fs-4 me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Hapus Terpilih</span>
                         </button>
                     </div>
                 </div>
