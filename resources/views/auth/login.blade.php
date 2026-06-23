@@ -4,15 +4,6 @@
     <div class="row align-items-center" style="min-height: 90vh">
         <div class="col-md-5 justify-content-center mx-auto">
             <div class="position-relative text-center" style="z-index: 10;">
-                <!-- Error Messages -->
-                @if (session('error'))
-                    <div class="alert alert-danger d-flex align-items-center mb-4 wow fadeInUp" data-wow-delay="0.3s"
-                        data-cy="alert-login-error">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        {{ session('error') }}
-                    </div>
-                @endif
-
                 <img src="{{ asset('theme') }}/images/logo-full.webp" alt="Logo Politeknik Caltex Riau"
                     class="wow fadeInOut mb-3 img-fluid w-75 mb-4" data-wow-delay="0.7s">
 

@@ -43,11 +43,12 @@ class AuthController extends Controller
     {
         try {
             [$email, $name, $mockRoles] = $this->resolveGoogleIdentity($request, $provider);
-            if (! Str::endsWith($email, ['@pcr.ac.id', '@mahasiswa.pcr.ac.id'])) {
-                return redirect()->route('login')->with(['error' => 'Hanya email @pcr.ac.id yang diizinkan.']);
-            }
-
+            $isPcrEmail = Str::endsWith($email, ['@pcr.ac.id', '@mahasiswa.pcr.ac.id']);
             $user = User::where('email', $email)->first();
+            
+            if (!$isPcrEmail && !$user) {
+                return redirect()->route('login')->with(['error' => 'Akses ditolak. Gunakan email @pcr.ac.id atau gunakan email yang sudah didaftarkan oleh Admin.']);
+            }
 
             if (!$user) {
                 $user = User::create([

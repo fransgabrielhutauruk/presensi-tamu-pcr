@@ -105,7 +105,7 @@ class UserController extends Controller
             $currData = User::findOrFail(decid($req->input('id')));
 
             $userData = $currData->toArray();
-            $userData['roles'] = $currData->roles()->whereIn('name', ['Admin', 'Eksekutif'])->pluck('name')->toArray();
+            $userData['roles'] = $currData->roles()->whereIn('name', ['Admin', 'Eksekutif', 'Security'])->pluck('name')->toArray();
 
             return response()->json([
                 'status' => true,
