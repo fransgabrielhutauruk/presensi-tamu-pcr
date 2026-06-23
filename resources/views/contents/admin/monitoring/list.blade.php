@@ -75,6 +75,7 @@
                             <option value="">Semua Identitas</option>
                             <option value="non-civitas">Non-Civitas</option>
                             <option value="civitas">Civitas PCR</option>
+                            <option value="vip">Non-Civitas (VIP)</option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -110,11 +111,7 @@
         @php
             $modalSections = [
                 'Data Tamu' => ['nama', 'identitas', 'jenis_kelamin', 'email', 'nomor_telepon'],
-                'Data Kunjungan' => [
-                    'jenis_kunjungan',
-                    'kategori_tujuan',
-                    'transportasi',
-                ],
+                'Data Kunjungan' => ['jenis_kunjungan', 'kategori_tujuan', 'transportasi'],
                 'Data Waktu' => ['tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar', 'waktu_checkout'],
             ];
         @endphp

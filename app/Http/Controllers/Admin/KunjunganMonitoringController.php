@@ -117,7 +117,15 @@ class KunjunganMonitoringController extends Controller
                 });
             })
             ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
-                $q->where('kunjungan.identitas', $filterIdentitas);
+                if ($filterIdentitas === 'vip') {
+                    $q->where('kunjungan.identitas', 'non-civitas')
+                        ->where('kunjungan.is_vip', 1);
+                } elseif ($filterIdentitas === 'non-civitas') {
+                    $q->where('kunjungan.identitas', 'non-civitas')
+                        ->where('kunjungan.is_vip', 0);
+                } else {
+                    $q->where('kunjungan.identitas', $filterIdentitas);
+                }
             });
 
         return DataTables::of($query)

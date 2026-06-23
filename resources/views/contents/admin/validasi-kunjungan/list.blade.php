@@ -57,6 +57,7 @@
                             <option value="">Semua Identitas</option>
                             <option value="non-civitas">Non-Civitas</option>
                             <option value="civitas">Civitas PCR</option>
+                            <option value="vip">Non-Civitas (VIP)</option>
                         </select>
                     </div>
                     <div class="col-md-3">

@@ -361,7 +361,15 @@ class KunjunganController extends Controller
                     });
                 })
                 ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
-                    $q->where('kunjungan.identitas', $filterIdentitas);
+                    if ($filterIdentitas === 'vip') {
+                        $q->where('kunjungan.identitas', 'non-civitas')
+                            ->where('kunjungan.is_vip', 1);
+                    } elseif ($filterIdentitas === 'non-civitas') {
+                        $q->where('kunjungan.identitas', 'non-civitas')
+                            ->where('kunjungan.is_vip', 0);
+                    } else {
+                        $q->where('kunjungan.identitas', $filterIdentitas);
+                    }
                 })
                 ->when(!empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
                     if ($filterJenisKunjungan === 'event') {
@@ -541,9 +549,9 @@ class KunjunganController extends Controller
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
                 'identitas' => match ($currData->identitas) {
-                    'civitas'  => 'Civitas PCR',
-                    'non-civitas'  => 'Non-Civitas',
-                    default        => $currData->identitas ?? '-',
+                    'civitas'     => 'Civitas PCR',
+                    'non-civitas' => $currData->is_vip ? 'Non-Civitas (VIP)' : 'Non-Civitas',
+                    default       => $currData->identitas ?? '-',
                 },
                 'transportasi' => $currData->transportasi ?? '',
                 'status_validasi' => $currData->status_validasi ? 'Sudah validasi' : 'Belum validasi',

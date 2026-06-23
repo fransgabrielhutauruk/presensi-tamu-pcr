@@ -81,7 +81,7 @@ class Kunjungan extends Model
         } elseif ($identitas == 'civitas') {
             return '<span class="badge badge-secondary">Civitas PCR</span>';
         } elseif ($is_vip == true) {
-            return '<span class="badge badge-info">VIP</span>';
+            return '<span class="badge badge-info">Non-Civitas (VIP)</span>';
         } else {
             return '<span class="badge badge-light">' . ($identitas ?? 'Tidak Diketahui') . '</span>';
         }
