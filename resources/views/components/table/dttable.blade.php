@@ -246,9 +246,9 @@
                                     </x-form.select>
                                 </div>
 
-                                <div class="col-3 col-md-2 mt-0">
+                                <div class="col-3 col-md-2 mt-0 mt-md-2">
                                     <x-btn type="light" class="btn-sm btn-secondary add-custom_order w-100"
-                                        text="Tambah" />
+                                        text="Tambah"/>
                                 </div>
                             </div>
                         </form>

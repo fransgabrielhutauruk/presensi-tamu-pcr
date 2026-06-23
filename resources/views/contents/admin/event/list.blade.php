@@ -121,7 +121,7 @@
                         </div>
                     </div>
                     <input type="text" class="form-control form-control-sm" name="tanggal_event" required
-                        data-cy="input-tanggal_event" placeholder="Pilih tanggal" />
+                        data-cy="input-tanggal_event" placeholder="Pilih rentang tanggal" />
                 </div>
                 <div class="col-md-4 mb-4">
                     <x-form.input type="time" label="Waktu Mulai" name="waktu_mulai_event" value="" required

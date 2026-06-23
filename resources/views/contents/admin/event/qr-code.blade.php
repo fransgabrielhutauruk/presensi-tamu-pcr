@@ -6,7 +6,6 @@
     $event = $pageData->event;
     $eventDate = $event->formatted_date_range;
     $eventTime = null;
-    $eventCategory = $event->eventKategori->nama_kategori ?? '-';
     $eventLocation = $event->lokasi_event ?? null;
 
     if ($event->waktu_mulai_event || $event->waktu_selesai_event) {
@@ -24,11 +23,15 @@
     <x-theme.toolbar :breadCrump="$pageData->breadCrump" :title="$pageData->title">
         <x-slot:tools>
             <x-theme.back link="{{ route('app.event.index') }}" />
+
             <x-btn type="button" class="btn btn-success" onclick="printQrCode()">
-                <i class="bi bi-printer fs-4 me-1"></i> Cetak QR Code
+                <i class="bi bi-printer fs-4 me-sm-1"></i>
+                <span class="d-none d-sm-inline">Cetak QR Code</span>
             </x-btn>
+
             <x-btn type="button" class="btn btn-primary" onclick="downloadQrCode()">
-                <i class="bi bi-download fs-4 me-1"></i> Download QR Code
+                <i class="bi bi-download fs-4 me-sm-1"></i>
+                <span class="d-none d-sm-inline">Download QR Code</span>
             </x-btn>
         </x-slot:tools>
     </x-theme.toolbar>
@@ -61,140 +64,125 @@
                 return;
             }
 
+            // 1. Ambil seluruh elemen HTML yang ada di dalam card
+            const cardContainer = document.getElementById('qr-card-container');
+            const cardHTML = cardContainer.innerHTML;
+
+            // 2. Buat template HTML khusus untuk jendela Print
             const printContent = `
                 <!DOCTYPE html>
-                <html>
+                <html lang="id">
                 <head>
-                    <title>QR Code - ${eventName}</title>
+                    <title>Presensi - ${eventName}</title>
+                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
                     <style>
+                        /* Optimasi Kertas A4 */
                         @page {
                             size: A4 portrait;
-                            margin: 2cm;
+                            margin: 1cm; /* Margin diperkecil agar ruang lebih lega */
                         }
-                        * {
-                            margin: 0;
-                            padding: 0;
-                            box-sizing: border-box;
-                        }
+                        
                         body {
-                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                            background: white;
-                            color: #000;
-                            width: 21cm;
-                            height: 29.7cm;
-                            margin: 0 auto;
+                            font-family: system-ui, -apple-system, sans-serif;
+                            background-color: #ffffff;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                            color: #181c32;
                         }
-                        .print-container {
-                            width: 100%;
-                            height: 100%;
-                            display: flex;
-                            flex-direction: column;
+                        
+                        /* --- Polyfill Warna Metronic --- */
+                        .text-primary { color: #009ef7 !important; }
+                        .bg-light { background-color: #f5f8fa !important; }
+                        .text-gray-600 { color: #7e8299 !important; }
+                        .text-gray-700 { color: #5e6278 !important; }
+                        .border-gray-200 { border-color: #eff2f5 !important; }
+                        
+                        /* SEMBUNYIKAN SEMUA TOMBOL SAAT DICETAK */
+                        button, .btn { display: none !important; }
+
+                        .input-group .form-control {
+                            border-radius: 0.5rem !important;
+                            border: 1px solid #e4e6ef;
+                            text-align: center;
+                            font-weight: 600;
+                        }
+
+                        .badge-circle {
+                            width: 25px;
+                            height: 25px;
+                            display: inline-flex;
                             align-items: center;
                             justify-content: center;
-                            padding: 2cm;
+                            border-radius: 50% !important;
+                            padding: 0;
+                            background-color: #009ef7 !important;
+                            color: #ffffff !important;
+                            font-weight: bold;
                         }
-                        .main-title {
-                            font-size: 48px;
-                            font-weight: 700;
-                            color: #000;
-                            text-align: center;
-                            letter-spacing: 8px;
+
+                        /* --- PERBAIKAN LAYOUT PRINT (AGAR MUAT 1 HALAMAN) --- */
+                        
+                        /* 1. Timpa spasi bawaan Bootstrap yang terlalu besar untuk kertas fisik */
+                        .mb-5 { margin-bottom: 1.5rem !important; }
+                        .py-5 { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; }
+                        .p-5 { padding: 1.5rem !important; }
+                        .p-md-5 { padding: 1.5rem !important; }
+                        .mt-4 { margin-top: 1rem !important; }
+                        .gap-4 { gap: 1rem !important; }
+                        
+                        /* 2. Hindari elemen kotak instruksi terpotong di tengah halaman */
+                        .bg-light { 
+                            page-break-inside: avoid; 
+                            break-inside: avoid; 
                         }
-                        .event-title {
-                            font-size: 28px;
-                            font-weight: 600;
-                            color: #000;
-                            margin-bottom: 2cm;
-                            line-height: 1.4;
-                            text-align: center;
-                            max-width: 100%;
-                            word-wrap: break-word;
+                        
+                        /* 3. Perkecil sedikit ukuran font dasar */
+                        html, body {
+                            font-size: 14px;
                         }
-                        .qr-container {
-                            text-align: center;
-                            margin-bottom: 2cm;
-                        }
-                        .qr-code {
-                            width: 12cm;
-                            height: 12cm;
-                            margin: 0 auto;
-                            background: white;
+                        
+                        /* 4. Pusatkan konten tepat di tengah kertas */
+                        .print-wrapper {
+                            padding-top: 0;
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                        }
-                        .qr-code svg {
-                            width: 100%;
-                            height: 100%;
-                        }
-                        .url-container {
-                            text-align: center;
-                            width: 100%;
-                        }
-                        .url-label {
-                            font-size: 18px;
-                            font-weight: 600;
-                            color: #000;
-                            margin-bottom: 0.3cm;
-                        }
-                        .url-text {
-                            font-size: 20px;
-                            font-weight: 500;
-                            color: #000;
-                            word-break: break-all;
-                            line-height: 1.5;
-                            border: 2px solid #000;
-                            border-radius: 10px;
-                            padding: 15px 20px;
-                            display: inline-block;
-                            max-width: 90%;
-                        }
-                        @media print {
-                            body { 
-                                -webkit-print-color-adjust: exact;
-                                print-color-adjust: exact;
-                            }
-                            .print-container {
-                                page-break-after: avoid;
-                            }
+                            min-height: 100vh;
                         }
                     </style>
                 </head>
                 <body>
-                    <div class="print-container">
-                        <div class="main-title">PRESENSI</div>
-                        <div class="event-title">{nama_event}</div>
-                        
-                        <div class="qr-container">
-                            <div class="qr-code">
-                                ${svg.outerHTML}
-                            </div>
-                        </div>
-                        
-                        <div class="url-container">
-                            <div class="url-label">atau akses URL berikut:</div>
-                            <div class="url-text">{url}</div>
-                        </div>
+                    <div class="print-wrapper container">
+                        ${cardHTML}
                     </div>
+                    <script>
+                        window.onload = function() {
+                            setTimeout(function() {
+                                window.print();
+                            }, 800);
+                        };
+                        
+                        window.onafterprint = function() {
+                            window.close();
+                        };
+                    <\/script>
                 </body>
                 </html>
-            `.replace('{nama_event}', eventName).replace('{url}', presensiUrl);
+            `;
 
             const printWindow = window.open('', '_blank');
             if (!printWindow) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Popup Terblokir',
+                    text: 'Browser Anda memblokir popup. Izinkan popup untuk mencetak QR Code.'
+                });
                 return;
             }
 
             printWindow.document.write(printContent);
             printWindow.document.close();
-
-            printWindow.onload = function() {
-                printWindow.focus();
-                printWindow.print();
-                printWindow.onafterprint = function() {
-                    printWindow.close();
-                };
-            };
         }
 
         function downloadQrCode() {
@@ -250,92 +238,167 @@
                 });
             });
         }
+
+        function toggleFullscreen() {
+            const elem = document.getElementById("qr-card-container");
+            const icon = document.getElementById("fullscreen-icon");
+
+            if (!document.fullscreenElement) {
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                icon.classList.remove('bi-arrows-fullscreen');
+                icon.classList.add('bi-fullscreen-exit');
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                icon.classList.remove('bi-fullscreen-exit');
+                icon.classList.add('bi-arrows-fullscreen');
+            }
+        }
+
+        document.addEventListener('fullscreenchange', (event) => {
+            if (!document.fullscreenElement) {
+                const icon = document.getElementById("fullscreen-icon");
+                icon.classList.remove('bi-fullscreen-exit');
+                icon.classList.add('bi-arrows-fullscreen');
+            }
+        });
     </script>
 @endsection
 
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid">
         <div class="row justify-content-center">
-            <div class="col-lg-10 my-3 py-3">
-                <div class="card">
-                    <div class="card-body text-center">
+            <div class="col-lg-10 my-4">
+                <div class="card shadow-sm border-0" id="qr-card-container">
+                    <div class="card-body text-center position-relative py-5">
+
+                        <button type="button"
+                            class="btn btn-icon btn-sm btn-light-primary position-absolute top-0 end-0 m-4 z-index-1"
+                            onclick="toggleFullscreen()" data-bs-toggle="tooltip" title="Tampilkan Fullscreen">
+                            <i class="bi bi-arrows-fullscreen fs-4" id="fullscreen-icon"></i>
+                        </button>
+
                         <div class="mb-5" data-cy="event-detail-info">
-                            <h4 class="text-primary mb-2" data-cy="text-event-title">{{ $pageData->event->nama_event }}</h4>
-                            <div class="text-muted mb-1">
-                                <i class="bi bi-tag"></i> {{ $eventCategory }}
+                            <h2 class="text-primary fw-bolder mb-4" data-cy="text-event-title"
+                                style="letter-spacing: -0.5px;">
+                                {{ $pageData->event->nama_event }}
+                            </h2>
+
+                            <div
+                                class="d-flex flex-wrap justify-content-center align-items-center gap-4 fs-6 fw-semibold text-gray-600">
+                                <span class="d-flex align-items-center">
+                                    <i class="bi bi-calendar text-primary me-2 fs-5"></i> {{ $eventDate }}
+                                </span>
+                                @if ($eventTime)
+                                    <span class="d-flex align-items-center">
+                                        <i class="bi bi-clock text-primary me-2 fs-5"></i> {{ $eventTime }}
+                                    </span>
+                                @endif
+                                @if ($eventLocation)
+                                    <span class="d-flex align-items-center">
+                                        <i class="bi bi-geo-alt text-primary me-2 fs-5"></i> {{ $eventLocation }}
+                                    </span>
+                                @endif
                             </div>
-                            <div class="text-muted mb-1">
-                                <i class="bi bi-calendar"></i>
-                                {{ $eventDate }}
-                            </div>
-                            @if ($eventTime)
-                                <div class="text-muted mb-1">
-                                    <i class="bi bi-clock"></i>
-                                    {{ $eventTime }}
-                                </div>
-                            @endif
-                            @if ($eventLocation)
-                                <div class="text-muted mb-1">
-                                    <i class="bi bi-geo-alt"></i> {{ $eventLocation }}
-                                </div>
-                            @endif
                         </div>
 
-                        <div class="mb-5" id="qr-container" data-cy="qr-event-container">
-                            <div class="border rounded p-4 bg-white d-inline-block">
+                        <div class="mb-5 mt-2" id="qr-container" data-cy="qr-event-container">
+                            <div class="border border-gray-200 shadow-sm rounded-4 p-5 bg-white d-inline-block">
                                 <div id="qr-code" data-cy="qr-event-code"
-                                    style="width: 250px; height: 250px; display: flex; align-items: center; justify-content: center;">
-                                    {!! $pageData->qrCodeSvg !!}
+                                    class="d-flex align-items-center justify-content-center mx-auto"
+                                    style="width: 280px; height: 280px;"> {!! $pageData->qrCodeSvg !!}
                                 </div>
-                                <div class="mt-3">
-                                    <small class="text-muted">Scan QR Code untuk Presensi Event</small>
+                                <div class="mt-4 pt-3 border-top border-gray-200">
+                                    <span class="text-dark fw-bold fs-6">Scan QR Code untuk Presensi</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="alert alert-light" data-cy="event-presensi-link-container">
-                            <h6 class="mb-2">Link Presensi:</h6>
-                            <div class="input-group">
-                                <input type="text" class="form-control" id="presensi-url"
+                        <div class="mb-5 mx-auto col-12 col-md-10 col-xl-7" style="max-width: 750px;"
+                            data-cy="event-presensi-link-container">
+                            <label class="form-label fw-bold text-gray-700 mb-2">Atau akses link alternatif:</label>
+                            <div class="input-group shadow-sm">
+                                <input type="text" class="form-control bg-light" id="presensi-url"
                                     value="{{ $pageData->presensiUrl }}" readonly data-cy="input-event-presensi-link">
-                                <button class="btn btn-outline-primary" type="button" onclick="copyUrl()">
-                                    <i class="bi bi-copy"></i> Copy
+
+                                <button class="btn btn-primary px-4" type="button" onclick="copyUrl()"
+                                    data-bs-toggle="tooltip" title="Salin Link">
+                                    <i class="ki-duotone ki-copy fs-5 text-white"></i>
                                 </button>
                             </div>
                         </div>
 
-                        <div class="mt-4">
-                            <h6 class="mb-3">Instruksi Penggunaan:</h6>
-                            <div class="row text-start">
-                                <div class="col-md-6">
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2">
-                                            <i class="bi bi-1-circle text-primary me-2"></i>
-                                            Tamu scan QR Code menggunakan kamera HP
+                        <div class="mx-auto col-12 col-md-10 col-xl-7  bg-light rounded-4 p-4 p-md-5 text-start">
+                            <h6 class="fw-bold mb-4 text-dark"><i class="bi bi-info-circle me-2"></i>Instruksi Penggunaan:
+                            </h6>
+                            <div class="row g-4">
+                                <div class="col-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="d-flex align-items-start mb-3">
+                                            <span class="badge badge-primary badge-circle flex-shrink-0 me-3">1</span>
+                                            <span class="text-gray-700">Scan QR Code menggunakan kamera HP</span>
                                         </li>
-                                        <li class="mb-2">
-                                            <i class="bi bi-2-circle text-primary me-2"></i>
-                                            Atau buka link presensi secara manual
+                                        <li class="d-flex align-items-start">
+                                            <span class="badge badge-primary badge-circle flex-shrink-0 me-3">2</span>
+                                            <span class="text-gray-700">Atau buka link presensi di atas secara manual
+                                                melalui browser</span>
                                         </li>
                                     </ul>
                                 </div>
-                                <div class="col-md-6">
-                                    <ul class="list-unstyled">
-                                        <li class="mb-2">
-                                            <i class="bi bi-3-circle text-primary me-2"></i>
-                                            Isi form presensi event dengan lengkap
+                                <div class="col-6">
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="d-flex align-items-start mb-3">
+                                            <span class="badge badge-primary badge-circle flex-shrink-0 me-3">3</span>
+                                            <span class="text-gray-700">Isi formulir presensi dengan lengkap</span>
                                         </li>
-                                        <li class="mb-2">
-                                            <i class="bi bi-4-circle text-primary me-2"></i>
-                                            Data presensi tersimpan di sistem
+                                        <li class="d-flex align-items-start">
+                                            <span class="badge badge-primary badge-circle flex-shrink-0 me-3">4</span>
+                                            <span class="text-gray-700">Kirim formulir presensi dan data berhasil
+                                                tersimpan</span>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <style>
+        #qr-card-container:fullscreen {
+            background-color: #ffffff !important;
+            overflow-y: auto;
+        }
+
+        #qr-card-container:fullscreen .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #qr-card-container:-webkit-full-screen {
+            background-color: #ffffff !important;
+            overflow-y: auto;
+        }
+
+        #qr-card-container:-webkit-full-screen .card-body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+    </style>
 @endsection

@@ -9,7 +9,7 @@
         <h1 class="page-heading d-flex flex-column justify-content-center {{ isSnap() ? 'text-gray-600 fw-light fs-4' : 'text-gray-800 fw-bold fs-4' }} m-0">{{ $title }}</h1>
         <x-theme.breadcrump :item="$breadCrump"></x-theme.breadcrump>
     </div>
-    <div class="d-flex align-items-center gap-2 gap-lg-3">
+    <div class="d-flex align-items-center flex-wrap gap-2 gap-lg-3">
         {{ isSnap() ? '' : $tools }}
     </div>
 </div>

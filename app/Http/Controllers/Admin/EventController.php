@@ -166,28 +166,30 @@ class EventController extends Controller
                     'title' => 'No',
                     'data' => 'no',
                     'orderable' => false,
+                    'className' => 'text-center'
                 ]),
                 Column::make([
                     'title' => 'Waktu Kunjungan',
                     'data' => 'waktu_kunjungan',
                     'orderable' => true,
                 ]),
+                Column::make([
+                    'title' => 'Identitas',
+                    'data' => 'identitas',
+                    'orderable' => true,
+                ]),
                 Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
                 Column::make([
                     'title' => 'Jenis Kelamin',
                     'data' => 'jenis_kelamin',
-                    'orderable' => false,
+                    'orderable' => true,
                 ]),
                 Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
-                Column::make([
-                    'title' => 'Identitas',
-                    'data' => 'identitas',
-                    'orderable' => false,
-                ]),
+                Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
                 Column::make([
                     'title' => 'Status',
                     'data' => 'status',
-                    'orderable' => false,
+                    'orderable' => true,
                     'className' => 'text-center'
                 ])
             ]);
@@ -641,7 +643,15 @@ class EventController extends Controller
                     };
                 })
                 ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
-                    $q->where('kunjungan.identitas', $filterIdentitas);
+                    if ($filterIdentitas === 'vip') {
+                        $q->where('kunjungan.identitas', 'non-civitas')
+                            ->where('kunjungan.is_vip', 1);
+                    } elseif ($filterIdentitas === 'non-civitas') {
+                        $q->where('kunjungan.identitas', 'non-civitas')
+                            ->where('kunjungan.is_vip', 0);
+                    } else {
+                        $q->where('kunjungan.identitas', $filterIdentitas);
+                    }
                 });
 
             $start = (int) $req->input('start', 0);
@@ -662,6 +672,9 @@ class EventController extends Controller
                 ->addColumn('nama', fn($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
                 ->addColumn('jenis_kelamin', fn($row) => $row->jenis_kelamin_tamu ?? $row->jenis_kelamin_civitas ?? '-')
                 ->addColumn('email', fn($row) => $row->email_tamu ?? $row->email_civitas ?? '-')
+                ->addColumn('nomor_telepon', function ($row) {
+                    return $row->tamu->nomor_telepon_tamu ?? $row->civitas->nomor_telepon ?? '-';
+                })
                 ->addColumn('identitas', fn($row) => Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip))
                 ->addColumn('waktu_kunjungan', function ($row) {
                     return $row->created_at
@@ -680,9 +693,13 @@ class EventController extends Controller
                     return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
                 ->rawColumns(['checkbox', 'identitas', 'status', 'action'])
+                ->orderColumn('identitas', 'kunjungan.identitas $1')
                 ->orderColumn('nama', 'COALESCE(tamu.nama_tamu, civitas.nama_civitas) $1')
+                ->orderColumn('jenis_kelamin', 'COALESCE(tamu.jenis_kelamin_tamu, civitas.jenis_kelamin) $1')
                 ->orderColumn('email', 'COALESCE(tamu.email_tamu, civitas.email) $1')
+                ->orderColumn('nomor_telepon', 'COALESCE(tamu.nomor_telepon_tamu, civitas.nomor_telepon) $1')
                 ->orderColumn('waktu_kunjungan', 'kunjungan.created_at $1')
+                ->orderColumn('status', 'kunjungan.status_validasi $1')
                 ->filterColumn('nama', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
                         $q->where('tamu.nama_tamu',      'like', "%{$keyword}%")
@@ -699,6 +716,12 @@ class EventController extends Controller
                     $query->where(function ($q) use ($keyword) {
                         $q->where('tamu.email_tamu', 'like', "%{$keyword}%")
                             ->orWhere('civitas.email',      'like', "%{$keyword}%");
+                    });
+                })
+                ->filterColumn('nomor_telepon', function ($query, $keyword) {
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('tamu.nomor_telepon_tamu', 'like', "%{$keyword}%")
+                            ->orWhere('civitas.nomor_telepon', 'like', "%{$keyword}%");
                     });
                 })
                 ->filterColumn('identitas', fn($query, $keyword) =>

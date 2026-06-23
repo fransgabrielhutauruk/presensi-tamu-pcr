@@ -19,40 +19,56 @@
 
         <div class="card mb-5" data-cy="card-event-validasi-summary">
             <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h3 class="mb-1">{{ $event->nama_event }}</h3>
-                        <p class="text-muted mb-0">
-                            <i class="bi bi-calendar me-2"></i>{{ $eventDate }}
-                            <i class="bi bi-geo-alt ms-3 me-2"></i>{{ $eventLocation }}
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+                    <div class="text-center text-sm-start">
+                        <h3 class="mb-1 fs-5 fs-sm-3">{{ $event->nama_event }}</h3>
+                        <p
+                            class="text-muted mb-0 d-flex flex-column flex-sm-row gap-2 gap-sm-3 justify-content-center justify-content-sm-start align-items-center">
+                            <span class="d-flex align-items-center">
+                                <i class="bi bi-calendar me-2 text-primary"></i>{{ $eventDate }}
+                            </span>
+                            <span class="d-flex align-items-center">
+                                <i class="bi bi-geo-alt me-2 text-primary"></i>{{ $eventLocation }}
+                            </span>
                         </p>
                     </div>
-                    <a href="{{ route('app.event.index') }}" class="btn btn-light btn-sm">
-                        <i class="bi bi-arrow-left"></i> Kembali
-                    </a>
                 </div>
             </div>
         </div>
 
         <div class="card mb-5" data-cy="card-bulk-validasi-panel">
             <div class="p-3">
-                <div class="d-flex align-items-center justify-content-between flex-wrap">
-                    <div class="d-flex align-items-center gap-2">
-                        <span id="selectedCount" class="badge badge-light fs-7 me-2" data-cy="text-selected-count">0
-                            dipilih</span>
-                        <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
-                            disabled data-cy="btn-bulk-validate-event">
-                            <i class="bi bi-check2-circle fs-4"></i> Validasi Terpilih
+                <div class="d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap gap-3">
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-center">
+                        <span id="selectedCount" class="badge badge-light-primary fs-7 px-3 py-2 flex-shrink-0"
+                            data-cy="text-selected-count">
+                            0 terpilih
+                        </span>
+
+                        <button type="button" class="btn btn-success btn-sm act-save" id="bulkValidateBtn"
+                            data-action="validate" disabled data-cy="btn-bulk-validate-event">
+                            <i class="bi bi-check2-circle fs-4 me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Validasi Terpilih</span>
                         </button>
+
                         <button type="button" class="btn btn-danger btn-sm" id="bulkRejectBtn" data-action="reject"
                             disabled data-cy="btn-bulk-reject-event">
-                            <i class="bi bi-x-circle fs-4"></i> Hapus Terpilih
+                            <i class="bi bi-x-circle fs-4 me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Hapus Terpilih</span>
                         </button>
                     </div>
-                    <div class="d-flex gap-2">
+
+                    <div class="d-flex align-items-center flex-wrap gap-2 justify-content-center">
+                        <a href="{{ route('app.event.index') }}" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-arrow-left me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Kembali</span>
+                        </a>
+
                         <x-btn.form action="save" text="Tambah Tamu VIP" icon="bi bi-star-fill"
-                            class="d-flex align-items-center act-save" id="addVipGuestBtn" data-cy="btn-add-vip-guest" />
-                        <x-btn.refresh-datatable />
+                            class="d-flex align-items-center flex-shrink-0 act-save" id="addVipGuestBtn"
+                            data-cy="btn-add-vip-guest" />
+
+                        <x-btn.refresh-datatable class="btn btn-sm" />
                     </div>
                 </div>
             </div>
@@ -90,6 +106,7 @@
                             <option value="">Semua Identitas</option>
                             <option value="non-civitas">Non-Civitas</option>
                             <option value="civitas">Civitas PCR</option>
+                            <option value="vip">Non-Civitas (VIP)</option>
                         </select>
                     </div>
                 </div>
@@ -395,16 +412,14 @@
             setDetailField('jenis_kelamin', data.jenis_kelamin);
             setDetailField('email', data.email);
             setDetailField('nomor_telepon', data.nomor_telepon);
-
             setDetailField('kategori_tujuan', data.kategori_tujuan);
             setDetailField('transportasi', data.transportasi);
             setDetailField('identitas', data.identitas);
             setDetailField('tanggal_kunjungan', data.tanggal_kunjungan);
             setDetailField('waktu_kunjungan', data.waktu_kunjungan);
             setDetailField('waktu_estimasi_keluar', data.waktu_estimasi_keluar);
-            
+
             var statusBadge = $('[data-field="status_badge"]');
-            console.log('this', data.status_validasi)
             if (data.status_validasi == 'Sudah validasi') {
                 statusBadge.removeClass('badge-warning').addClass('badge-success').text('Tervalidasi');
                 $('#validateSingleBtn').hide();
