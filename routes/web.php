@@ -28,10 +28,6 @@ require __DIR__ . '/auth.php';
 
 Route::prefix('app')
     ->middleware(['auth', 'active-role:' . implode(',', UserRole::getAllRoles())])->group(function () {
-        Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
-        Route::post('event/store-vip-guest', [EventController::class, 'storeVipGuest'])->name('app.event.store-vip-guest');
-        generalRoute(EventController::class, 'event', 'app');
-
         Route::post('kunjungan/detail-data', function (Request $request) {
             return app(KunjunganController::class)->data($request, 'detail');
         })->name('app.kunjungan.detail-data');
@@ -44,8 +40,6 @@ Route::prefix('app')
             ->name('app.kunjungan.bulk-validasi');
 
         Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifSecurityRoles()))->group(function () {
-            generalRoute(DashboardController::class, 'dashboard', 'app');
-
             Route::get('kunjungan/monitoring', [KunjunganMonitoringController::class, 'index'])
                 ->name('app.kunjungan.monitoring');
             Route::any('kunjungan/data/monitoring-hari-ini/{param2?}/{param3?}/{param4?}', [KunjunganMonitoringController::class, 'data'])
@@ -59,6 +53,16 @@ Route::prefix('app')
 
             generalRoute(KunjunganController::class, 'kunjungan', 'app');
             generalRoute(FeedbackController::class, 'feedback', 'app');
+        });
+
+        Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifStafMahasiswaRoles()))->group(function () {
+            Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
+            Route::post('event/store-vip-guest', [EventController::class, 'storeVipGuest'])->name('app.event.store-vip-guest');
+            generalRoute(EventController::class, 'event', 'app');
+        });
+
+        Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifRoles()))->group(function () {
+            generalRoute(DashboardController::class, 'dashboard', 'app');
         });
 
         Route::middleware('active-role:' . UserRole::ADMIN->value)->group(function () {

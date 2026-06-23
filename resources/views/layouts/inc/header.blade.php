@@ -3,7 +3,7 @@
     <div class="app-header-logo d-flex align-items-center ps-lg-9 ms-2" id="kt_app_header_logo">
         @php
             use App\Enums\UserRole;
-            $showSidebar = hasAnyActiveRole(UserRole::getAdminEksekutifSecurityRoles());
+            $showSidebar = hasAnyActiveRole(UserRole::getAdminEksekutifRoles());
         @endphp
         
         @if($showSidebar)
@@ -209,7 +209,7 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status) {
-                            window.location.href = '/app/event';
+                            window.location.href = data.redirect;
                         } else {
                             alert(data.message || 'Error switching role');
                             button.innerHTML = originalText;

@@ -14,9 +14,7 @@ use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
 {
-    public function __construct(private CypressTestingService $cypressTestingService)
-    {
-    }
+    public function __construct(private CypressTestingService $cypressTestingService) {}
 
     /**
      * Redirect the user to the Google authentication page.
@@ -75,7 +73,7 @@ class AuthController extends Controller
             request()->session()->regenerate();
             $this->setMockActiveRoleIfNeeded($request);
 
-            return redirect()->intended('/app/event');
+            return redirect()->intended(UserRole::getDefaultRoute(getActiveRole()));
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Google login failed!');
         }
@@ -100,14 +98,17 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Role berhasil diubah ke ' . $role
+            'message' => 'Role berhasil diubah ke ' . $role,
+            'redirect' => UserRole::getDefaultRoute($role)
         ]);
     }
 
     private function resolveGoogleIdentity(Request $request, string $provider): array
     {
-        if ($this->cypressTestingService->isMockEnabled($request)
-            && ($request->boolean('cy_mock') || $request->attributes->get('cy_mock', false) === true)) {
+        if (
+            $this->cypressTestingService->isMockEnabled($request)
+            && ($request->boolean('cy_mock') || $request->attributes->get('cy_mock', false) === true)
+        ) {
             return $this->cypressTestingService->resolveMockIdentity($request);
         }
 

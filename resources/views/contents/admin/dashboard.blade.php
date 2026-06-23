@@ -21,8 +21,6 @@
             @include('contents.admin.dashboard.admin-dashboard')
         @elseif($userRole === 'Eksekutif')
             @include('contents.admin.dashboard.eksekutif-dashboard')
-        @elseif($userRole === 'Security')
-            @include('contents.admin.dashboard.security-dashboard')
         @else
             <div class="alert alert-warning">
                 <strong>Perhatian!</strong> Role tidak dikenali atau Anda tidak memiliki akses ke dashboard.

@@ -18,7 +18,7 @@ class KunjunganMonitoringController extends Controller
 
     public function index()
     {
-        $this->title = 'Monitoring Kunjungan Hari Ini';
+        $this->title = 'Monitoring Kunjungan Hari Ini di PCR';
         $this->activeMenu = 'monitoring-kunjungan';
         $this->breadCrump[] = ['title' => 'Monitoring Kunjungan', 'link' => url()->current()];
 
@@ -44,6 +44,7 @@ class KunjunganMonitoringController extends Controller
             'dataTable'               => $dataTable,
             'totalKunjunganHariIni'   => $stats['total'],
             'kunjunganSudahCheckout'  => $stats['checkout'],
+            'kunjunganBelumCheckout'  => $stats['belum_checkout'],
             'tanggalHariIni'          => tanggal($today->toDateString()),
         ]);
 
@@ -71,6 +72,7 @@ class KunjunganMonitoringController extends Controller
             'civitas.jenis_kelamin',
             'kunjungan.event_id',
             'event.nama_event',
+            'event.kategori_lokasi',
             'kunjungan.kategori_tujuan',
             'kunjungan.identitas',
             'kunjungan.is_vip',
@@ -94,6 +96,10 @@ class KunjunganMonitoringController extends Controller
                     ->whereNull('event.deleted_at');
             })
             ->whereDate('kunjungan.created_at', $today)
+            ->where(function ($q) {
+                $q->whereNull('kunjungan.event_id')
+                    ->orWhere('event.kategori_lokasi', 'dalam_kampus');
+            })
             ->when(!empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
                 match ($filterJenisKunjungan) {
                     'event'     => $q->whereNotNull('kunjungan.event_id'),
@@ -217,17 +223,25 @@ class KunjunganMonitoringController extends Controller
             'success'                => true,
             'totalKunjunganHariIni'  => $stats['total'],
             'kunjunganSudahCheckout' => $stats['checkout'],
+            'kunjunganBelumCheckout' => $stats['belum_checkout'],
         ]);
     }
 
     private function getTodayStatistics(): array
     {
         $today = Carbon::today();
-        $totalQuery = Kunjungan::whereDate('created_at', $today);
+
+        $baseQuery = Kunjungan::whereDate('kunjungan.created_at', $today)
+            ->leftJoin('event', 'kunjungan.event_id', '=', 'event.event_id')
+            ->where(function ($q) {
+                $q->whereNull('kunjungan.event_id')
+                    ->orWhere('event.kategori_lokasi', 'dalam_kampus');
+            });
 
         return [
-            'total'    => $totalQuery->count(),
-            'checkout' => (clone $totalQuery)->where('is_checkout', true)->count(),
+            'total' => (clone $baseQuery)->count(),
+            'checkout' => (clone $baseQuery)->where('kunjungan.is_checkout', true)->count(),
+            'belum_checkout' => (clone $baseQuery)->where('kunjungan.is_checkout', false)->count(),
         ];
     }
 }

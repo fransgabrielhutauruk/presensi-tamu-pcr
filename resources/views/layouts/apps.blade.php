@@ -35,7 +35,7 @@
 
 @php
     use App\Enums\UserRole;
-    $showSidebar = hasAnyActiveRole(UserRole::getAdminEksekutifSecurityRoles());
+    $showSidebar = hasAnyActiveRole(UserRole::getAdminEksekutifRoles());
     $sidebarEnabled = $showSidebar ? 'true' : 'false';
 @endphp
 

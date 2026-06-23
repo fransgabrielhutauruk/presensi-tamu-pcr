@@ -16,30 +16,38 @@
 @section('content')
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
-        <div class="row g-5 g-xl-10">
-            <div class="col-md-6 col-lg-6 col-xl-3">
-                <div class="card card-flush mb-5" data-cy="card-total-kunjungan-hari-ini">
-                    <div class="card-header py-5">
-                        <div class="card-title d-flex flex-column">
-                            <div class="d-flex align-items-center">
-                                <span class="fs-2hx fw-bold text-dark me-2 lh-1 ls-n2"
-                                    data-cy="text-total-kunjungan-hari-ini">{{ $pageData->totalKunjunganHariIni }}</span>
-                            </div>
-                            <span class="text-gray-400 pt-1 fw-semibold fs-6">Kunjungan Hari Ini</span>
+        <div class="row g-4 mb-8">
+            <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                <div class="card card-flush h-100 shadow-sm border-0" style="border-top: 4px solid #009ef7 !important;">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-dark lh-1 ls-n2 mb-1"
+                                data-cy="text-total-kunjungan-hari-ini">{{ $pageData->totalKunjunganHariIni }}</span>
+                            <span class="text-gray-500 fw-semibold fs-7 text-uppercase">Total Kunjungan</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-6 col-lg-6 col-xl-3">
-                <div class="card card-flush mb-5" data-cy="card-kunjungan-sudah-checkout">
-                    <div class="card-header py-5">
-                        <div class="card-title d-flex flex-column">
-                            <div class="d-flex align-items-center">
-                                <span class="fs-2hx fw-bold text-primary me-2 lh-1 ls-n2"
-                                    data-cy="text-kunjungan-sudah-checkout">{{ $pageData->kunjunganSudahCheckout }}</span>
-                            </div>
-                            <span class="text-gray-400 pt-1 fw-semibold fs-6">Sudah Checkout</span>
+            <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                <div class="card card-flush h-100 shadow-sm border-0" style="border-top: 4px solid #50cd89 !important;">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-dark lh-1 ls-n2 mb-1"
+                                data-cy="text-kunjungan-sudah-checkout">{{ $pageData->kunjunganSudahCheckout }}</span>
+                            <span class="text-gray-500 fw-semibold fs-7 text-uppercase">Sudah Checkout</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6 col-sm-4 col-md-3 col-xl-2">
+                <div class="card card-flush h-100 shadow-sm border-0" style="border-top: 4px solid #f1416c !important;">
+                    <div class="card-body p-4 d-flex flex-column justify-content-between">
+                        <div class="d-flex flex-column">
+                            <span class="fs-2hx fw-bold text-dark lh-1 ls-n2 mb-1"
+                                data-cy="text-kunjungan-belum-checkout">{{ $pageData->kunjunganBelumCheckout }}</span>
+                            <span class="text-gray-500 fw-semibold fs-7 text-uppercase">Belum Checkout</span>
                         </div>
                     </div>
                 </div>
@@ -101,13 +109,11 @@
         title="Detail Kunjungan">
         @php
             $modalSections = [
-                'Data Tamu' => ['nama', 'jenis_kelamin', 'email', 'nomor_telepon'],
+                'Data Tamu' => ['nama', 'identitas', 'jenis_kelamin', 'email', 'nomor_telepon'],
                 'Data Kunjungan' => [
                     'jenis_kunjungan',
                     'kategori_tujuan',
                     'transportasi',
-                    'status_validasi',
-                    'identitas',
                 ],
                 'Data Waktu' => ['tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar', 'waktu_checkout'],
             ];
@@ -171,9 +177,9 @@
             baseUrl: `{{ route('app.kunjungan.index') }}`,
             statsUrl: `{{ route('app.kunjungan.monitoring.stats') }}`,
             autoRefreshInterval: 300000, // 5 minutes
-            detailFields: ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
-                'kategori_tujuan', 'transportasi', 'status_validasi',
-                'identitas', 'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar',
+            detailFields: ['nama', 'identitas', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
+                'kategori_tujuan', 'transportasi',
+                'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar',
                 'waktu_checkout', 'event_nama', 'event_kategori', 'event_kategori_lokasi', 'event_lokasi'
             ]
         };
@@ -239,10 +245,9 @@
                 dataType: 'json',
                 success: function(response) {
                     if (response.success) {
-                        const cardFlush = $('[jf-data="kunjungan-monitoring"]').closest('.app-container').find(
-                            '.card-flush');
-                        cardFlush.eq(0).find('.fs-2hx').text(response.totalKunjunganHariIni);
-                        cardFlush.eq(1).find('.fs-2hx').text(response.kunjunganSudahCheckout);
+                        $('[data-cy="text-total-kunjungan-hari-ini"]').text(response.totalKunjunganHariIni);
+                        $('[data-cy="text-kunjungan-sudah-checkout"]').text(response.kunjunganSudahCheckout);
+                        $('[data-cy="text-kunjungan-belum-checkout"]').text(response.kunjunganBelumCheckout);
                     }
                 }
             });

@@ -119,48 +119,57 @@
         </div>
         <div class="separator separator-dashed mb-3 my-2"></div>
     @endif
-    <div class="d-flex flex-wrap gap-2 mb-4 {{ !$search && !$order && !$filter && !$export ? 'd-none' : '' }}">
-        <div class="flex-grow-1 d-flex align-items-center justify-content-md-start table-search gap-2">
-            <div class="d-flex align-items-center position-relative w-100 mw-250px {{ !$search ? 'd-none' : '' }}">
-                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-4"></i>
-                <input type="text"
-                    class="form-control border border-gray-200 form-control-solid ps-12 w-100 mw-250px form-control-sm"
-                    id="customSearch-{{ $builder->getTableId() }}" placeholder="Cari.."
-                    data-cy="input-table-search-{{ $builder->getTableId() }}">
-            </div>
-            @if ($order != '')
-                <x-btn type="light"
-                    class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_order"
-                    title="Order Data" data-cy="btn-table-order-{{ $builder->getTableId() }}">
-                    <i class="bi bi-sort-alpha-down fs-3 text-gray-700 pe-0"></i> Orders <span id="order-count"></span>
-                </x-btn>
-            @endif
-            @if ($filter != '')
-                <x-btn type="light"
-                    class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_filter"
-                    title="Filter Data" data-cy="btn-table-filter-{{ $builder->getTableId() }}">
-                    <i class="bi bi-funnel fs-3 text-gray-700 pe-0"></i> Filters <span id="filter-count"></span>
-                </x-btn>
-            @endif
-
-            @if ($export == 'local')
-                <x-btn type="light-success"
-                    class="btn-icon btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel"
-                    title="Download Data" style="display: none">
-                    <i class="bi bi-file-earmark-spreadsheet fs-3 pe-0"></i>
-                </x-btn>
-            @elseif ($export == 'external')
-                <x-btn type="light-success"
-                    class="px-3 btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel_external"
-                    title="Download Data" style="display: none">
-                    <i class="bi bi-file-earmark-excel fs-3 pe-0"></i>
-                </x-btn>
-            @endif
+    <div
+        class="d-flex flex-column flex-md-row gap-3 mb-4 {{ !$search && !$order && !$filter && !$export ? 'd-none' : '' }}">
+        <!-- Search Field -->
+        <div class="position-relative w-100 w-md-250px {{ !$search ? 'd-none' : '' }}">
+            <i class="ki-outline ki-magnifier fs-3 position-absolute top-50 translate-middle-y ms-4"></i>
+            <input type="text"
+                class="form-control border border-gray-200 form-control-solid ps-12 w-100 form-control-sm"
+                id="customSearch-{{ $builder->getTableId() }}" placeholder="Cari.."
+                data-cy="input-table-search-{{ $builder->getTableId() }}">
         </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 w-100 w-md-auto">
-            @if ($action != '')
-                {!! $action !!}
-            @endif
+
+        <!-- Toolbar Buttons -->
+        <div class="d-flex flex-wrap align-items-center gap-2 flex-grow-1 justify-content-between">
+            <div class="d-flex flex-wrap gap-2">
+                @if ($order != '')
+                    <x-btn type="light"
+                        class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_order"
+                        title="Order Data" data-cy="btn-table-order-{{ $builder->getTableId() }}">
+                        <i class="bi bi-sort-alpha-down fs-3 text-gray-700 pe-0"></i> Orders <span
+                            id="order-count"></span>
+                    </x-btn>
+                @endif
+                @if ($filter != '')
+                    <x-btn type="light"
+                        class="px-3 btn-sm text-nowrap border border-gray-200 text-gray-700 {{ $builder->getTableId() }}-trigger_filter"
+                        title="Filter Data" data-cy="btn-table-filter-{{ $builder->getTableId() }}">
+                        <i class="bi bi-funnel fs-3 text-gray-700 pe-0"></i> Filters <span id="filter-count"></span>
+                    </x-btn>
+                @endif
+
+                @if ($export == 'local')
+                    <x-btn type="light-success"
+                        class="btn-icon btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel"
+                        title="Download Data" style="display: none">
+                        <i class="bi bi-file-earmark-spreadsheet fs-3 pe-0"></i>
+                    </x-btn>
+                @elseif ($export == 'external')
+                    <x-btn type="light-success"
+                        class="px-3 btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel_external"
+                        title="Download Data" style="display: none">
+                        <i class="bi bi-file-earmark-excel fs-3 pe-0"></i>
+                    </x-btn>
+                @endif
+            </div>
+
+            <!-- Action Slot -->
+            <div class="d-flex align-items-center gap-2 ms-auto">
+                @if ($action != '')
+                    {!! $action !!}
+                @endif
+            </div>
         </div>
     </div>
 
@@ -216,9 +225,10 @@
                     </div>
                     <div class="card-body px-3 py-4">
                         <form id="{{ $builder->getTableId() }}-order_form">
-                            <div class="w-100" id="{{ $builder->getTableId() }}-order_list"></div>
-                            <div class="row">
-                                <div class="col-6 col-md-6">
+                            <div class="w-100 mb-3" id="{{ $builder->getTableId() }}-order_list"></div>
+
+                            <div class="row g-2 align-items-center">
+                                <div class="col-6 col-md-7">
                                     <x-form.select placeholder="Kolom Data" name="order_kolom" search="true"
                                         class="border-1 text-gray-700">
                                         @foreach ($builder->getColumns() as $key => $item)
@@ -228,14 +238,16 @@
                                         @endforeach
                                     </x-form.select>
                                 </div>
-                                <div class="col-3 col-md-2">
+
+                                <div class="col-3 col-md-3">
                                     <x-form.select placeholder="Order" name="order_type" class="border-1">
-                                        <option value="asc">Asc</option>
-                                        <option value="desc">Desc</option>
+                                        <option value="asc">Asc (&#8593;)</option>
+                                        <option value="desc">Desc (&#8595;)</option>
                                     </x-form.select>
                                 </div>
-                                <div class="col-3 col-md-2">
-                                    <x-btn type="light" class="btn-sm btn-secondary add-custom_order"
+
+                                <div class="col-3 col-md-2 mt-0">
+                                    <x-btn type="light" class="btn-sm btn-secondary add-custom_order w-100"
                                         text="Tambah" />
                                 </div>
                             </div>

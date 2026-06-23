@@ -36,9 +36,6 @@ class DashboardController extends Controller
             case 'Eksekutif':
                 $data = $this->getEksekutifDashboardData();
                 break;
-            case 'Security':
-                $data = $this->getSecurityDashboardData();
-                break;
             default:
                 $data = [];
         }
@@ -145,35 +142,6 @@ class DashboardController extends Controller
                 'statistikKunjungan' => $this->getStatistikKunjungan(),
                 'trendKunjungan' => $this->getTrendKunjungan(),
             ]
-        ];
-    }
-
-    private function getSecurityDashboardData()
-    {
-        return [
-            'title' => 'Dashboard Security',
-            'widgets' => [
-                [
-                    'title' => 'Kunjungan Hari Ini',
-                    'value' => \App\Models\Kunjungan::whereDate('created_at', today())->count(),
-                    'icon' => 'ki-shield-tick',
-                    'color' => 'primary'
-                ],
-                [
-                    'title' => 'Menunggu Validasi',
-                    'value' => \App\Models\Kunjungan::where('status_validasi', false)->count(),
-                    'icon' => 'ki-time',
-                    'color' => 'warning'
-                ],
-                [
-                    'title' => 'Sudah Divalidasi',
-                    'value' => \App\Models\Kunjungan::where('status_validasi', true)
-                        ->whereDate('created_at', today())
-                        ->count(),
-                    'icon' => 'ki-check-circle',
-                    'color' => 'success'
-                ],
-            ],
         ];
     }
 

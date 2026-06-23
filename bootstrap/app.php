@@ -4,6 +4,8 @@ use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\AjaxRequest;
 use App\Http\Middleware\EnableCypressMock;
 use Illuminate\Foundation\Application;
+use App\Enums\UserRole;
+use Illuminate\Http\Request;
 use App\Http\Middleware\CheckActiveRole;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -27,7 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->redirectGuestsTo('/login');
-        $middleware->redirectUsersTo('/app/event');
+        $middleware->redirectUsersTo(fn (Request $request) => UserRole::getDefaultRoute(getActiveRole()));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
