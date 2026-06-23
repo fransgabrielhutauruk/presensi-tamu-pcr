@@ -24,7 +24,7 @@ class FeedbackController extends Controller
 
     public function index()
     {
-        $this->title = 'Kelola Feedback';
+        $this->title = 'Feedback';
         $this->activeMenu = 'feedback';
 
         $builder = app('datatables.html');
@@ -171,18 +171,22 @@ class FeedbackController extends Controller
 
                 'jenis_kunjungan' => !empty($currData->event_id) ? 'Event' : 'Non-Event',
                 'kategori_tujuan' => \App\Enums\KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-',
-                'detail_kunjungan' => ($currData->event_id
+                'tujuan_kunjungan' => ($currData->event_id
                     ? ($currData->event?->nama_event ?? '-')
                     : (\App\Enums\KategoriTujuanEnum::getDescription($currData->kategori_tujuan?->value) ?? '-'))
                     . '<br/>' . Kunjungan::getJenisKunjunganBadge($currData->event_id),
-                'identitas' => $currData->identitas == 'tamu_luar' ? 'Tamu Luar'
-                    : ($currData->identitas == 'civitas_pcr' ? 'Civitas PCR' : ($currData->identitas ?? '')),
+                'identitas' => match ($currData->identitas) {
+                    'civitas'     => 'Civitas PCR',
+                    'non-civitas' => $currData->is_vip ? 'Non-Civitas (VIP)' : 'Non-Civitas',
+                    default       => $currData->identitas ?? '-',
+                },
                 'transportasi' => $currData->transportasi ?? '',
                 'status_validasi' => (bool) $currData->status_validasi,
                 'is_checkout' => (bool) $currData->is_checkout,
 
                 'tanggal_kunjungan' => $currData->created_at ? tanggal($currData->created_at) : '',
-                'waktu_kunjungan' => $currData->created_at ? $currData->created_at->format('H:i') : '-',
+                'waktu_kunjungan' => $currData->created_at ? tanggal($currData->created_at) . ' ' . Carbon::parse($currData->created_at)->format('H:i') : '-',
+                'waktu_feedback' => $feedback->created_at ? tanggal($feedback->created_at) . ' ' . Carbon::parse($feedback->created_at)->format('H:i') : '-',
                 'waktu_keluar' => $currData->waktu_keluar ? \Carbon\Carbon::parse($currData->waktu_keluar)
                     ->format('H:i') : '-',
                 'checkout_time' => $currData->checkout_time ? $currData->checkout_time->format('H:i') : '-',

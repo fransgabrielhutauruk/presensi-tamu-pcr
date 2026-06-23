@@ -24,26 +24,31 @@
                     <form id="columnForm" method="GET" action="{{ route('app.kunjungan.index') }}">
                         <div class="row">
                             <div class="col-12 mb-4">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                                <div
+                                    class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center mb-3 gap-3">
                                     <label class="form-label fw-bold mb-0">Pilih Kolom yang Akan Ditampilkan:</label>
-                                    <div class="form-check">
+                                    <div class="form-check flex-shrink-0">
                                         <input class="form-check-input" type="checkbox" id="checkAll">
                                         <label class="form-check-label fw-bold text-primary" for="checkAll">
                                             Pilih Semua
                                         </label>
                                     </div>
                                 </div>
+
                                 <div class="separator separator-dashed mb-4"></div>
-                                <div class="row">
+
+                                <div class="row g-3">
                                     @foreach ($pageData->availableColumns as $key => $column)
                                         @if (!isset($column['required']) || !$column['required'])
-                                            <div class="col-md-3 mb-2">
+                                            <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                                                 <div class="form-check">
-                                                    <input class="form-check-input column-checkbox" type="checkbox"
-                                                        name="columns[]" value="{{ $key }}"
+                                                    <input class="form-check-input column-checkbox flex-shrink-0"
+                                                        type="checkbox" name="columns[]" value="{{ $key }}"
                                                         id="col_{{ $key }}"
                                                         {{ in_array($key, $pageData->selectedColumns) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="col_{{ $key }}">
+                                                    <label class="form-check-label text-break"
+                                                        for="col_{{ $key }}">
                                                         {{ $column['title'] }}
                                                     </label>
                                                 </div>
@@ -51,15 +56,19 @@
                                         @endif
                                     @endforeach
                                 </div>
+
                             </div>
-                            <div class="col-12">
-                                <button type="button" class="btn btn-sm btn-secondary me-2" onclick="resetColumns()">
+
+                            <div class="col-12 d-flex flex-column flex-sm-row justify-content-sm-end gap-2 mt-2">
+                                <button type="button" class="btn btn-sm btn-secondary w-100 w-sm-auto"
+                                    onclick="resetColumns()">
                                     Reset Default
                                 </button>
-                                <button type="submit" class="btn btn-sm btn-light-primary">
+                                <button type="submit" class="btn btn-sm btn-light-primary w-100 w-sm-auto">
                                     Terapkan
                                 </button>
                             </div>
+
                         </div>
                     </form>
                 </div>
@@ -125,11 +134,11 @@
             $detailSections = [
                 [
                     'title' => 'Data Tamu',
-                    'fields' => ['nama', 'jenis_kelamin', 'email', 'nomor_telepon'],
+                    'fields' => ['nama', 'identitas', 'jenis_kelamin', 'email', 'nomor_telepon'],
                 ],
                 [
                     'title' => 'Data Kunjungan',
-                    'fields' => ['jenis_kunjungan', 'kategori_tujuan', 'transportasi', 'status_validasi', 'identitas'],
+                    'fields' => ['jenis_kunjungan', 'kategori_tujuan', 'transportasi'],
                 ],
                 [
                     'title' => 'Data Waktu',
@@ -139,14 +148,13 @@
 
             $fieldLabels = [
                 'nama' => 'Nama',
+                'identitas' => 'Identitas',
                 'jenis_kelamin' => 'Jenis Kelamin',
                 'email' => 'Email',
                 'nomor_telepon' => 'Nomor Telepon',
                 'jenis_kunjungan' => 'Jenis Kunjungan',
                 'kategori_tujuan' => 'Kategori Tujuan',
                 'transportasi' => 'Transportasi',
-                'status_validasi' => 'Status Validasi',
-                'identitas' => 'Identitas',
                 'tanggal_kunjungan' => 'Tanggal Kunjungan',
                 'waktu_kunjungan' => 'Waktu Kunjungan',
                 'waktu_estimasi_keluar' => 'Waktu Estimasi Keluar',
@@ -273,9 +281,7 @@
 
 @push('scripts')
     <script>
-        const DEFAULT_COLUMNS = ['action', 'waktu_kunjungan', 'identitas', 'nama', 'jenis_kelamin', 'jenis_kunjungan',
-            'status_validasi'
-        ];
+        const DEFAULT_COLUMNS = ['action', 'waktu_kunjungan', 'identitas', 'nama', 'jenis_kelamin', 'jenis_kunjungan'];
 
         function formatLabel(str) {
             return str.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -296,7 +302,7 @@
 
         function populateDetailFields(data) {
             const detailFields = ['nama', 'jenis_kelamin', 'email', 'nomor_telepon', 'jenis_kunjungan',
-                'kategori_tujuan', 'transportasi', 'status_validasi', 'identitas',
+                'kategori_tujuan', 'transportasi', 'identitas',
                 'tanggal_kunjungan', 'waktu_kunjungan', 'waktu_estimasi_keluar', 'checkout_time', 'event_nama',
                 'event_kategori', 'event_kategori_lokasi', 'event_lokasi'
             ];

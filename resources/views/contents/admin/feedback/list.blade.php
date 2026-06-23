@@ -54,11 +54,13 @@
                     <div data-field="nama" data-cy="field-feedback-nama" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
+                    <label class="fw-bold text-muted">Identitas:</label>
+                    <div data-field="identitas" class="fw-bold">-</div>
+                </div>
+                <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Jenis Kelamin:</label>
                     <div data-field="jenis_kelamin" class="fw-bold">-</div>
                 </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Email:</label>
                     <div data-field="email" class="fw-bold">-</div>
@@ -75,21 +77,15 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Waktu Kunjungan:</label>
-                    <div data-field="tanggal_kunjungan" class="fw-bold">-</div>
+                    <div data-field="waktu_kunjungan" class="fw-bold">-</div>
                 </div>
-                <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Identitas:</label>
-                    <div data-field="identitas" class="fw-bold">-</div>
-                </div>
-            </div>
-            <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="fw-bold text-muted">Jenis Kunjungan:</label>
                     <div data-field="jenis_kunjungan" class="fw-bold">-</div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label class="fw-bold text-muted">Detail Kunjungan:</label>
-                    <div data-field="detail_kunjungan" class="fw-bold">-</div>
+                    <label class="fw-bold text-muted">Tujuan Kunjungan:</label>
+                    <div data-field="tujuan_kunjungan" class="fw-bold">-</div>
                 </div>
             </div>
         </div>
@@ -97,6 +93,10 @@
         <div class="mb-7">
             <h5 class="mb-4">Feedback</h5>
             <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label class="fw-bold text-muted">Waktu Feedback Dikirim:</label>
+                    <div data-field="waktu_feedback" data-cy="field-waktu-feedback" class="fw-bold">-</div>
+                </div>
                 <div class="col-md-12 mb-3">
                     <label class="fw-bold text-muted">Rating:</label>
                     <div data-field="rating" data-cy="field-feedback-rating" class="fw-bold fs-2">-</div>
@@ -108,7 +108,6 @@
                 </div>
             </div>
         </div>
-
         @slot('action')
         @endslot
     </x-modal>
@@ -139,6 +138,12 @@
                     }
                 }
                 $('[data-field="rating"]').html(stars);
+
+                if (data.tujuan_kunjungan) {
+                    $('[data-field="tujuan_kunjungan"]').html(data.tujuan_kunjungan);
+                } else {
+                    $('[data-field="tujuan_kunjungan"]').text('-');
+                }
             }
         });
 

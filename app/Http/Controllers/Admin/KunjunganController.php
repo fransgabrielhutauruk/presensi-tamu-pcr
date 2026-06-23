@@ -18,7 +18,7 @@ class KunjunganController extends Controller
 {
     public function index(Request $request)
     {
-        $this->title = 'Kelola Kunjungan';
+        $this->title = 'Kunjungan';
         $this->activeMenu = 'kunjungan';
         $this->breadCrump[] = ['title' => 'Kunjungan', 'link' => route('app.kunjungan.index')];
 
@@ -80,8 +80,6 @@ class KunjunganController extends Controller
                 'data' => 'is_checkout',
                 'orderable' => true,
             ],
-            'event_nama' => ['title' => 'Nama Event', 'data' => 'event_nama', 'orderable' => true],
-            'event_kategori' => ['title' => 'Kategori Event', 'data' => 'event_kategori', 'orderable' => true]
         ];
 
         $defaultColumns = ['action', 'no', 'waktu_kunjungan', 'identitas', 'nama', 'jenis_kelamin',  'jenis_kunjungan'];
@@ -427,12 +425,6 @@ class KunjunganController extends Controller
                 ->addColumn('is_checkout', function ($row) {
                     return Kunjungan::getStatusCheckoutBadge($row->is_checkout);
                 })
-                ->addColumn('event_nama', function ($row) {
-                    return $row->event->nama_event ?? '-';
-                })
-                ->addColumn('event_kategori', function ($row) {
-                    return $row->event->eventKategori->nama_kategori ?? '-';
-                })
                 ->addColumn('action', function ($row) {
                     $id = encid($row->kunjungan_id);
                     $dataAction = [
@@ -457,8 +449,6 @@ class KunjunganController extends Controller
                 ->orderColumn('transportasi',    'transportasi $1')
                 ->orderColumn('waktu_keluar',    'waktu_keluar $1')
                 ->orderColumn('checkout_time',   'checkout_time $1')
-                ->orderColumn('event_nama',      'event.nama_event $1')
-                ->orderColumn('event_kategori',   'event_kategori.nama_kategori $1')
                 ->filterColumn('waktu_kunjungan', fn($query, $keyword) =>
                 dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
                 ->filterColumn('nama', function ($query, $keyword) {

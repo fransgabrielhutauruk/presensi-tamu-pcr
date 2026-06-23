@@ -1,7 +1,7 @@
 <ul class="nav nav-tabs nav-line-tabs nav-line-tabs-2x mb-5 fs-6">
     <li class="nav-item">
         <a class="nav-link {{ $pageData->activeMenu == 'kunjungan' ? 'active' : '' }}"
-            href="{{ route('app.kunjungan.index') }}" data-cy="tab-kunjungan-list">Kelola Semua Kunjungan</a>
+            href="{{ route('app.kunjungan.index') }}" data-cy="tab-kunjungan-list">Semua Kunjungan</a>
     </li>
     @if (hasAnyActiveRole([\App\Enums\UserRole::ADMIN->value]))
     <li class="nav-item">

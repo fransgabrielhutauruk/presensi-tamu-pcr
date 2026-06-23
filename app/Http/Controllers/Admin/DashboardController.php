@@ -115,7 +115,7 @@ class DashboardController extends Controller
     private function getEksekutifDashboardData()
     {
         return [
-            'title' => 'Dashboard Eksekutif',
+            'title' => 'Dashboard Eksekutif (Microsoft Power BI)',
             'widgets' => [
                 [
                     'title' => 'Kunjungan Hari Ini',
