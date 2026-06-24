@@ -44,7 +44,15 @@ class KunjunganEventController extends Controller
         $currentDate = now()->format('Y-m-d');
 
         $query = Event::query()
-            ->where('tanggal_event', '=', $currentDate);
+            ->where(function ($q) use ($currentDate) {
+                $q->whereDate('tanggal_event', $currentDate)
+                    ->whereNull('tanggal_selesai_event');
+            })
+            ->orWhere(function ($q) use ($currentDate) {
+                $q->whereNotNull('tanggal_selesai_event')
+                    ->whereDate('tanggal_event', '<=', $currentDate)
+                    ->whereDate('tanggal_selesai_event', '>=', $currentDate);
+            });
 
         if ($request->has('kategori_lokasi') && in_array($request->kategori_lokasi, ['dalam_kampus', 'luar_kampus'])) {
             $query->where('kategori_lokasi', $request->kategori_lokasi);
@@ -249,7 +257,7 @@ class KunjunganEventController extends Controller
                 'status' => false,
                 'source' => self::SOURCE_NOT_FOUND,
                 'identifier_type' => $identifierType,
-                'message' => 'Data tidak ditemukan di database lokal',
+                'message' => 'Data tidak ditemukan. Silahkan isi data.',
                 'autofilled_fields' => [],
             ]);
         } catch (Throwable $exception) {
@@ -329,7 +337,7 @@ class KunjunganEventController extends Controller
                 'source' => self::SOURCE_NOT_FOUND,
                 'identifier_type' => 'nip',
                 'autofilled_fields' => [],
-                'message' => 'Gagal mengambil data. Lengkapi data yang belum terisi.',
+                'message' => 'Data tidak ditemukan. Silahkan isi seluruh data di bawah.',
                 'http_code' => 404,
             ];
         }
@@ -403,7 +411,7 @@ class KunjunganEventController extends Controller
                 'source' => self::SOURCE_NOT_FOUND,
                 'identifier_type' => 'nim',
                 'autofilled_fields' => [],
-                'message' => 'Data mahasiswa dengan NIM tersebut tidak ditemukan',
+                'message' => 'Data tidak ditemukan. Silahkan isi seluruh data di bawah.',
                 'http_code' => 404,
             ];
         }
@@ -442,12 +450,14 @@ class KunjunganEventController extends Controller
 
     private function isEventExpired(Event $event): bool
     {
-        $eventDate = $event->tanggal_event;
         $currentDate = now()->format('Y-m-d');
 
-        return $eventDate && $eventDate < $currentDate;
-    }
+        if (!empty($event->tanggal_selesai_event)) {
+            return $event->tanggal_selesai_event < $currentDate;
+        }
 
+        return $event->tanggal_event && $event->tanggal_event < $currentDate;
+    }
     private function buildTamuData(Request $request): array
     {
         return [

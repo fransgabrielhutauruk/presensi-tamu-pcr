@@ -210,6 +210,16 @@
                 clearLookupFeedback();
             });
 
+            nimNipInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.keyCode === 13) {
+                    e.preventDefault();
+                    
+                    if (btnLookup.style.display !== 'none' && !btnLookup.disabled) {
+                        btnLookup.click();
+                    }
+                }
+            });
+
             async function runLookupFlow(nimNip) {
                 setLookupLoading(true);
                 clearLookupFeedback();
