@@ -300,7 +300,7 @@ class KunjunganEventController extends Controller
         } catch (Throwable $exception) {
             Log::error('Error fetching external data: ' . $exception->getMessage());
 
-            return $this->jsonServerErrorResponse('Terjadi kesalahan saat mengambil data', self::SOURCE_EXTERNAL_ERROR);
+            return $this->jsonServerErrorResponse('Terjadi kesalahan saat mengambil data. Silahkan isi seluruh data di bawah.', self::SOURCE_EXTERNAL_ERROR);
         }
     }
 
