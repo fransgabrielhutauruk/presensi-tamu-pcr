@@ -208,16 +208,16 @@ class KunjunganMonitoringController extends Controller
                 });
             })
             ->filterColumn('jam_kedatangan', fn($query, $keyword) =>
-            $query->whereRaw("CONVERT(VARCHAR(8), kunjungan.created_at, 108) LIKE ?", ["%{$keyword}%"]))
+            $query->whereRaw("DATE_FORMAT(kunjungan.created_at, '%H:%i:%s') LIKE ?", ["%{$keyword}%"]))
             ->filterColumn('waktu_keluar', fn($query, $keyword) =>
-            $query->whereRaw("CONVERT(VARCHAR(5), kunjungan.waktu_keluar, 108) LIKE ?", ["%{$keyword}%"]))
+            $query->whereRaw("DATE_FORMAT(kunjungan.waktu_keluar, '%H:%i') LIKE ?", ["%{$keyword}%"]))
             ->filterColumn('waktu_checkout', function ($query, $keyword) {
                 $lc = strtolower(trim($keyword));
                 if (str_contains($lc, 'belum')) {
                     $query->where('kunjungan.is_checkout', false);
                 } else {
                     $query->where('kunjungan.is_checkout', true)
-                        ->whereRaw("CONVERT(VARCHAR(8), kunjungan.checkout_time, 108) LIKE ?", ["%{$keyword}%"]);
+                        ->whereRaw("DATE_FORMAT(kunjungan.checkout_time, '%H:%i:%s') LIKE ?", ["%{$keyword}%"]);
                 }
             })
             ->toJson();

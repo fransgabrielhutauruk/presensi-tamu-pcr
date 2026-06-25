@@ -421,7 +421,7 @@ function convertFileSize($size = 0, $unit = 'KB')
 
 /**
  * Fungsi helper untuk filterColumn DataTables pada kolom tanggal/waktu dengan keyword bahasa Indonesia.
- * Mengkonversi nama bulan Indonesia ke angka sebelum melakukan LIKE query menggunakan CONVERT SQL Server.
+ * Mengkonversi nama bulan Indonesia ke angka sebelum melakukan LIKE query menggunakan DATE_FORMAT MySQL.
  *
  * Penggunaan:
  *   ->filterColumn('waktu_kunjungan', fn($q, $kw) => dtFilterByDateKeyword($q, $kw, 'kunjungan.created_at'))
@@ -430,7 +430,7 @@ function convertFileSize($size = 0, $unit = 'KB')
  * @param  mixed  $query   Eloquent / query builder instance
  * @param  string $keyword Keyword yang diinput user pada search DataTables
  * @param  string $column  Ekspresi kolom SQL lengkap (mis: "kunjungan.created_at", "event.tanggal_event")
- * @param  int    $length  Panjang VARCHAR hasil CONVERT: 20 untuk DATETIME, 10 untuk DATE saja
+ * @param  int    $length  Panjang hasil: 20 untuk DATETIME, 10 untuk DATE saja
  * @return void
  */
 function dtFilterByDateKeyword($query, string $keyword, string $column, int $length = 20): void
@@ -449,5 +449,9 @@ function dtFilterByDateKeyword($query, string $keyword, string $column, int $len
         }
     }
 
-    $query->whereRaw("CONVERT(VARCHAR({$length}), {$column}, 120) LIKE ?", ["%{$lc}%"]);
+    if ($length == 10) {
+        $query->whereRaw("DATE_FORMAT({$column}, '%Y-%m-%d') LIKE ?", ["%{$lc}%"]);
+    } else {
+        $query->whereRaw("DATE_FORMAT({$column}, '%Y-%m-%d %H:%i:%s') LIKE ?", ["%{$lc}%"]);
+    }
 }
