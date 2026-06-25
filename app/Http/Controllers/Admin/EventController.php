@@ -398,21 +398,41 @@ class EventController extends Controller
                 })
                 ->when(!empty($filterStatus), function ($q) use ($filterStatus, $now) {
                     $nowStr = $now->format('Y-m-d H:i:s');
-                    match ($filterStatus) {
-                        'mendatang' => $q->whereRaw(
-                            "CAST(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')) AS DATETIME) > ?",
-                            [$nowStr]
-                        ),
-                        'berlangsung' => $q->whereRaw(
-                            "? BETWEEN CAST(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')) AS DATETIME) AND CAST(CONCAT(DATE_FORMAT(COALESCE(event.tanggal_selesai_event, event.tanggal_event), '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')) AS DATETIME)",
-                            [$nowStr]
-                        ),
-                        'selesai' => $q->whereRaw(
-                            "CAST(CONCAT(DATE_FORMAT(COALESCE(event.tanggal_selesai_event, event.tanggal_event), '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')) AS DATETIME) < ?",
-                            [$nowStr]
-                        ),
-                        default => null,
-                    };
+                    $driver = DB::connection()->getDriverName();
+
+                    if ($driver === 'sqlsrv') {
+                        match ($filterStatus) {
+                            'mendatang' => $q->whereRaw(
+                                "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) > ?",
+                                [$nowStr]
+                            ),
+                            'berlangsung' => $q->whereRaw(
+                                "? BETWEEN CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) AND CAST(CONVERT(VARCHAR(10), COALESCE(event.tanggal_selesai_event, event.tanggal_event), 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME)",
+                                [$nowStr]
+                            ),
+                            'selesai' => $q->whereRaw(
+                                "CAST(CONVERT(VARCHAR(10), COALESCE(event.tanggal_selesai_event, event.tanggal_event), 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME) < ?",
+                                [$nowStr]
+                            ),
+                            default => null,
+                        };
+                    } else {
+                        match ($filterStatus) {
+                            'mendatang' => $q->whereRaw(
+                                "STR_TO_DATE(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')), '%Y-%m-%d %H:%i:%s') > ?",
+                                [$nowStr]
+                            ),
+                            'berlangsung' => $q->whereRaw(
+                                "? BETWEEN STR_TO_DATE(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')), '%Y-%m-%d %H:%i:%s') AND STR_TO_DATE(CONCAT(DATE_FORMAT(COALESCE(event.tanggal_selesai_event, event.tanggal_event), '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')), '%Y-%m-%d %H:%i:%s')",
+                                [$nowStr]
+                            ),
+                            'selesai' => $q->whereRaw(
+                                "STR_TO_DATE(CONCAT(DATE_FORMAT(COALESCE(event.tanggal_selesai_event, event.tanggal_event), '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')), '%Y-%m-%d %H:%i:%s') < ?",
+                                [$nowStr]
+                            ),
+                            default => null,
+                        };
+                    }
                 });
 
             $start = (int) $req->input('start', 0);
@@ -465,7 +485,7 @@ class EventController extends Controller
                         $eventStartAt = !empty($mulai)
                             ? Carbon::parse($tanggal . ' ' . $mulai)->setTimezone($tz)
                             : Carbon::parse($tanggal)->startOfDay()->setTimezone($tz);
-                        
+
                         $endDate = $tanggal_selesai ?? $tanggal;
                         $eventEndAt   = !empty($selesai)
                             ? Carbon::parse($endDate . ' ' . $selesai)->setTimezone($tz)
@@ -517,28 +537,55 @@ class EventController extends Controller
                 dtFilterByDateKeyword($query, $keyword, 'event.tanggal_event', 10))
                 ->filterColumn('waktu_event', function ($query, $keyword) {
                     $query->where(function ($q) use ($keyword) {
-                        $q->whereRaw("DATE_FORMAT(event.waktu_mulai_event, '%H:%i:%s') LIKE ?",   ["%{$keyword}%"])
-                            ->orWhereRaw("DATE_FORMAT(event.waktu_selesai_event, '%H:%i:%s') LIKE ?", ["%{$keyword}%"]);
+                        $driver = DB::connection()->getDriverName();
+                        if ($driver === 'sqlsrv') {
+                            $q->whereRaw("CONVERT(VARCHAR(8), event.waktu_mulai_event, 108) LIKE ?",   ["%{$keyword}%"])
+                                ->orWhereRaw("CONVERT(VARCHAR(8), event.waktu_selesai_event, 108) LIKE ?", ["%{$keyword}%"]);
+                        } else {
+                            $q->whereRaw("TIME_FORMAT(event.waktu_mulai_event, '%H:%i:%s') LIKE ?",   ["%{$keyword}%"])
+                                ->orWhereRaw("TIME_FORMAT(event.waktu_selesai_event, '%H:%i:%s') LIKE ?", ["%{$keyword}%"]);
+                        }
                     });
                 })
                 ->filterColumn('status', function ($query, $keyword) use ($now) {
                     $lc     = strtolower(trim($keyword));
                     $nowStr = $now->format('Y-m-d H:i:s');
-                    if (str_contains($lc, 'mendatang')) {
-                        $query->whereRaw(
-                            "CAST(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')) AS DATETIME) > ?",
-                            [$nowStr]
-                        );
-                    } elseif (str_contains($lc, 'berlangsung')) {
-                        $query->whereRaw(
-                            "? BETWEEN CAST(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')) AS DATETIME) AND CAST(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')) AS DATETIME)",
-                            [$nowStr]
-                        );
-                    } elseif (str_contains($lc, 'selesai')) {
-                        $query->whereRaw(
-                            "CAST(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(DATE_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')) AS DATETIME) < ?",
-                            [$nowStr]
-                        );
+                    $driver = DB::connection()->getDriverName();
+
+                    if ($driver === 'sqlsrv') {
+                        if (str_contains($lc, 'mendatang')) {
+                            $query->whereRaw(
+                                "CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) > ?",
+                                [$nowStr]
+                            );
+                        } elseif (str_contains($lc, 'berlangsung')) {
+                            $query->whereRaw(
+                                "? BETWEEN CAST(CONVERT(VARCHAR(10), event.tanggal_event, 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_mulai_event, 108), '00:00:00') AS DATETIME) AND CAST(CONVERT(VARCHAR(10), COALESCE(event.tanggal_selesai_event, event.tanggal_event), 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME)",
+                                [$nowStr]
+                            );
+                        } elseif (str_contains($lc, 'selesai')) {
+                            $query->whereRaw(
+                                "CAST(CONVERT(VARCHAR(10), COALESCE(event.tanggal_selesai_event, event.tanggal_event), 120) + ' ' + COALESCE(CONVERT(VARCHAR(8), event.waktu_selesai_event, 108), '23:59:59') AS DATETIME) < ?",
+                                [$nowStr]
+                            );
+                        }
+                    } else {
+                        if (str_contains($lc, 'mendatang')) {
+                            $query->whereRaw(
+                                "STR_TO_DATE(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')), '%Y-%m-%d %H:%i:%s') > ?",
+                                [$nowStr]
+                            );
+                        } elseif (str_contains($lc, 'berlangsung')) {
+                            $query->whereRaw(
+                                "? BETWEEN STR_TO_DATE(CONCAT(DATE_FORMAT(event.tanggal_event, '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_mulai_event, '%H:%i:%s'), '00:00:00')), '%Y-%m-%d %H:%i:%s') AND STR_TO_DATE(CONCAT(DATE_FORMAT(COALESCE(event.tanggal_selesai_event, event.tanggal_event), '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')), '%Y-%m-%d %H:%i:%s')",
+                                [$nowStr]
+                            );
+                        } elseif (str_contains($lc, 'selesai')) {
+                            $query->whereRaw(
+                                "STR_TO_DATE(CONCAT(DATE_FORMAT(COALESCE(event.tanggal_selesai_event, event.tanggal_event), '%Y-%m-%d'), ' ', COALESCE(TIME_FORMAT(event.waktu_selesai_event, '%H:%i:%s'), '23:59:59')), '%Y-%m-%d %H:%i:%s') < ?",
+                                [$nowStr]
+                            );
+                        }
                     }
                 })
                 ->toJson();
