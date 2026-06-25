@@ -95,10 +95,14 @@ class KunjunganValidasiController extends Controller
             'kunjungan.kunjungan_id',
             'kunjungan.tamu_id',
             'tamu.nama_tamu',
+            'tamu.email_tamu',
             'tamu.jenis_kelamin_tamu',
+            'tamu.nomor_telepon_tamu',
             'kunjungan.civitas_id',
             'civitas.nama_civitas',
             'civitas.jenis_kelamin',
+            'civitas.email',
+            'civitas.nomor_telepon',
             'kunjungan.event_id',
             'kunjungan.identitas',
             'kunjungan.kategori_tujuan',
@@ -170,10 +174,10 @@ class KunjunganValidasiController extends Controller
                 return $row->jenis_kelamin_tamu ?? $row->jenis_kelamin ?? '-';
             })
             ->addColumn('email', function ($row) {
-                return $row->tamu->email_tamu ?? $row->civitas->email ?? '-';
+                return $row->email_tamu ?? $row->email ?? '-';
             })
             ->addColumn('nomor_telepon', function ($row) {
-                return $row->tamu->nomor_telepon_tamu ?? $row->civitas->nomor_telepon ?? '-';
+                return $row->nomor_telepon_tamu ?? $row->nomor_telepon ?? '-';
             })
             ->addColumn('identitas', function ($row) {
                 return Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip);

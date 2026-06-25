@@ -1,7 +1,7 @@
 <x-mail::message>
 Halo {{ $jenisKelamin == 'Laki-laki' ? 'Pak' : 'Bu' }} {{ $namaTamu }},
 
-Terima kasih telah berkunjung ke **Politeknik Caltex Riau**.
+Terima kasih telah berkunjung.
 
 Jika {{ $jenisKelamin == 'Laki-laki' ? 'Bapak' : 'Ibu'}} sudah selesai berkunjung, silakan lakukan checkout atau konfirmasi kepulangan melalui tombol di bawah ini:
 
