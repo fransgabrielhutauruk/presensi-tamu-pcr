@@ -282,7 +282,7 @@
                 }
             });
 
-            $('#datatable').on('draw.dt', function() {
+            $('#dataTableBuilder').on('draw.dt', function() {
                 setTimeout(updateBulkActionPanel, 100);
             });
 
