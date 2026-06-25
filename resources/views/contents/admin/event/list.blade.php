@@ -59,7 +59,8 @@
                             data-control="select2" data-placeholder="Semua Status" data-allow-clear="true"
                             data-cy="select-filter-event-status">
                             <option value="">Semua Status</option>
-                            <option value="mendatang" {{ request('filter_status') == 'mendatang' ? 'selected' : '' }}>Mendatang</option>
+                            <option value="mendatang" {{ request('filter_status') == 'mendatang' ? 'selected' : '' }}>Mendatang
+                            </option>
                             <option value="berlangsung">Berlangsung</option>
                             <option value="selesai">Selesai</option>
                         </select>
@@ -159,19 +160,6 @@
             $(documentationFieldSelector).toggle(Boolean(shouldShow));
         }
 
-        function filterEventTable(kategoriId) {
-            const table = $(eventListTableSelector).DataTable();
-
-            if (!table) {
-                return;
-            }
-
-            const currentUrl = table.ajax.url().split('?')[0];
-            const nextUrl = kategoriId ? `${currentUrl}?kategori=${kategoriId}` : currentUrl;
-
-            table.ajax.url(nextUrl).load();
-        }
-
         jForm.init({
             name: "event",
             base_url: `{{ route('app.event.index') }}`,
@@ -256,7 +244,8 @@
         });
 
         $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filterKategori, #filter_kategori_lokasi_event, #filter_status_event').val('').trigger('change');
+            $('#filterKategori, #filter_kategori_lokasi_event, #filter_status_event, #filter_date_from, #filter_date_to')
+                .val('').trigger('change');
             $('#dataTableBuilder-filter-badge').addClass('d-none');
         });
     </script>

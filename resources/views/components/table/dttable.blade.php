@@ -199,9 +199,6 @@
                         <x-btn type="secondary" text="Reset Filter" class="act-filter_reset btn-sm"
                             data-table="{{ $builder->getTableId() }}"
                             data-cy="btn-table-filter-reset-{{ $builder->getTableId() }}" />
-                        <x-btn type="light-primary" text="Terapkan Filter" class="act-filter_applay btn-sm"
-                            data-table="{{ $builder->getTableId() }}"
-                            data-cy="btn-table-filter-apply-{{ $builder->getTableId() }}" />
                     </div>
                 </div>
             </div>
@@ -248,7 +245,7 @@
 
                                 <div class="col-3 col-md-2 mt-0 mt-md-2">
                                     <x-btn type="light" class="btn-sm btn-secondary add-custom_order w-100"
-                                        text="Tambah"/>
+                                        text="Tambah" />
                                 </div>
                             </div>
                         </form>
@@ -284,31 +281,7 @@
         @endif
     </div>
 
-    <div class="mt-3 {{ $responsive !== true ? 'table-responsive-' : '' }}">
-        <style>
-            .dataTables_length {
-                padding: 0px !important;
-            }
-
-            .dataTables_paginate {
-                padding: 0px !important;
-            }
-
-            .dataTables_info {
-                padding: 0px !important;
-            }
-        </style>
-        @if ($table_card)
-            <style>
-                .table-card-data> :not(caption)>*>* {
-                    padding: 0px !important;
-                }
-
-                .dataTables_scrollHead {
-                    display: none;
-                }
-            </style>
-        @endif
+    <div class="mt-3">
         <div id="tableCard{{ $builder->getTableId() }}" class="row table-card {{ $class }}"
             {{ $attributes }}></div>
         <table
@@ -321,27 +294,47 @@
         </table>
     </div>
 </div>
+
 @push('scripts')
     {{ $builder->scripts() }}
     <script>
-        $(`#{{ $builder->getTableId() }}`).dtTableLaraComp({
-            filter: {{ $filter != '' ? true : 0 }},
-            order: {{ $order != '' ? true : 0 }},
-            checkbox: {{ $checkbox_action != '' || $checkbox ? true : 0 }},
-            checkbox_action: {{ $checkbox_action != '' ? true : 0 }},
-            default_filter: {!! json_encode($default_filter) !!}
-        }).setTitleExport('{{ $title_export }}')
+        $(document).ready(function() {
+            const tableId = `{{ $builder->getTableId() }}`;
 
-        @if ($table_card)
-            let tableCard{{ $builder->getTableId() }} = function() {
-                let content = ''
-                el = $('#{{ $builder->getTableId() }} tbody tr td')
-                $.each(el, function(i, val) {
-                    content += $(val).html().replace('in table', '')
-                })
-                $(`#tableCard{{ $builder->getTableId() }}`).html(content)
-            }
-            tableCard{{ $builder->getTableId() }}();
-        @endif
+            $(`#${tableId}`).dtTableLaraComp({
+                filter: {{ $filter != '' ? true : 0 }},
+                order: {{ $order != '' ? true : 0 }},
+                checkbox: {{ $checkbox_action != '' || $checkbox ? true : 0 }},
+                checkbox_action: {{ $checkbox_action != '' ? true : 0 }},
+                default_filter: {!! json_encode($default_filter) !!}
+            }).setTitleExport('{{ $title_export }}');
+
+            // OTOMATIS TRIGGER REFRESH: Jalankan reload datatables jika ada perubahan input di form filter
+            $(`#${tableId}-filter_form`).on('change', 'select, input[type="checkbox"], input[type="radio"]',
+                function() {
+                    $(`#${tableId}`).DataTable().ajax.reload(null, false);
+                });
+
+            // Beri sedikit toleransi delay mengetik untuk input bertipe teks/date agar tidak spamming request AJAX
+            let filterTimeout;
+            $(`#${tableId}-filter_form`).on('input', 'input[type="text"], input[type="date"]', function() {
+                clearTimeout(filterTimeout);
+                filterTimeout = setTimeout(function() {
+                    $(`#${tableId}`).DataTable().ajax.reload(null, false);
+                }, 400); // 400ms delay setelah berhenti mengetik/memilih tanggal
+            });
+
+            @if ($table_card)
+                let tableCard{{ $builder->getTableId() }} = function() {
+                    let content = ''
+                    el = $('#{{ $builder->getTableId() }} tbody tr td')
+                    $.each(el, function(i, val) {
+                        content += $(val).html().replace('in table', '')
+                    })
+                    $(`#tableCard{{ $builder->getTableId() }}`).html(content)
+                }
+                tableCard{{ $builder->getTableId() }}();
+            @endif
+        });
     </script>
 @endpush
