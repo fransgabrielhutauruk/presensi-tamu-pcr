@@ -17,8 +17,11 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         <div class="row g-4 mb-8">
+
             <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                <div class="card card-flush h-100 shadow-sm border-0" style="border-top: 4px solid #009ef7 !important;">
+                <a href="javascript:void(0)"
+                    class="card card-flush h-100 shadow-sm border-0 hoverable text-decoration-none filter-card-trigger"
+                    style="border-top: 4px solid #009ef7 !important;" data-filter-target="#filterIsCheckout" data-value="">
                     <div class="card-body p-4 d-flex flex-column justify-content-between">
                         <div class="d-flex flex-column">
                             <span class="fs-2hx fw-bold text-dark lh-1 ls-n2 mb-1"
@@ -26,11 +29,13 @@
                             <span class="text-gray-500 fw-semibold fs-7 text-uppercase">Total Kunjungan</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                <div class="card card-flush h-100 shadow-sm border-0" style="border-top: 4px solid #50cd89 !important;">
+                <a href="javascript:void(0)"
+                    class="card card-flush h-100 shadow-sm border-0 hoverable text-decoration-none filter-card-trigger"
+                    style="border-top: 4px solid #50cd89 !important;" data-filter-target="#filterIsCheckout" data-value="1">
                     <div class="card-body p-4 d-flex flex-column justify-content-between">
                         <div class="d-flex flex-column">
                             <span class="fs-2hx fw-bold text-dark lh-1 ls-n2 mb-1"
@@ -38,11 +43,13 @@
                             <span class="text-gray-500 fw-semibold fs-7 text-uppercase">Sudah Checkout</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
 
             <div class="col-6 col-sm-4 col-md-3 col-xl-2">
-                <div class="card card-flush h-100 shadow-sm border-0" style="border-top: 4px solid #f1416c !important;">
+                <a href="javascript:void(0)"
+                    class="card card-flush h-100 shadow-sm border-0 hoverable text-decoration-none filter-card-trigger"
+                    style="border-top: 4px solid #f1416c !important;" data-filter-target="#filterIsCheckout" data-value="0">
                     <div class="card-body p-4 d-flex flex-column justify-content-between">
                         <div class="d-flex flex-column">
                             <span class="fs-2hx fw-bold text-dark lh-1 ls-n2 mb-1"
@@ -50,7 +57,7 @@
                             <span class="text-gray-500 fw-semibold fs-7 text-uppercase">Belum Checkout</span>
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
 
@@ -63,8 +70,10 @@
                         <select id="filterIsCheckout" class="form-select form-select-sm" data-control="select2"
                             data-allow-clear="true" data-placeholder="Semua Status" data-cy="select-filter-checkout-monitoring">
                             <option value="">Semua Status</option>
-                            <option value="0">Belum Checkout</option>
-                            <option value="1">Sudah Checkout</option>
+                            <option value="0" {{ request('filterIsCheckout') == '0' ? 'selected' : '' }}>Belum Checkout
+                            </option>
+                            <option value="1" {{ request('filterIsCheckout') == '1' ? 'selected' : '' }}>Sudah Checkout
+                            </option>
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -226,11 +235,11 @@
             data.details.forEach(detail => {
                 const formattedLabel = formatLabel(detail.kunci);
                 const detailHtml = `<div class="row mb-2">
-                    <div class="col-auto fw-bold">
-                        <span class="text-muted">${formattedLabel}: </span>
-                        <span class="fw-bold">${detail.nilai}</span>
-                    </div>
-                </div>`;
+                        <div class="col-auto fw-bold">
+                            <span class="text-muted">${formattedLabel}: </span>
+                            <span class="fw-bold">${detail.nilai}</span>
+                        </div>
+                    </div>`;
                 detailContainer.append(detailHtml);
             });
         }
@@ -265,6 +274,19 @@
                 updateStats();
             });
 
+            $(document).on('click', '.filter-card-trigger', function(e) {
+                e.preventDefault();
+
+                const targetSelect = $(this).data('filter-target');
+                const filterValue = $(this).data('value'); 
+
+                if ($(targetSelect).length) {
+                    $(targetSelect).val(filterValue).trigger('change');
+
+                    $('#dataTableBuilder').DataTable().ajax.reload(null, false);
+                }
+            });
+
             // Auto-refresh every 5 minutes
             setInterval(function() {
                 $('#dataTableBuilder').DataTable().ajax.reload(null, false);
@@ -286,7 +308,7 @@
         });
 
         $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filterJenisKunjungan, #filterIsCheckout', '#filter_identitas', '#filter_jenis_kelamin').val('')
+            $('#filter_jenis_kunjungan, #filterIsCheckout, #filter_identitas, #filter_jenis_kelamin').val('')
                 .trigger('change');
         });
     </script>
