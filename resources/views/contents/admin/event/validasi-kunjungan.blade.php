@@ -282,12 +282,6 @@
             $(`.dataTableBuilder-trigger_filter #filter-count`).text(count > 0 ? '(' + count + ')' : '');
         });
 
-        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filterStatusValidasi, #filter_identitas')
-                .val('').trigger('change');
-            $('#dataTableBuilder-filter-badge').addClass('d-none');
-        });
-
         $(document).ready(function() {
             $(document).off('click', '[jf-data="kunjungan-event-validasi"] [jf-detail]');
             $(document).on('click', '[jf-data="kunjungan-event-validasi"] [jf-detail]', function(e) {

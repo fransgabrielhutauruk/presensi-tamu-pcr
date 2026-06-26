@@ -253,7 +253,7 @@
                     <div class="card-footer bg-transparent d-flex justify-content-end gap-2 py-4 px-3">
                         <x-btn type="secondary" text="Reset Order" class="act-order_reset btn-sm"
                             data-table="{{ $builder->getTableId() }}" />
-                        <x-btn type="light-primary" text="Terapkan Order" class="act-order_applay btn-sm"
+                        <x-btn type="light-primary" text="Terapkan Order" class="act-order_applay btn-sm d-none"
                             data-table="{{ $builder->getTableId() }}" />
                     </div>
                 </div>
@@ -323,6 +323,29 @@
                     $(`#${tableId}`).DataTable().ajax.reload(null, false);
                 }, 400); // 400ms delay setelah berhenti mengetik/memilih tanggal
             });
+
+            // OTOMATIS TRIGGER ORDER REFRESH
+            $('.add-custom_order').on('click', function() {
+                setTimeout(function() {
+                    $(`.act-order_applay[data-table="${tableId}"]`).trigger('click');
+                }, 100); // Delay 100ms agar library selesai menyusun list DOM
+            });
+
+            // tombol (x), maka otomatis reload juga
+            const orderListArea = document.getElementById(`${tableId}-order_list`);
+            if (orderListArea) {
+                const observer = new MutationObserver(function(mutations) {
+                    // Jika ada item order yang dihapus dari DOM, klik apply
+                    mutations.forEach(function(mutation) {
+                        if (mutation.removedNodes.length > 0) {
+                            $(`.act-order_applay[data-table="${tableId}"]`).trigger('click');
+                        }
+                    });
+                });
+                observer.observe(orderListArea, {
+                    childList: true
+                });
+            }
 
             @if ($table_card)
                 let tableCard{{ $builder->getTableId() }} = function() {

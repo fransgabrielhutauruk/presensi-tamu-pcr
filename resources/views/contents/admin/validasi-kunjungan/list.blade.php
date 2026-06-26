@@ -557,11 +557,5 @@
                 $badge.addClass('d-none');
             }
         });
-
-        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filter_jenis_kelamin_validasi, #filter_identitas_validasi, #filter_jenis_kunjungan_validasi')
-                .val('').trigger('change');
-            $('#dataTableBuilder-filter-badge').addClass('d-none');
-        });
     </script>
 @endpush

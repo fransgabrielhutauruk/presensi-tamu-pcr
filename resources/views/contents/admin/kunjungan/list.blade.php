@@ -396,11 +396,5 @@
                 $badge.addClass('d-none');
             }
         });
-
-        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filter_jenis_kelamin, #filter_identitas, #filter_jenis_kunjungan')
-                .val('').trigger('change');
-            $('#dataTableBuilder-filter-badge').addClass('d-none');
-        });
     </script>
 @endpush

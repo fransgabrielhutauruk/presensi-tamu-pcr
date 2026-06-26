@@ -30,7 +30,7 @@ class KunjunganValidasiController extends Controller
                     'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
                     <input class="form-check-input" type="checkbox" id="checkAllValidasi" data-cy="checkbox-check-all-validasi-kunjungan"></div>',
                     'data' => 'checkbox',
-                    'orderable' => true,
+                    'orderable' => false,
                     'className' => 'text-center',
                     'searchable' => false
                 ]),

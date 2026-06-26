@@ -158,10 +158,5 @@
             var count = Object.values(vals).filter(v => v !== '').length;
             $(`.dataTableBuilder-trigger_filter #filter-count`).text(count > 0 ? '(' + count + ')' : '');
         });
-
-        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filterRating').val('').trigger('change');
-            $('#dataTableBuilder').DataTable().ajax.reload(null, false);
-        });
     </script>
 @endpush
