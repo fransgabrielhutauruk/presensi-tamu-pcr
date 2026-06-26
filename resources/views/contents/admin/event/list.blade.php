@@ -97,15 +97,22 @@
                     @endforeach
                 </x-form.select>
             </div>
-            <div class="row">
-                <div class="col-md-6 mb-4">
-                    <x-form.radio-group name="kategori_lokasi" label="Kategori Lokasi" required :options="['dalam_kampus' => 'Dalam Kampus', 'luar_kampus' => 'Luar Kampus']"
-                        data-cy-prefix="radio-kategori_lokasi" />
-                </div>
-                <div class="col-md-6 mb-4">
+            <div class="row mb-3 mb-4">
+                <div class="col-md-auto mb-0">
                     <x-form.radio-group name="jenis_kegiatan" label="Jenis Kegiatan" required :options="['pmb' => 'PMB', 'non_pmb' => 'Non PMB']"
                         data-cy-prefix="radio-jenis_kegiatan" />
                 </div>
+                <div class="col-md-auto d-flex align-items-center">
+                    <div class="form-text text-muted fs-8 mt-0">
+                        <i class="bi bi-info-circle text-primary me-1"></i>
+                        Opsi PMB akan memunculkan isian tambahan (Minat PCR & Pilihan Prodi yang Diminati) pada form
+                        presensi tamu non-civitas.
+                    </div>
+                </div>
+            </div>
+            <div class="mb-4">
+                <x-form.radio-group name="kategori_lokasi" label="Kategori Lokasi" required :options="['dalam_kampus' => 'Dalam Kampus', 'luar_kampus' => 'Luar Kampus']"
+                    data-cy-prefix="radio-kategori_lokasi" />
             </div>
             <div class="mb-4">
                 <x-form.input type="text" label="Lokasi Event" name="lokasi_event" value="" required
@@ -241,12 +248,6 @@
             } else {
                 $badge.addClass('d-none');
             }
-        });
-
-        $(document).on('click', '.act-filter_reset[data-table="dataTableBuilder"]', function() {
-            $('#filterKategori, #filter_kategori_lokasi_event, #filter_status_event, #filter_date_from, #filter_date_to')
-                .val('').trigger('change');
-            $('#dataTableBuilder-filter-badge').addClass('d-none');
         });
     </script>
 @endpush
