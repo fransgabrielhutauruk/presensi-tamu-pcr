@@ -667,6 +667,7 @@ class EventController extends Controller
                 'civitas.jenis_kelamin as jenis_kelamin_civitas',
                 'civitas.email as email_civitas',
             ])
+                ->with('details')
                 ->leftJoin('tamu', function ($join) {
                     $join->on('kunjungan.tamu_id', '=', 'tamu.tamu_id')
                         ->whereNull('tamu.deleted_at');
@@ -703,7 +704,7 @@ class EventController extends Controller
 
             $start = (int) $req->input('start', 0);
 
-            return DataTables::of($query)
+            $dt = DataTables::of($query)
                 ->addColumn('checkbox', function ($row) {
                     $id = encid($row->kunjungan_id);
                     if (!$row->status_validasi) {
@@ -782,8 +783,58 @@ class EventController extends Controller
                     } elseif (str_contains($lc, 'tervalid') || str_contains($lc, 'sudah')) {
                         $query->where('kunjungan.status_validasi', true);
                     }
-                })
-                ->toJson();
+                });
+
+            if ($req->has('export') && $req->input('export') == 'true') {
+                $response = $dt->make(true)->getData(true);
+                $rows = $response['data'] ?? [];
+
+                $semuaKunciDetail = [];
+                foreach ($rows as $row) {
+                    if (!empty($row['details']) && is_array($row['details'])) {
+                        foreach ($row['details'] as $d) {
+                            $namaKolom = ucwords(str_replace('_', ' ', $d['kunci']));
+                            if (!in_array($namaKolom, $semuaKunciDetail)) {
+                                $semuaKunciDetail[] = $namaKolom;
+                            }
+                        }
+                    }
+                }
+
+                $exportData = array_map(function ($row) use ($semuaKunciDetail) {
+                    $dataUtama = [
+                        'No' => $row['no'] ?? '',
+                        'Waktu Kunjungan' => strip_tags($row['waktu_kunjungan'] ?? ''),
+                        'Identitas' => strip_tags($row['identitas'] ?? ''),
+                        'Nama Tamu' => strip_tags($row['nama'] ?? ''),
+                        'Jenis Kelamin' => strip_tags($row['jenis_kelamin'] ?? ''),
+                        'Email' => strip_tags($row['email'] ?? ''),
+                        'No. Telepon' => strip_tags($row['nomor_telepon'] ?? ''),
+                    ];
+
+                    $detailBarisIni = [];
+                    if (!empty($row['details']) && is_array($row['details'])) {
+                        foreach ($row['details'] as $d) {
+                            $namaKolom = ucwords(str_replace('_', ' ', $d['kunci']));
+                            $detailBarisIni[$namaKolom] = $d['nilai'];
+                        }
+                    }
+
+                    $kolomDinamis = [];
+                    foreach ($semuaKunciDetail as $kunciMaster) {
+                        $kolomDinamis[$kunciMaster] = (!empty($detailBarisIni[$kunciMaster]) && trim($detailBarisIni[$kunciMaster]) !== '')
+                            ? $detailBarisIni[$kunciMaster]
+                            : '-';
+                    }
+
+                    return $dataUtama + $kolomDinamis;
+                }, $rows);
+
+                $response['data'] = $exportData;
+                return response()->json($response);
+            }
+
+            return $dt->toJson();
         } else {
             abort(404, 'Halaman tidak ditemukan');
         }

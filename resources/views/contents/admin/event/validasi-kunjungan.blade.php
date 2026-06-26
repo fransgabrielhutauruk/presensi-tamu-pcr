@@ -75,7 +75,7 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="kunjungan-event-validasi"
-            jf-list="datatable" data-cy="table-event-validasi" :server_side="true" :default_order="[[3, 'desc']]">
+            jf-list="datatable" data-cy="table-event-validasi" :server_side="true" :default_order="[[3, 'desc']]" :show_export="true">
             @slot('filter')
                 <div class="row g-4">
                     <div class="col-md-3">

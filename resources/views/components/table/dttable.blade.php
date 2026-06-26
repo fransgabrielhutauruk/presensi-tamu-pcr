@@ -3,6 +3,7 @@
     'title' => '',
     'builder' => null,
     'export' => 'external', // local or external
+    'show_export' => false,
     'filter' => '',
     'order' => true,
     'search' => true,
@@ -149,17 +150,17 @@
                     </x-btn>
                 @endif
 
-                @if ($export == 'local')
+                @if ($export == 'local' && $show_export)
                     <x-btn type="light-success"
                         class="btn-icon btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel"
-                        title="Download Data" style="display: none">
+                        title="Download Data">
                         <i class="bi bi-file-earmark-spreadsheet fs-3 pe-0"></i>
                     </x-btn>
-                @elseif ($export == 'external')
+                @elseif ($export == 'external' && $show_export)
                     <x-btn type="light-success"
-                        class="px-3 btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel_external"
-                        title="Download Data" style="display: none">
-                        <i class="bi bi-file-earmark-excel fs-3 pe-0"></i>
+                        class="d-inline-flex align-items-center gap-1 px-3 btn-sm text-nowrap border border-gray-200 {{ $builder->getTableId() }}-export-excel_external"
+                        title="Export Data">
+                        <i class="bi bi-file-earmark-excel fs-3 pe-0"></i> Export
                     </x-btn>
                 @endif
             </div>
