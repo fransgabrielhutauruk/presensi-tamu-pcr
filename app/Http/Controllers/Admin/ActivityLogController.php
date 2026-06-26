@@ -70,7 +70,8 @@ class ActivityLogController extends Controller
                 'sys_activity_log.batch_uuid',
                 'sys_activity_log.created_at',
                 'sys_activity_log.updated_at',
-                'users.name as user_name'
+                'users.name as user_name',
+                'users.email'
             ])
                 ->leftJoin('users', 'sys_activity_log.causer_id', '=', 'users.id')
                 ->when(!empty($filterUser), fn($q) => $q->where('sys_activity_log.causer_id', $filterUser))
@@ -84,7 +85,7 @@ class ActivityLogController extends Controller
 
             $start = (int) $req->input('start', 0);
 
-            return DataTables::of($query)
+            $dt = DataTables::of($query)
                 ->addColumn('no', function () use (&$start) {
                     return ++$start;
                 })
@@ -129,8 +130,27 @@ class ActivityLogController extends Controller
                 ->filterColumn('created_at', fn($q, $keyword) => dtFilterByDateKeyword($q, $keyword, 'sys_activity_log.created_at'))
                 ->filterColumn('user', fn($q, $keyword) => $q->where('users.name', 'like', "%{$keyword}%"))
                 ->filterColumn('description', fn($q, $keyword) => $q->where('sys_activity_log.description', 'like', "%{$keyword}%"))
-                ->filterColumn('subject_type', fn($q, $keyword) => $q->where('sys_activity_log.subject_type', 'like', "%{$keyword}%"))
-                ->toJson();
+                ->filterColumn('subject_type', fn($q, $keyword) => $q->where('sys_activity_log.subject_type', 'like', "%{$keyword}%"));
+
+            if ($req->has('export') && $req->input('export') == 'true') {
+                $response = $dt->toArray();
+
+                $exportData = array_map(function ($row) {
+                    return [
+                        'No'              => $row['no'] ?? '',
+                        'Waktu'           => strip_tags($row['created_at'] ?? ''),
+                        'User'            => strip_tags($row['user'] ?? ''),
+                        'Email'           => strip_tags($row['email'] ?? ''),
+                        'Aktivitas'       => strip_tags($row['description'] ?? ''),
+                        'Subjek'          => strip_tags($row['subject_type'] ?? ''),
+                    ];
+                }, $response['data']);
+
+                $response['data'] = $exportData;
+                return response()->json($response);
+            }
+
+            return $dt->toJson();
         } else if ($param1 === 'detail') {
             $id = $req->input('id');
             $log = Activity::with('causer', 'subject')->find($id);

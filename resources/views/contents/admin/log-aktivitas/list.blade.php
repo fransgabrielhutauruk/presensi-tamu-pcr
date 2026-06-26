@@ -14,7 +14,7 @@
         <div class="row">
             <div class="col-md">
                 <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="log_aktivitas"
-                    jf-list="datatable" data-cy="table-log-aktivitas-list" :server_side="true" :default_order="[[2, 'desc']]">
+                    jf-list="datatable" data-cy="table-log-aktivitas-list" :server_side="true" :default_order="[[2, 'desc']]" :show_export="true">
                     @slot('filter')
                         <div class="row g-4">
                             <div class="col-md-2">
