@@ -71,7 +71,7 @@
                             data-allow-clear="true" data-cy="select-filter-validasi-jenis-kunjungan">
                             <option value="">Semua Jenis Kunjungan</option>
                             <option value="event">Event</option>
-                            <option value="non_event">Non-Event</option>
+                            <option value="non_event" {{ request('filter_jenis_kunjungan_validasi') == 'non_event' ? 'selected' : '' }}>Non-Event</option>
                         </select>
                     </div>
                     <div class="col-md-2">
