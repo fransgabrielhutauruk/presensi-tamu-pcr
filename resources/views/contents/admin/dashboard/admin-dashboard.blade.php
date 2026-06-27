@@ -127,11 +127,16 @@
     <script>
         const ctx = document.getElementById('chartKunjunganPerBulan');
         if (ctx) {
-            const bulanNames = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
             const chartData = @json($dashboardData['charts']['kunjunganPerBulan']);
 
-            const labels = chartData.map(item => bulanNames[item.bulan - 1]);
-            const data = chartData.map(item => item.total);
+            const data = Array.from({
+                length: 12
+            }, (_, index) => {
+                const targetBulan = index + 1;
+                const foundData = chartData.find(item => item.bulan == targetBulan);
+                return foundData ? foundData.total : 0;
+            });
 
             new Chart(ctx, {
                 type: 'bar',
