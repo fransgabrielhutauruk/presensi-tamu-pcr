@@ -75,7 +75,7 @@ class DashboardController extends Controller
                     'value' => \App\Models\Kunjungan::where('status_validasi', false)->count(),
                     'icon' => 'ki-notification-status',
                     'color' => 'warning',
-                    'link' => route('app.kunjungan.validasi')
+                    'link' => route('app.kunjungan-validasi.index')
                 ],
                 [
                     'title' => 'Total Event',

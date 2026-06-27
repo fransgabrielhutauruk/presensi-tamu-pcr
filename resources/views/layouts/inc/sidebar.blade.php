@@ -25,7 +25,7 @@
         @endif
 
         @if ($hasAdminRole)
-            <x-theme.menu link="{{ route('app.kunjungan.validasi', ['filter_jenis_kunjungan_validasi' => 'non_event']) }}"
+            <x-theme.menu link="{{ route('app.kunjungan-validasi.index', ['filter_jenis_kunjungan_validasi' => 'non_event']) }}"
                 text="Validasi Kunjungan" icon="ki-outline ki-check-circle" :active="$pageData->activeMenu == 'validasi-kunjungan'" />
         @endif
 

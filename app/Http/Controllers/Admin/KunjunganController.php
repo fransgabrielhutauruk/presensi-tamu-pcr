@@ -524,7 +524,8 @@ class KunjunganController extends Controller
                 'id' => ['Parameter data', 'required'],
             ]);
 
-            $currData = Kunjungan::with(['tamu', 'civitas', 'details', 'event', 'event.eventKategori'])
+            $currData = Kunjungan::withTrashed()
+                ->with(['tamu', 'civitas', 'details', 'event', 'event.eventKategori'])
                 ->findOrFail(decid($req->input('id')));
 
             $detailData = [

@@ -38,6 +38,14 @@ Route::prefix('app')
             ->name('app.kunjungan.reject-single');
         Route::post('kunjungan/bulk-validasi', [KunjunganValidasiController::class, 'bulkValidasi'])
             ->name('app.kunjungan.bulk-validasi');
+        Route::post('kunjungan/restore/{id}', [KunjunganValidasiController::class, 'restoreSingle'])
+            ->name('app.kunjungan.restore-single');
+        Route::post('kunjungan/force-delete/{id}', [KunjunganValidasiController::class, 'forceDeleteSingle'])
+            ->name('app.kunjungan.force-delete-single');
+        Route::post('kunjungan/bulk-restore', [KunjunganValidasiController::class, 'bulkRestore'])
+            ->name('app.kunjungan.bulk-restore');
+        Route::post('kunjungan/bulk-force-delete', [KunjunganValidasiController::class, 'bulkForceDelete'])
+            ->name('app.kunjungan.bulk-force-delete');
 
         Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifSecurityRoles()))->group(function () {
             Route::get('kunjungan/monitoring', [KunjunganMonitoringController::class, 'index'])
@@ -47,10 +55,7 @@ Route::prefix('app')
             Route::get('kunjungan/monitoring/stats', [KunjunganMonitoringController::class, 'getStats'])
                 ->name('app.kunjungan.monitoring.stats');
 
-            Route::any('kunjungan/data/validasi-list/{param2?}/{param3?}/{param4?}', [KunjunganValidasiController::class, 'data'])
-                ->middleware(['ajax']);
-            Route::get('kunjungan/validasi', [KunjunganValidasiController::class, 'index'])->name('app.kunjungan.validasi');
-
+            generalRoute(KunjunganValidasiController::class, 'kunjungan-validasi', 'app');
             generalRoute(KunjunganController::class, 'kunjungan', 'app');
             generalRoute(FeedbackController::class, 'feedback', 'app');
         });

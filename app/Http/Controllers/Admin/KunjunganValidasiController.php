@@ -19,11 +19,11 @@ class KunjunganValidasiController extends Controller
     {
         $this->title = 'Validasi Kunjungan';
         $this->activeMenu = 'validasi-kunjungan';
-        $this->breadCrump[] = ['title' => 'Validasi Kunjungan', 'link' => route('app.kunjungan.validasi')];
+        $this->breadCrump[] = ['title' => 'Validasi Kunjungan', 'link' => route('app.kunjungan-validasi.index')];
 
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)
-            ->ajax(route('app.kunjungan.data') . '/validasi-list')
+            ->ajax(route('app.kunjungan-validasi.data') . '/validasi-list')
             ->columns([
                 Column::make([
                     'width' => '3%',
@@ -79,9 +79,82 @@ class KunjunganValidasiController extends Controller
         return $this->view('admin.validasi-kunjungan.list');
     }
 
+    public function show($param1 = '', $param2 = '')
+    {
+        if ($param1 == 'dihapus') {
+            $this->title = 'Kunjungan yang Dihapus';
+            $this->activeMenu = 'validasi-kunjungan-dihapus';
+            $this->breadCrump[] = ['title' => 'Kunjungan yang Dihapus', 'link' =>  url()->current()];
+
+            $countValidasi = Kunjungan::where('status_validasi', false)->whereNull('deleted_at')->count();
+            $countDihapus = Kunjungan::where('status_validasi', false)->onlyTrashed()->count();
+
+            $builder = app('datatables.html');
+            $dataTable = $builder->serverSide(true)
+                ->ajax(route('app.kunjungan-validasi.data') . '/validasi-dihapus-list')
+                ->columns([
+                    Column::make([
+                        'width' => '3%',
+                        'title' => '<div class="form-check form-check-sm form-check-custom form-check-solid">
+                        <input class="form-check-input" type="checkbox" id="checkAllValidasi" data-cy="checkbox-check-all-validasi-kunjungan"></div>',
+                        'data' => 'checkbox',
+                        'orderable' => false,
+                        'className' => 'text-center',
+                        'searchable' => false
+                    ]),
+                    Column::make([
+                        'title' => 'Aksi',
+                        'data' => 'action',
+                        'orderable' => false,
+                        'className' => 'text-nowrap text-center'
+                    ]),
+                    Column::make([
+                        'title' => 'Waktu Kunjungan',
+                        'data' => 'waktu_kunjungan',
+                        'orderable' => true,
+                    ]),
+                    Column::make([
+                        'width' => '5%',
+                        'title' => 'No',
+                        'data' => 'no',
+                        'orderable' => false,
+                        'className' => 'text-center'
+                    ]),
+                    Column::make([
+                        'title' => 'Identitas',
+                        'data' => 'identitas',
+                        'orderable' => true,
+                    ]),
+                    Column::make(['title' => 'Nama Tamu', 'data' => 'nama', 'orderable' => true]),
+                    Column::make([
+                        'title' => 'Jenis Kelamin',
+                        'data' => 'jenis_kelamin',
+                        'orderable' => true,
+                    ]),
+                    Column::make(['title' => 'Email', 'data' => 'email', 'orderable' => true]),
+                    Column::make(['title' => 'No. Telepon', 'data' => 'nomor_telepon', 'orderable' => true]),
+                    Column::make([
+                        'title' => 'Tujuan Kunjungan',
+                        'data' => 'jenis_kunjungan',
+                        'orderable' => true,
+                    ]),
+                ]);
+
+            $this->dataView([
+                'dataTable' => $dataTable,
+                'countValidasi' => $countValidasi,
+                'countDihapus' => $countDihapus,
+            ]);
+
+            return $this->view('admin.validasi-kunjungan.dihapus');
+        } else {
+            abort(404, 'Halaman tidak ditemukan');
+        }
+    }
+
     public function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
-        if ($param1 !== '' && $param1 != 'validasi-list') {
+        if ($param1 !== '' && !in_array($param1, ['validasi-list', 'validasi-dihapus-list'])) {
             abort(404, 'Halaman tidak ditemukan');
         }
 
@@ -91,7 +164,7 @@ class KunjunganValidasiController extends Controller
         $filterDateFrom       = $req->input('filter_date_from', '');
         $filterDateTo         = $req->input('filter_date_to', '');
 
-        $query = Kunjungan::select([
+        $query = Kunjungan::withTrashed()->select([
             'kunjungan.kunjungan_id',
             'kunjungan.tamu_id',
             'tamu.nama_tamu',
@@ -127,7 +200,6 @@ class KunjunganValidasiController extends Controller
                     ->whereNull('event.deleted_at');
             })
             ->where('kunjungan.status_validasi', false)
-            ->whereNull('kunjungan.deleted_at')
             ->when(!empty($filterJK), function ($q) use ($filterJK) {
                 $q->where(function ($q) use ($filterJK) {
                     $q->where('tamu.jenis_kelamin_tamu', $filterJK)
@@ -154,6 +226,12 @@ class KunjunganValidasiController extends Controller
             })
             ->when(!empty($filterDateFrom), fn($q) => $q->whereDate('kunjungan.created_at', '>=', $filterDateFrom))
             ->when(!empty($filterDateTo), fn($q) => $q->whereDate('kunjungan.created_at', '<=', $filterDateTo));
+
+        if ($param1 === 'validasi-dihapus-list') {
+            $query->whereNotNull('kunjungan.deleted_at');
+        } else {
+            $query->whereNull('kunjungan.deleted_at');
+        }
 
         $start = (int) $req->input('start', 0);
 
@@ -327,6 +405,95 @@ class KunjunganValidasiController extends Controller
         } catch (\Throwable $th) {
             DB::rollBack();
             abort(500, 'Gagal melakukan bulk action, kesalahan database');
+        }
+    }
+    public function restoreSingle(Request $request, $id): JsonResponse
+    {
+        $currData = Kunjungan::withTrashed()->findOrFail(decid($id));
+
+        DB::beginTransaction();
+        try {
+            $currData->restore();
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Data kunjungan berhasil direstore'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Gagal merestore kunjungan, kesalahan database');
+        }
+    }
+
+    public function forceDeleteSingle(Request $request, $id): JsonResponse
+    {
+        $currData = Kunjungan::withTrashed()->findOrFail(decid($id));
+
+        DB::beginTransaction();
+        try {
+            $currData->forceDelete();
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => 'Data kunjungan berhasil dihapus permanen'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Gagal menghapus kunjungan secara permanen, kesalahan database');
+        }
+    }
+
+    public function bulkRestore(Request $request): JsonResponse
+    {
+        validate_and_response([
+            'ids' => ['Parameter data', 'required|array'],
+        ]);
+
+        $ids = $request->input('ids');
+
+        DB::beginTransaction();
+        try {
+            $decodedIds = array_map('decid', $ids);
+            $kunjungans = Kunjungan::onlyTrashed()->whereIn('kunjungan_id', $decodedIds)->get();
+
+            Kunjungan::onlyTrashed()->whereIn('kunjungan_id', $decodedIds)->restore();
+
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => count($kunjungans) . ' kunjungan berhasil direstore'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Gagal melakukan restore masal, kesalahan database');
+        }
+    }
+
+    public function bulkForceDelete(Request $request): JsonResponse
+    {
+        validate_and_response([
+            'ids' => ['Parameter data', 'required|array'],
+        ]);
+
+        $ids = $request->input('ids');
+
+        DB::beginTransaction();
+        try {
+            $decodedIds = array_map('decid', $ids);
+            $kunjungans = Kunjungan::onlyTrashed()->whereIn('kunjungan_id', $decodedIds)->get();
+
+            foreach ($kunjungans as $kunjungan) {
+                $kunjungan->forceDelete();
+            }
+
+            DB::commit();
+            return response()->json([
+                'status' => true,
+                'message' => count($kunjungans) . ' kunjungan berhasil dihapus permanen'
+            ]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            abort(500, 'Gagal melakukan hapus permanen masal, kesalahan database');
         }
     }
 }

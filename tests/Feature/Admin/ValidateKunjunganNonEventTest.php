@@ -36,7 +36,7 @@ describe('BBT-13 Memvalidasi Presensi Tamu Non-Event', function () {
         $pageResponse = $this
             ->actingAs($admin)
             ->withSession(['active_role' => UserRole::ADMIN->value])
-            ->get(route('app.kunjungan.validasi'));
+            ->get(route('app.kunjungan-validasi'));
 
         $validateResponse = $this
             ->actingAs($admin)

@@ -11,6 +11,7 @@
     <div id="kt_app_content_container" class="app-container container-fluid" data-cue="slideInLeft" data-duration="1000"
         data-delay="0">
         @include('contents.admin.validasi-kunjungan.tabs')
+
         <div class="card mb-5">
             <div class="p-3">
                 <div class="d-flex align-items-center justify-content-center justify-content-sm-between flex-wrap gap-3">
@@ -21,16 +22,16 @@
                     </div>
 
                     <div class="d-flex gap-2 justify-content-center">
-                        <button type="button" class="btn btn-success btn-sm" id="bulkValidateBtn" data-action="validate"
-                            disabled data-cy="btn-bulk-validate-validasi-kunjungan">
-                            <i class="bi bi-check2-circle fs-4 Combined me-sm-1"></i>
-                            <span class="d-none d-sm-inline">Validasi Terpilih</span>
+                        <button type="button" class="btn btn-success btn-sm" id="bulkRestoreBtn" data-action="restore"
+                            disabled data-cy="btn-bulk-restore-kunjungan-dihapus">
+                            <i class="bi bi-arrow-counterclockwise fs-4 Combined me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Restore Terpilih</span>
                         </button>
 
-                        <button type="button" class="btn btn-danger btn-sm" id="bulkRejectBtn" data-action="reject"
-                            disabled data-cy="btn-bulk-reject-validasi-kunjungan">
-                            <i class="bi bi-x-circle fs-4 me-sm-1"></i>
-                            <span class="d-none d-sm-inline">Hapus Terpilih</span>
+                        <button type="button" class="btn btn-danger btn-sm" id="bulkForceDeleteBtn" data-action="force-delete"
+                            disabled data-cy="btn-bulk-force-delete-kunjungan-dihapus">
+                            <i class="bi bi-trash fs-4 me-sm-1"></i>
+                            <span class="d-none d-sm-inline">Hapus Permanen</span>
                         </button>
                     </div>
                 </div>
@@ -38,7 +39,7 @@
         </div>
 
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" :server_side="true" :default_order="[[2, 'desc']]"
-            jf-data="kunjungan-validasi" jf-list="datatable" data-cy="table-validasi-kunjungan">
+            jf-data="kunjungan-dihapus" jf-list="datatable" data-cy="table-validasi-kunjungan-dihapus">
             @slot('action')
                 <x-btn.refresh-datatable />
             @endslot
@@ -191,10 +192,8 @@
         </div>
 
         @slot('action')
-            <x-btn.form action="save" id="validateSingleBtn" text="Validasi" title="Validasi"
-                data-cy="btn-validate-single-validasi-kunjungan" />
-            <x-btn.form action="cancle" id="rejectSingleBtn" text="Hapus" title="Hapus"
-                data-cy="btn-reject-single-validasi-kunjungan" />
+            <x-btn.form action="save" icon="bi bi-arrow-counterclockwise" text="Restore" onclick="restoreSingle()" data-cy="btn-restore-single-dihapus" />
+            <x-btn.form action="cancle" icon="bi bi-trash" text="Hapus Permanen" onclick="forceDeleteSingle()" data-cy="btn-force-delete-single-dihapus" />
         @endslot
     </x-modal>
 @endsection
@@ -205,37 +204,8 @@
 
 @push('styles')
     <style>
-        #bulkActionPanel {
-            border-left: 4px solid #009ef7;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1rem;
-            display: block !important;
-        }
-
-        #bulkActionPanel .card-body {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            border-radius: 8px;
-        }
-
-        #bulkActionPanel .btn {
-            transition: all 0.2s ease-in-out;
-        }
-
-        #selectedCount {
-            transition: all 0.2s ease-in-out;
-        }
-
-        .form-check-input {
-            transform: scale(1.1);
-        }
-
-        .row-checkbox:checked {
-            background-color: #009ef7;
-            border-color: #009ef7;
-        }
-
         .badge {
-            font-size: 0.8rem;
+            transition: all 0.3s ease;
         }
 
         .btn-sm {
@@ -270,38 +240,41 @@
         let currentDetailId = null;
 
         $(document).ready(function() {
-            $(document).off('click', '[jf-data="kunjungan-validasi"] [jf-detail]');
-            $(document).on('click', '[jf-data="kunjungan-validasi"] [jf-detail]', function() {
+            $(document).off('click', '[jf-data="kunjungan-dihapus"] [jf-detail]');
+            $(document).on('click', '[jf-data="kunjungan-dihapus"] [jf-detail]', function() {
                 currentDetailId = $(this).attr('jf-detail');
             });
 
             jForm.init({
-                name: "kunjungan-validasi",
-                base_url: `{{ route('app.kunjungan.index') }}`,
+                name: "kunjungan-dihapus",
+                url: {
+                    detail: `{{ route('app.kunjungan.data', ['param1' => 'detail']) }}`,
+                },
                 onDetail: function(data) {
                     showDetailModal(data);
                 }
             });
 
-            $('#dataTableBuilder').on('draw.dt', function() {
-                setTimeout(updateBulkActionPanel, 100);
-            });
-
-            $(document).on('change', '.row-checkbox', updateBulkActionPanel);
-
-            $(document).on('change', '#checkAllValidasi', function() {
+            $('#checkAllValidasi').on('change', function() {
                 $('.row-checkbox').prop('checked', $(this).is(':checked'));
                 updateBulkActionPanel();
             });
 
-            setTimeout(updateBulkActionPanel, 500);
-
-            $(document).on('click', '#bulkValidateBtn, #bulkRejectBtn', function() {
-                bulkAction($(this).data('action'));
+            $(document).on('change', '.row-checkbox', function() {
+                updateBulkActionPanel();
             });
 
-            $(document).on('click', '#validateSingleBtn', validateSingle);
-            $(document).on('click', '#rejectSingleBtn', rejectSingle);
+            $('#bulkRestoreBtn').on('click', function() {
+                bulkAction('restore');
+            });
+
+            $('#bulkForceDeleteBtn').on('click', function() {
+                bulkAction('force-delete');
+            });
+
+            $('#dataTableBuilder').on('draw.dt', function() {
+                clearSelection();
+            });
         });
 
         function formatLabel(str) {
@@ -393,14 +366,14 @@
             $('#selectedCount').text(count + ' dipilih');
 
             if (count > 0) {
-                $('#bulkValidateBtn, #bulkRejectBtn').prop('disabled', false);
-                $('#bulkValidateBtn').removeClass('btn-light').addClass('btn-success');
-                $('#bulkRejectBtn').removeClass('btn-light').addClass('btn-danger');
+                $('#bulkRestoreBtn, #bulkForceDeleteBtn').prop('disabled', false);
+                $('#bulkRestoreBtn').removeClass('btn-light').addClass('btn-success');
+                $('#bulkForceDeleteBtn').removeClass('btn-light').addClass('btn-danger');
                 $('#selectedCount').removeClass('badge-light').addClass('badge-primary');
             } else {
-                $('#bulkValidateBtn, #bulkRejectBtn').prop('disabled', true);
-                $('#bulkValidateBtn').removeClass('btn-success').addClass('btn-light');
-                $('#bulkRejectBtn').removeClass('btn-danger').addClass('btn-light');
+                $('#bulkRestoreBtn, #bulkForceDeleteBtn').prop('disabled', true);
+                $('#bulkRestoreBtn').removeClass('btn-success').addClass('btn-light');
+                $('#bulkForceDeleteBtn').removeClass('btn-danger').addClass('btn-light');
                 $('#selectedCount').removeClass('badge-primary').addClass('badge-light');
             }
 
@@ -422,11 +395,10 @@
         const _csrfToken = $('meta[name="csrf-token"]').attr('content');
 
         function reloadValidationTable() {
-            $('table[jf-data="kunjungan-validasi"]').DataTable().ajax.reload(null, false);
+            $('table[jf-data="kunjungan-dihapus"]').DataTable().ajax.reload(null, false);
         }
 
         function confirmAndPost(opts) {
-            // opts: { title, text, icon, confirmText, postUrl, postData, onSuccessReload, failMessage }
             return Swal.fire({
                 title: opts.title || 'Konfirmasi',
                 text: opts.text || '',
@@ -445,8 +417,7 @@
                 return $.post(opts.postUrl, data)
                     .done(function(response) {
                         if (response.status) {
-                            Swal.fire('Berhasil!', response.message || opts.successMessage ||
-                                'Operasi berhasil.', 'success');
+                            Swal.fire('Berhasil!', response.message || opts.successMessage || 'Operasi berhasil.', 'success');
                             if (opts.onSuccessHideModal) {
                                 $('#modalDetailValidasi').modal('hide');
                             }
@@ -456,8 +427,7 @@
                             if (typeof opts.onSuccess === 'function') opts.onSuccess(response);
                             clearSelection();
                         } else {
-                            Swal.fire('Gagal!', response.message || opts.failMessage || 'Terjadi kesalahan',
-                                'error');
+                            Swal.fire('Gagal!', response.message || opts.failMessage || 'Terjadi kesalahan', 'error');
                         }
                     }).fail(function() {
                         Swal.fire('Gagal!', opts.failMessage || 'Terjadi kesalahan', 'error');
@@ -478,59 +448,59 @@
                 return;
             }
 
-            const actionText = action === 'validate' ? 'memvalidasi' : 'menghapus';
-            const actionTitle = action === 'validate' ? 'Validasi Massal' : 'Hapus Massal';
+            const actionText = action === 'restore' ? 'merestore' : 'menghapus secara permanen';
+            const actionTitle = action === 'restore' ? 'Restore Massal' : 'Hapus Permanen Massal';
+            const routeUrl = action === 'restore' ? `{{ route('app.kunjungan.index') }}/bulk-restore` : `{{ route('app.kunjungan.index') }}/bulk-force-delete`;
 
             confirmAndPost({
                 title: actionTitle,
                 text: `Apakah Anda yakin ingin ${actionText} ${ids.length} kunjungan yang dipilih?`,
-                icon: 'question',
-                confirmText: action === 'validate' ? 'Ya, Validasi' : 'Ya, Hapus',
-                postUrl: `{{ route('app.kunjungan.index') }}/bulk-validasi`,
+                icon: action === 'restore' ? 'question' : 'warning',
+                confirmText: action === 'restore' ? 'Ya, Restore' : 'Ya, Hapus Permanen',
+                postUrl: routeUrl,
                 postData: {
-                    ids: ids,
-                    action: action
+                    ids: ids
                 },
                 onSuccessReload: true,
                 failMessage: `Terjadi kesalahan saat ${actionText} kunjungan.`
             });
         }
 
-        function validateSingle() {
+        function restoreSingle() {
             if (!currentDetailId) {
                 Swal.fire('Error!', 'ID kunjungan tidak ditemukan.', 'error');
                 return;
             }
 
             confirmAndPost({
-                title: 'Konfirmasi Validasi',
-                text: 'Apakah Anda yakin ingin memvalidasi kunjungan ini?',
+                title: 'Konfirmasi Restore',
+                text: 'Apakah Anda yakin ingin merestore kunjungan ini?',
                 icon: 'question',
-                confirmText: 'Ya, Validasi',
-                postUrl: `{{ route('app.kunjungan.index') }}/validate/${currentDetailId}`,
+                confirmText: 'Ya, Restore',
+                postUrl: `{{ route('app.kunjungan.index') }}/restore/${currentDetailId}`,
                 postData: {},
                 onSuccessHideModal: true,
                 onSuccessReload: true,
-                failMessage: 'Terjadi kesalahan saat memvalidasi kunjungan.'
+                failMessage: 'Terjadi kesalahan saat merestore kunjungan.'
             });
         }
 
-        function rejectSingle() {
+        function forceDeleteSingle() {
             if (!currentDetailId) {
                 Swal.fire('Error!', 'ID kunjungan tidak ditemukan.', 'error');
                 return;
             }
 
             confirmAndPost({
-                title: 'Konfirmasi Penghapusan',
-                text: 'Apakah Anda yakin menghapus kunjungan ini?',
+                title: 'Konfirmasi Penghapusan Permanen',
+                text: 'Apakah Anda yakin ingin menghapus permanen kunjungan ini? Aksi ini tidak dapat dibatalkan.',
                 icon: 'warning',
-                confirmText: 'Ya, Hapus',
-                postUrl: `{{ route('app.kunjungan.index') }}/reject/${currentDetailId}`,
+                confirmText: 'Ya, Hapus Permanen',
+                postUrl: `{{ route('app.kunjungan.index') }}/force-delete/${currentDetailId}`,
                 postData: {},
                 onSuccessHideModal: true,
                 onSuccessReload: true,
-                failMessage: 'Terjadi kesalahan saat menolak kunjungan.'
+                failMessage: 'Terjadi kesalahan saat menghapus permanen kunjungan.'
             });
         }
     </script>
