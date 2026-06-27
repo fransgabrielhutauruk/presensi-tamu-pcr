@@ -13,11 +13,11 @@
         @include('contents.admin.kunjungan.tabs')
         <x-table.dttable :builder="$pageData->dataTable" class="align-middle" :responsive="false" jf-data="opsi-kunjungan" jf-list="datatable"
             data-cy="table-opsi-kunjungan-list">
-            @slot('action')
+            {{-- @slot('action')
                 <x-btn type="primary" class="act-add" jf-add="opsi-kunjungan" data-cy="btn-add-opsi-kunjungan">
                     <i class="bi bi-plus fs-2"></i> Tambah Opsi
                 </x-btn>
-            @endslot
+            @endslot --}}
         </x-table.dttable>
     </div>
 

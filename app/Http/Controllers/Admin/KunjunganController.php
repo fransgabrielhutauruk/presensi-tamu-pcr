@@ -614,7 +614,7 @@ class KunjunganController extends Controller
                     'id' => $id,
                     'btn' => [
                         ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
-                        ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
+                        // ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
                     ]
                 ];
                 $dt['action'] = Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
