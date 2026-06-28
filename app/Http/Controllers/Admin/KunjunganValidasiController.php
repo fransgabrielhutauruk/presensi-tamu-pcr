@@ -199,6 +199,10 @@ class KunjunganValidasiController extends Controller
                 $join->on('kunjungan.event_id', '=', 'event.event_id')
                     ->whereNull('event.deleted_at');
             })
+            ->where(function ($q) {
+                $q->whereNull('kunjungan.event_id')
+                    ->orWhereNotNull('event.event_id');
+            })
             ->where('kunjungan.status_validasi', false)
             ->when(!empty($filterJK), function ($q) use ($filterJK) {
                 $q->where(function ($q) use ($filterJK) {
