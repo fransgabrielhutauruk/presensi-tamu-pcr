@@ -50,6 +50,8 @@ describe('BBT-8 Kirim Dokumentasi', function () {
             'waktu_mulai_event' => '09:00',
             'waktu_selesai_event' => '12:00',
             'lokasi_event' => 'Aula Utama PCR',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'https://drive.google.com/drive/folders/dokumentasi-event-ds',
         ];
 
@@ -110,6 +112,8 @@ describe('BBT-8 Kirim Dokumentasi', function () {
             'waktu_mulai_event' => '10:00',
             'waktu_selesai_event' => '12:00',
             'lokasi_event' => 'Lab Komputer',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'invalid-url',
         ];
 

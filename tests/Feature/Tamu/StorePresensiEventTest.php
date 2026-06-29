@@ -30,7 +30,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Perempuan',
             'nomor_telepon' => '081298765432',
             'email' => 'siti@example.com',
-            'institusi' => 'PT Inovasi Nusantara',
+            'instansi' => 'PT Inovasi Nusantara',
             'peran' => 'Peserta',
             'transportasi' => 'Mobil',
         ];
@@ -72,7 +72,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         $this->assertDatabaseHas('kunjungan_detail', [
             'kunjungan_id' => $kunjungan->kunjungan_id,
-            'kunci' => 'institusi',
+            'kunci' => 'instansi',
             'nilai' => 'PT Inovasi Nusantara',
         ]);
 
@@ -366,7 +366,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
             'jenis_kelamin' => 'Perempuan',
             'nomor_telepon' => '081298765432',
             'email' => 'siti@example.com',
-            'institusi' => '',
+            'instansi' => '',
             'peran' => 'Peserta',
             'transportasi' => 'Mobil',
         ];
@@ -378,7 +378,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
 
         // Assertion
         $response->assertRedirect(route('tamu.event.form-presensi-non-civitas', encid((string) $event->event_id)));
-        $response->assertSessionHasErrors(['institusi']);
+        $response->assertSessionHasErrors(['instansi']);
 
         $this->assertDatabaseCount('tamu', 0);
         $this->assertDatabaseCount('kunjungan', 0);

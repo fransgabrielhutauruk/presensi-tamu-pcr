@@ -102,7 +102,7 @@ describe('BBT-1 Login', function () {
 
         // Assertion
         $response->assertRedirect(route('login'));
-        $response->assertSessionHas('error', 'Hanya email @pcr.ac.id yang diizinkan.');
+        $response->assertSessionHas('error', 'Akses ditolak. Gunakan email @pcr.ac.id atau gunakan email yang sudah didaftarkan oleh Admin.');
         $this->assertGuest();
         $this->assertDatabaseMissing('users', [
             'email' => 'user@gmail.com',

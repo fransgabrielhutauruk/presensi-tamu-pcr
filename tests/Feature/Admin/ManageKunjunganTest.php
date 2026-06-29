@@ -52,7 +52,7 @@ describe('BBT-10 Mengelola Data Kunjungan', function () {
             ]);
 
         // Assertion
-        $pageResponse->assertOk()->assertSee('Kelola Kunjungan');
+        $pageResponse->assertOk()->assertSee('Kunjungan');
 
         $dataResponse->assertOk();
         $dataResponse->assertJsonFragment([
@@ -145,6 +145,15 @@ describe('BBT-10 Mengelola Data Kunjungan', function () {
                     'value' => 'Nama Tidak Ditemukan',
                     'regex' => 'false',
                 ],
+                'columns' => [
+                    [
+                        'data' => 'nama',
+                        'name' => 'nama',
+                        'searchable' => 'true',
+                        'orderable' => 'true',
+                        'search' => ['value' => '', 'regex' => 'false']
+                    ]
+                ]
             ]);
 
         // Assertion

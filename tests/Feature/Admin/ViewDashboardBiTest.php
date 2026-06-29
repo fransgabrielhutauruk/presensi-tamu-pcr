@@ -34,7 +34,7 @@ describe('BBT-14 Melihat Dashboard BI', function () {
         $response->assertSee('app.powerbi.com/view', false);
     });
 
-    it('security dapat mengakses dashboard tetapi tidak menampilkan embed Power BI', function () {
+    it('menolak akses dashboard untuk pengguna dengan role security', function () {
         /** @var Tests\TestCase $this */
         // Setup
         Role::firstOrCreate([
@@ -54,10 +54,7 @@ describe('BBT-14 Melihat Dashboard BI', function () {
             ->get(route('app.dashboard.index'));
 
         // Assertion
-        $response->assertOk();
-        $response->assertSee('Dashboard Security');
-        $response->assertDontSee('dashboard-power-bi-presensi-tamu', false);
-        $response->assertDontSee('app.powerbi.com/view', false);
+        $response->assertForbidden();
     });
 
     it('menolak akses dashboard untuk pengguna dengan role mahasiswa', function () {

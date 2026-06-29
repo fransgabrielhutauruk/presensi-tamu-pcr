@@ -56,7 +56,7 @@ describe('BBT-16 Melihat Feedback', function () {
             ]);
 
         // Assertion
-        $pageResponse->assertOk()->assertSee('Kelola Feedback');
+        $pageResponse->assertOk()->assertSee('Feedback');
 
         $detailResponse->assertOk()->assertJson([
             'status' => true,

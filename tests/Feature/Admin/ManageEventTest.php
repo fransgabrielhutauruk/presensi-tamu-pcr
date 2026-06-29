@@ -100,6 +100,8 @@ describe('BBT-9 Mengelola Data Event', function () {
             'waktu_mulai_event' => '09:00',
             'waktu_selesai_event' => '11:00',
             'lokasi_event' => 'Lab Komputer 2',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'https://drive.google.com/drive/folders/workshop-keamanan-data',
         ];
 
@@ -205,7 +207,7 @@ describe('BBT-9 Mengelola Data Event', function () {
             ->actingAs($user)
             ->withSession(['active_role' => UserRole::ADMIN->value])
             ->withHeader('X-Requested-With', 'XMLHttpRequest')
-            ->get(route('app.event.data', ['param1' => 'list', 'kategori' => encid((string) $kategoriTanpaData->eventkategori_id)]));
+            ->get(route('app.event.data', ['param1' => 'list', 'filter_kategori' => encid((string) $kategoriTanpaData->eventkategori_id)]));
 
         // Assertion
         $response->assertOk();
@@ -248,6 +250,8 @@ describe('BBT-9 Mengelola Data Event', function () {
             'waktu_mulai_event' => '10:00',
             'waktu_selesai_event' => '12:00',
             'lokasi_event' => 'Aula 2',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'bukan-url-valid',
         ];
 

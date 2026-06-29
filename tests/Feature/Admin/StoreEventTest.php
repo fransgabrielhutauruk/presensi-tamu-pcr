@@ -38,6 +38,8 @@ describe('BBT-6 Pembuatan Event Baru', function () {
             'waktu_mulai_event' => '09:00',
             'waktu_selesai_event' => '12:00',
             'lokasi_event' => 'Aula Utama PCR',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'https://drive.google.com/drive/folders/pcr-seminar-ai',
         ];
 
@@ -65,6 +67,8 @@ describe('BBT-6 Pembuatan Event Baru', function () {
             'eventkategori_id' => $kategori->eventkategori_id,
             'nama_event' => 'Seminar Teknologi AI',
             'lokasi_event' => 'Aula Utama PCR',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'https://drive.google.com/drive/folders/pcr-seminar-ai',
         ]);
 
@@ -72,7 +76,7 @@ describe('BBT-6 Pembuatan Event Baru', function () {
             ->withSession(['active_role' => UserRole::STAF->value])
             ->get(route('app.event.qr-code', $eventIdHashed))
             ->assertOk()
-            ->assertSee('Link Presensi')
+            ->assertSee('Atau akses link alternatif:')
             ->assertSee($presensiUrl);
     });
 
@@ -103,6 +107,8 @@ describe('BBT-6 Pembuatan Event Baru', function () {
             'waktu_mulai_event' => '9-00',
             'waktu_selesai_event' => '12.00',
             'lokasi_event' => 'Lab Komputer 1',
+            'kategori_lokasi' => 'dalam_kampus',
+            'jenis_kegiatan' => 'non_pmb',
             'link_dokumentasi_event' => 'https://drive.google.com/drive/folders/workshop-uiux',
         ];
 
@@ -147,6 +153,8 @@ describe('BBT-6 Pembuatan Event Baru', function () {
             'waktu_mulai_event' => '08:00',
             'waktu_selesai_event' => '10:00',
             'lokasi_event' => '',
+            'kategori_lokasi' => '',
+            'jenis_kegiatan' => '',
             'link_dokumentasi_event' => 'https://drive.google.com/drive/folders/pelatihan-internal',
         ];
 
@@ -160,7 +168,7 @@ describe('BBT-6 Pembuatan Event Baru', function () {
 
         // Assertion
         $response->assertRedirect(route('app.event.index'));
-        $response->assertSessionHasErrors(['nama_event', 'lokasi_event']);
+        $response->assertSessionHasErrors(['nama_event', 'lokasi_event', 'kategori_lokasi', 'jenis_kegiatan']);
         $this->assertDatabaseCount('event', 0);
     });
 });
