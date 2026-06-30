@@ -31,8 +31,9 @@ const bukaHalamanKelolaOpsiKunjungan = () => {
 };
 
 const bukaModalEditPihakDituju = () => {
-  cy.contains('[data-cy="table-opsi-kunjungan-list"] tbody tr', 'pihak_dituju', { timeout: 15000 })
+  cy.contains('[data-cy="table-opsi-kunjungan-list"] tbody tr td', /^pihak_dituju$/, { timeout: 15000 })
     .should('be.visible')
+    .parent()
     .within(() => {
       cy.get('[data-cy^="btn-action-edit-"]').first().click({ force: true });
     });
@@ -86,9 +87,9 @@ describe('BBT-19 Mengelola Opsi Kunjungan', () => {
 
     // Assert (Verifikasi UI)
     cy.visit('/non-event/presensi?tujuan=instansi');
-    cy.get('[data-cy="select-pihak_dituju"]').should('be.visible').invoke('text').then((opsiTeks) => {
-      expect(String(opsiTeks), 'opsi pihak dituju baru muncul di form presensi tamu').to.include(opsiBaruId);
-    });
+    cy.get('[data-cy="select-pihak_dituju"]')
+      .should('be.visible')
+      .should('contain', opsiBaruId);
   });
 
   it('admin mengubah nilai salah satu item opsi kunjungan dan perubahan muncul di form presensi tamu', () => {
@@ -116,11 +117,10 @@ describe('BBT-19 Mengelola Opsi Kunjungan', () => {
 
     // Assert (Verifikasi UI)
     cy.visit('/non-event/presensi?tujuan=instansi');
-    cy.get('[data-cy="select-pihak_dituju"]').should('be.visible').invoke('text').then((opsiTeks) => {
-      const daftarOpsi = String(opsiTeks);
-      expect(daftarOpsi, 'nilai opsi hasil edit muncul pada form presensi tamu').to.include(opsiBaruId);
-      expect(daftarOpsi, 'nilai opsi lama tidak tampil setelah diedit').to.not.include(opsiAwalId);
-    });
+    cy.get('[data-cy="select-pihak_dituju"]')
+      .should('be.visible')
+      .should('contain', opsiBaruId)
+      .and('not.contain', opsiAwalId);
   });
 
   it('admin menghapus salah satu item opsi kunjungan dan item tidak muncul lagi di form presensi tamu', () => {
@@ -145,8 +145,8 @@ describe('BBT-19 Mengelola Opsi Kunjungan', () => {
 
     // Assert (Verifikasi UI)
     cy.visit('/non-event/presensi?tujuan=instansi');
-    cy.get('[data-cy="select-pihak_dituju"]').should('be.visible').invoke('text').then((opsiTeks) => {
-      expect(String(opsiTeks), 'item opsi yang dihapus tidak muncul di form presensi tamu').to.not.include(opsiHapusId);
-    });
+    cy.get('[data-cy="select-pihak_dituju"]')
+      .should('be.visible')
+      .should('not.contain', opsiHapusId);
   });
 });

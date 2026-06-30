@@ -34,7 +34,7 @@ const buatPresensiEventBelumValidasi = () => {
   cy.get('[data-cy="radio-jenis_kelamin-laki-laki"]').check({ force: true });
   cy.get('[data-cy="input-nomor_telepon"]').type(`081277${suffix}`);
   cy.get('[data-cy="input-email"]').type(`bbt7.${suffix}@example.com`);
-  cy.get('[data-cy="input-institusi"]').type('PT Validasi Event');
+  cy.get('[data-cy="input-instansi"]').type('PT Validasi Event');
   pilihOpsiPertama('[data-cy="select-peran"]');
   pilihOpsiPertama('[data-cy="select-transportasi"]');
   cy.get('[data-cy="btn-submit-presensi-event"]').click();

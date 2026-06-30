@@ -22,19 +22,35 @@ const pilihRoles = (roles) => {
   });
 };
 
-const cariUserDiTabel = (keyword) => {
-  cy.get('[data-cy^="input-table-search-"]').first()
-    .click({ force: true })
-    .type('{selectall}{backspace}', { force: true })
-    .type(`${keyword}{enter}`, { force: true });
+const cariUserDiTabel = (keyword, alias = 'listUserSearch') => {
+  cy.intercept('POST', '**/app/user/data/list*').as(alias);
+  cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+    const tableId = $el.attr('id').replace('customSearch-', '');
+    cy.window().then((win) => {
+      win.$(`#${tableId}`).DataTable().search(keyword).draw();
+    });
+  });
+  cy.wait(`@${alias}`); // Tunggu DataTable AJAX selesai
+  cy.wait(300); // Buffer agar DOM stabil
+};
+
+const bukaFormTambahUser = () => {
+  cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
+  cy.get('#modalForm').should('be.visible');
+  cy.wait(500); // Tunggu animasi Bootstrap modal selesai
+};
+
+const bukaFormEditUser = (userIdEnc) => {
+  cy.get(`[data-cy="btn-action-edit-${userIdEnc}"]`)
+    .should('exist')
+    .scrollIntoView()
+    .click({ force: true });
+  cy.get('#modalForm', { timeout: 10000 }).should('be.visible');
+  cy.wait(500); // Tunggu animasi Bootstrap modal selesai
 };
 
 const tungguModalUserTertutup = () => {
-  cy.get('body').then(($body) => {
-    if ($body.find('[data-cy="form-user"]').length > 0) {
-      cy.get('[data-cy="form-user"]').should('not.be.visible');
-    }
-  });
+  cy.get('#modalForm').should('not.be.visible');
   cy.wait(300);
 };
 
@@ -53,8 +69,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     cy.wait('@listUser');
 
     // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(namaUser);
     cy.get('[data-cy="input-user-email"]').type(emailUser);
     pilihRoles(['Security']);
@@ -69,18 +84,13 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
       cy.wrap(userIdEnc).as('userIdEnc');
     });
 
-    cy.wait('@listUser');
     tungguModalUserTertutup();
-    cariUserDiTabel(emailUser);
+    cariUserDiTabel(emailUser, 'listUserSearch1');
     cy.contains('[data-cy="table-user-list"] tbody tr', emailUser).should('contain', 'Security');
 
     cy.get('@userIdEnc').then((userIdEnc) => {
-      cy.get(`[data-cy="btn-action-edit-${userIdEnc}"]`)
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
+      bukaFormEditUser(userIdEnc);
     });
-    cy.get('[data-cy="form-user"]').should('be.visible');
     cy.get('[data-cy="input-user-name"]').invoke('val').should('not.equal', '');
     cy.get('[data-cy="input-user-email"]').should('have.value', emailUser);
     pilihRoles(['Security', 'Admin']);
@@ -91,18 +101,13 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
       expect(updateInterception.response?.body?.status).to.equal(true);
     });
 
-    cy.wait('@listUser');
     tungguModalUserTertutup();
-    cariUserDiTabel(emailUser);
+    cariUserDiTabel(emailUser, 'listUserSearch2');
     cy.contains('[data-cy="table-user-list"] tbody tr', emailUser).should('contain', 'Admin');
 
     cy.get('@userIdEnc').then((userIdEnc) => {
-      cy.get(`[data-cy="btn-action-edit-${userIdEnc}"]`)
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
+      bukaFormEditUser(userIdEnc);
     });
-    cy.get('[data-cy="form-user"]').should('be.visible');
     cy.get('[data-cy="input-user-name"]').invoke('val').should('not.equal', '');
     cy.get('[data-cy="input-user-email"]').should('have.value', emailUser);
     pilihRoles(['Security']);
@@ -114,9 +119,8 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     });
 
     // Assert (Verifikasi UI)
-    cy.wait('@listUser');
     tungguModalUserTertutup();
-    cariUserDiTabel(emailUser);
+    cariUserDiTabel(emailUser, 'listUserSearch3');
     cy.contains('[data-cy="table-user-list"] tbody tr', emailUser)
       .should('contain', 'Security')
       .and('not.contain', 'Admin');
@@ -136,8 +140,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     cy.wait('@listUserInvalidRole');
 
     // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(namaUser);
     cy.get('[data-cy="input-user-email"]').type(emailUser);
     pilihRoles(['Security']);
@@ -152,17 +155,12 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
       cy.wrap(userIdEnc).as('userIdEncInvalidRole');
     });
 
-    cy.wait('@listUserInvalidRole');
     tungguModalUserTertutup();
-    cariUserDiTabel(emailUser);
+    cariUserDiTabel(emailUser, 'listUserSearchInvalidRole');
     cy.get('@userIdEncInvalidRole').then((userIdEnc) => {
-      cy.get(`[data-cy="btn-action-edit-${userIdEnc}"]`)
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
+      bukaFormEditUser(userIdEnc);
     });
 
-    cy.get('[data-cy="form-user"]').should('be.visible');
     cy.get('[data-cy="input-user-name"]').invoke('val').should('not.equal', '');
     cy.get('[data-cy="input-user-email"]').should('have.value', emailUser);
     cy.get('[data-cy="select-user-roles"]').invoke('val', []).trigger('change', { force: true });
@@ -190,8 +188,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     cy.wait('@listUserDuplicate');
 
     // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(`User BBT11 First ${suffix}`);
     cy.get('[data-cy="input-user-email"]').type(emailUser);
     pilihRoles(['Security']);
@@ -203,8 +200,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     });
 
     tungguModalUserTertutup();
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(`User BBT11 Second ${suffix}`);
     cy.get('[data-cy="input-user-email"]').type(emailUser);
     pilihRoles(['Admin']);
@@ -232,8 +228,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     cy.wait('@listUserInvalidEmail');
 
     // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(`User BBT11 Invalid Email ${suffix}`);
     cy.get('[data-cy="input-user-email"]').type(invalidEmail);
     pilihRoles(['Security']);
@@ -261,8 +256,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     cy.wait('@listUserNoRole');
 
     // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(`User BBT11 No Role ${suffix}`);
     cy.get('[data-cy="input-user-email"]').type(emailUser);
     cy.get('[data-cy="select-user-roles"]').invoke('val', []).trigger('change', { force: true });
@@ -292,8 +286,7 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
     cy.wait('@listUserInvalidValue');
 
     // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-user"]').click({ force: true });
-    cy.get('[data-cy="form-user"]').should('be.visible');
+    bukaFormTambahUser();
     cy.get('[data-cy="input-user-name"]').type(namaUser);
     cy.get('[data-cy="input-user-email"]').type(emailUser);
     pilihRoles(['Security']);
@@ -308,17 +301,12 @@ describe('BBT-11 Mengelola Akses Pengguna', () => {
       cy.wrap(userIdEnc).as('userIdEncInvalidValue');
     });
 
-    cy.wait('@listUserInvalidValue');
     tungguModalUserTertutup();
-    cariUserDiTabel(emailUser);
+    cariUserDiTabel(emailUser, 'listUserSearchInvalidValue');
     cy.get('@userIdEncInvalidValue').then((userIdEnc) => {
-      cy.get(`[data-cy="btn-action-edit-${userIdEnc}"]`)
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
+      bukaFormEditUser(userIdEnc);
     });
 
-    cy.get('[data-cy="form-user"]').should('be.visible');
     cy.get('[data-cy="input-user-email"]').should('have.value', emailUser);
     cy.get('[data-cy="select-user-roles"]').then(($select) => {
       const hasInvalidOption = [...$select.find('option')].some((option) => option.value === 'SuperAdmin');

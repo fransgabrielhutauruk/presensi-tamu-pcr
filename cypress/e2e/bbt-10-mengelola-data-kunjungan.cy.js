@@ -23,10 +23,26 @@ describe('BBT-10 Mengelola Data Kunjungan', () => {
     // Act (Isi form/klik)
     cy.get('[data-cy^="btn-action-delete-"]').its('length').should('be.gte', 1);
 
-    cy.get('[data-cy^="input-table-search-"]').first().clear().type('zzzz-bbt10-data-tidak-ada');
+    // Trigger DataTable search langsung via API (lebih reliable dari mengetik)
+    cy.intercept('POST', '**/app/kunjungan/data/list*').as('listKunjunganSearch');
+    cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+      const tableId = $el.attr('id').replace('customSearch-', '');
+      cy.window().then((win) => {
+        win.$(`#${tableId}`).DataTable().search('zzzz-bbt10-data-tidak-ada').draw();
+      });
+    });
+    cy.wait('@listKunjunganSearch');
     cy.get('[data-cy^="btn-action-delete-"]').should('not.exist');
 
-    cy.get('[data-cy^="input-table-search-"]').first().clear();
+    // Reset pencarian
+    cy.intercept('POST', '**/app/kunjungan/data/list*').as('listKunjunganReset');
+    cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+      const tableId = $el.attr('id').replace('customSearch-', '');
+      cy.window().then((win) => {
+        win.$(`#${tableId}`).DataTable().search('').draw();
+      });
+    });
+    cy.wait('@listKunjunganReset');
 
     cy.get('[data-cy^="btn-action-delete-"]').first().as('targetDeleteButton');
     cy.get('@targetDeleteButton').invoke('attr', 'data-cy').then((deleteDataCy) => {

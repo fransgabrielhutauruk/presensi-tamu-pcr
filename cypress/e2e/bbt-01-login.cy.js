@@ -48,8 +48,9 @@ describe('BBT-1 Login', () => {
 
     // Assert (Verifikasi UI)
     cy.url().should('include', '/login');
-    cy.get('[data-cy="alert-login-error"]')
+    cy.get('.swal2-popup').should('be.visible');
+    cy.get('.swal2-html-container')
       .should('be.visible')
-      .and('contain', 'Hanya email @pcr.ac.id yang diizinkan.');
+      .and('contain', 'Akses ditolak. Gunakan email @pcr.ac.id atau gunakan email yang sudah didaftarkan oleh Admin.');
   });
 });

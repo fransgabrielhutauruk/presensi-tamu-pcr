@@ -52,6 +52,12 @@ const requestListFeedback = (csrfToken, searchKeyword) => {
       length: '50',
       'search[value]': searchKeyword,
       'search[regex]': 'false',
+      'columns[0][data]': 'nama_tamu',
+      'columns[0][name]': 'nama_tamu',
+      'columns[0][searchable]': 'true',
+      'columns[0][orderable]': 'true',
+      'columns[0][search][value]': '',
+      'columns[0][search][regex]': 'false',
     },
   });
 };

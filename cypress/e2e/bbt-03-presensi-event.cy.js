@@ -75,7 +75,7 @@ describe('BBT-3 Pengisian Presensi Event', () => {
     cy.get('[data-cy="radio-jenis_kelamin-perempuan"]').check({ force: true });
     cy.get('[data-cy="input-nomor_telepon"]').type(`08129876${suffix}`);
     cy.get('[data-cy="input-email"]').type(`siti.bbt3.${suffix}@example.com`);
-    cy.get('[data-cy="input-institusi"]').type('PT Inovasi Nusantara');
+    cy.get('[data-cy="input-instansi"]').type('PT Inovasi Nusantara');
     pilihOpsiPertama('[data-cy="select-peran"]');
     pilihOpsiPertama('[data-cy="select-transportasi"]');
     cy.get('[data-cy="btn-submit-presensi-event"]').click();
@@ -185,7 +185,7 @@ describe('BBT-3 Pengisian Presensi Event', () => {
       '[data-cy="radio-jenis_kelamin-laki-laki"]',
       '[data-cy="input-nomor_telepon"]',
       '[data-cy="input-email"]',
-      '[data-cy="input-institusi"]',
+      '[data-cy="input-instansi"]',
       '[data-cy="select-peran"]',
       '[data-cy="select-transportasi"]',
     ]);

@@ -35,15 +35,17 @@ const buatEventMelaluiUI = (namaEvent) => {
   cy.intercept('POST', '**/app/event/store').as('storeEventBBT18');
   cy.get('[data-cy="btn-tambah-event"]').click();
   cy.get('[data-cy="form-create-event"]').should('be.visible');
-  cy.get('[data-cy="input-nama_event"]').clear().type(namaEvent);
+  cy.get('[data-cy="input-nama_event"]').clear({ force: true }).type(namaEvent, { force: true });
 
   return ambilKategoriEventPertama().then((kategoriId) => {
     cy.get('[data-cy="select-eventkategori_id"]').select(kategoriId, { force: true });
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
-    cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('09:00', { force: true });
-    cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('11:00', { force: true });
-    cy.get('[data-cy="input-lokasi_event"]').clear().type('Gedung Utama PCR');
-    cy.get('[data-cy="textarea-deskripsi_event"]').clear().type(`Event untuk pengujian BBT-18 ${namaEvent}`);
+    cy.get('[name="jenis_kegiatan"][value="non_pmb"]').check({ force: true });
+    cy.get('[name="kategori_lokasi"][value="dalam_kampus"]').check({ force: true });
+    cy.get('[data-cy="input-tanggal_event"]').invoke('val', tanggalEventFormat).trigger('change', { force: true });
+    cy.get('[data-cy="input-waktu_mulai_event"]').invoke('val', '09:00').trigger('change', { force: true });
+    cy.get('[data-cy="input-waktu_selesai_event"]').invoke('val', '11:00').trigger('change', { force: true });
+    cy.get('[data-cy="input-lokasi_event"]').clear({ force: true }).type('Gedung Utama PCR', { force: true });
+    cy.get('[data-cy="textarea-deskripsi_event"]').clear({ force: true }).type(`Event untuk pengujian BBT-18 ${namaEvent}`, { force: true });
     cy.get('[data-cy="btn-simpan-event"]').click();
 
     return cy.wait('@storeEventBBT18').then((storeInterception) => {

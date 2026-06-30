@@ -1,10 +1,12 @@
-const loginDenganSkenario = (scenario, expectedRole) => {
+const loginDenganSkenario = (scenario, expectedRole, expectedPath) => {
   cy.visit('/login');
   cy.get('[data-cy="btn-login-google"]')
     .should('be.visible')
     .invoke('attr', 'href', `/auth/google?cy_scenario=${scenario}`);
   cy.get('[data-cy="btn-login-google"]').click();
-  cy.location('pathname', { timeout: 10000 }).should('eq', '/app/event');
+  if (expectedPath) {
+    cy.location('pathname', { timeout: 10000 }).should('eq', expectedPath);
+  }
   cy.get('[data-cy="menu-user-toggle"]').click();
   cy.get('[data-cy="badge-active-role"]').should('contain', expectedRole);
 };
@@ -12,7 +14,7 @@ const loginDenganSkenario = (scenario, expectedRole) => {
 describe('BBT-14 Melihat Dashboard BI', () => {
   it('eksekutif mengakses halaman dashboard BI dan melihat visualisasi Power BI', () => {
     // Arrange (Kunjungi URL)
-    loginDenganSkenario('eksekutif-role', 'Eksekutif');
+    loginDenganSkenario('eksekutif-role', 'Eksekutif', '/app/dashboard');
     cy.visit('/app/dashboard');
 
     // Act (Isi form/klik)
@@ -27,10 +29,10 @@ describe('BBT-14 Melihat Dashboard BI', () => {
 
   it('security dapat mengakses dashboard tetapi tidak menampilkan embed Power BI', () => {
     // Arrange (Kunjungi URL)
-    loginDenganSkenario('security-role', 'Security');
+    loginDenganSkenario('security-role', 'Security', '/app/kunjungan/monitoring');
 
     // Act (Isi form/klik)
-    cy.visit('/app/dashboard');
+    cy.visit('/app/dashboard', { failOnStatusCode: false });
 
     // Assert (Verifikasi UI)
     cy.get('[data-cy="panel-dashboard-bi"]').should('not.exist');
@@ -39,7 +41,7 @@ describe('BBT-14 Melihat Dashboard BI', () => {
 
   it('pengguna role mahasiswa ditolak saat mengakses dashboard BI', () => {
     // Arrange (Kunjungi URL)
-    loginDenganSkenario('mahasiswa-role', 'Mahasiswa');
+    loginDenganSkenario('mahasiswa-role', 'Mahasiswa', '/app/event');
 
     // Act (Isi form/klik)
     cy.request({

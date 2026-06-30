@@ -7,8 +7,11 @@ const loginSebagaiAdmin = () => {
   cy.location('pathname', { timeout: 10000 }).should('eq', '/app/event');
   cy.get('[data-cy="menu-user-toggle"]').click();
   cy.get('[data-cy="btn-switch-role-admin"]').click();
+  cy.location('pathname', { timeout: 10000 }).should('eq', '/app/dashboard');
+  
   cy.get('[data-cy="menu-user-toggle"]').click();
   cy.get('[data-cy="badge-active-role"]').should('contain', 'Admin');
+  cy.visit('/app/event');
 };
 
 const pilihKategoriEventPertama = () => {
@@ -21,6 +24,32 @@ const pilihKategoriEventPertama = () => {
       .select(kategoriId, { force: true })
       .then(() => kategoriId);
   });
+};
+
+// Helper: klik tombol tambah event dan tunggu modal terbuka sepenuhnya
+const bukaFormTambahEvent = () => {
+  cy.get('[data-cy="btn-tambah-event"]').click();
+  cy.get('#modalForm').should('be.visible');
+  cy.wait(500); // Tunggu animasi fade Bootstrap selesai
+};
+
+// Helper: klik tombol edit pada baris event tertentu dan tunggu modal terbuka
+const bukaFormEditEvent = (eventIdEnc, namaEvent) => {
+  // Intercept search table AJAX agar kita bisa tunggu sampai DataTable selesai redraw
+  cy.intercept('POST', '**/app/event/data/list*').as('searchReloadEdit');
+  cy.get('[data-cy^="input-table-search-"]').first().clear().type(namaEvent, { delay: 0 });
+  cy.wait('@searchReloadEdit'); // Pastikan DataTable sudah selesai redraw akibat pencarian
+  cy.wait(300); // Sedikit buffer agar DOM stabil
+
+  // Klik tombol edit - DataTable sudah stabil jadi tidak ada race condition
+  cy.get(`[data-cy="btn-action-edit-${eventIdEnc}"]`, { timeout: 10000 })
+    .should('exist')
+    .scrollIntoView()
+    .click({ force: true });
+
+  // Tunggu modal terbuka (AJAX response selesai & Bootstrap modal fade-in)
+  cy.get('#modalForm', { timeout: 10000 }).should('be.visible');
+  cy.wait(500); // Tunggu animasi fade Bootstrap selesai
 };
 
 describe('BBT-9 Mengelola Data Event', () => {
@@ -40,18 +69,18 @@ describe('BBT-9 Mengelola Data Event', () => {
     cy.intercept('POST', '**/app/event/store').as('storeEventBBT9');
     cy.intercept('POST', '**/app/event/update**').as('updateEventBBT9');
     cy.intercept('POST', '**/app/event/data/list*').as('listEventBBT9');
-    cy.intercept('POST', '**/app/event/data/list?kategori=*').as('listEventFilteredBBT9');
 
-    // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-event"]').click();
-    cy.get('[data-cy="form-create-event"]').should('exist');
+    // Act (Isi form Tambah Event)
+    bukaFormTambahEvent();
     cy.get('[data-cy="input-nama_event"]').type(namaEvent);
     pilihKategoriEventPertama().then((kategoriId) => {
       cy.wrap(kategoriId).as('kategoriEventId');
     });
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
+    cy.get('[data-cy="input-tanggal_event"]').then($el => { $el[0]._flatpickr.setDate(tanggalEventFormat); });
     cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('08:00', { force: true });
     cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('10:00', { force: true });
+    cy.get('[data-cy="radio-jenis_kegiatan-non-pmb"]').check({ force: true });
+    cy.get('[data-cy="radio-kategori_lokasi-dalam-kampus"]').check({ force: true });
     cy.get('[data-cy="input-lokasi_event"]').type(lokasiAwal);
     cy.get('[data-cy="textarea-deskripsi_event"]').type('Event untuk skenario pengelolaan data event.');
     cy.get('[data-cy="btn-simpan-event"]').click();
@@ -65,20 +94,19 @@ describe('BBT-9 Mengelola Data Event', () => {
       cy.wrap(eventIdEnc).as('eventIdEnc');
     });
 
-    cy.get('@eventIdEnc').then((eventIdEnc) => {
-      cy.get('[data-cy^="input-table-search-"]').first().clear().type(namaEvent);
-      cy.get(`[data-cy="btn-action-edit-${eventIdEnc}"]`, { timeout: 10000 })
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
-    });
+    // Tunggu tabel selesai reload setelah simpan
+    cy.wait('@listEventBBT9');
 
-    cy.get('[data-cy="form-create-event"]').should('exist');
-    cy.get('[data-cy="input-lokasi_event"]')
-      .click()
-      .type('{selectall}{backspace}')
-      .type(lokasiBaru)
-      .should('have.value', lokasiBaru);
+    // Buka form Edit event yang baru dibuat
+    cy.get('@eventIdEnc').then((eventIdEnc) => {
+      bukaFormEditEvent(eventIdEnc, namaEvent);
+
+      // Edit lokasi
+      cy.get('[data-cy="input-lokasi_event"]')
+        .clear()
+        .type(lokasiBaru)
+        .should('have.value', lokasiBaru);
+    });
     cy.get('[data-cy="textarea-deskripsi_event"]').clear().type(deskripsiBaru);
     cy.get('[data-cy="btn-simpan-event"]').click();
 
@@ -90,28 +118,24 @@ describe('BBT-9 Mengelola Data Event', () => {
       expect(body).to.include(`\r\n\r\n${lokasiBaru}\r\n`);
     });
 
-    cy.get('[data-cy^="input-table-search-"]').first().clear();
+    // Verifikasi Filter Kategori
     cy.get('@kategoriEventId').then((kategoriEventId) => {
+      cy.intercept('POST', '**/app/event/data/list*').as('listEventFiltered');
+      cy.get('[data-cy^="input-table-search-"]').first().clear();
       cy.get('[data-cy="select-filter-kategori-event"]')
         .select(kategoriEventId, { force: true })
         .should('have.value', kategoriEventId);
+      cy.wait('@listEventFiltered');
     });
-    cy.wait('@listEventFilteredBBT9');
 
     // Assert (Verifikasi UI)
     cy.location('pathname').should('eq', '/app/event');
-    cy.get('[data-cy^="input-table-search-"]').first().clear().type(namaEvent);
-    cy.wait('@listEventBBT9');
-    cy.contains('[data-cy="table-event-list"] tbody tr', namaEvent, { timeout: 10000 })
-      .should('be.visible');
+
+    // Verifikasi data edit berhasil - cari dan buka edit lagi
     cy.get('@eventIdEnc').then((eventIdEnc) => {
-      cy.get(`[data-cy="btn-action-edit-${eventIdEnc}"]`, { timeout: 10000 })
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
+      bukaFormEditEvent(eventIdEnc, namaEvent);
+      cy.get('[data-cy="input-lokasi_event"]').should('have.value', lokasiBaru);
     });
-    cy.get('[data-cy="form-create-event"]').should('be.visible');
-    cy.get('[data-cy="input-lokasi_event"]').should('have.value', lokasiBaru);
   });
 
   it('admin gagal mengedit event saat nama event dikosongkan', () => {
@@ -128,14 +152,15 @@ describe('BBT-9 Mengelola Data Event', () => {
     cy.intercept('POST', '**/app/event/update**').as('updateEventBBT9Invalid');
     cy.intercept('POST', '**/app/event/data/list*').as('listEventBBT9Invalid');
 
-    // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-event"]').click();
-    cy.get('[data-cy="form-create-event"]').should('be.visible');
+    // Act (Isi form Tambah Event)
+    bukaFormTambahEvent();
     cy.get('[data-cy="input-nama_event"]').type(namaEvent);
     pilihKategoriEventPertama();
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
+    cy.get('[data-cy="input-tanggal_event"]').then($el => { $el[0]._flatpickr.setDate(tanggalEventFormat); });
     cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('13:00', { force: true });
     cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('15:00', { force: true });
+    cy.get('[data-cy="radio-jenis_kegiatan-non-pmb"]').check({ force: true });
+    cy.get('[data-cy="radio-kategori_lokasi-dalam-kampus"]').check({ force: true });
     cy.get('[data-cy="input-lokasi_event"]').type('AulaC');
     cy.get('[data-cy="textarea-deskripsi_event"]').type('Event untuk edge case edit nama kosong.');
     cy.get('[data-cy="btn-simpan-event"]').click();
@@ -149,20 +174,22 @@ describe('BBT-9 Mengelola Data Event', () => {
       cy.wrap(eventIdEnc).as('eventIdEncInvalid');
     });
 
-    cy.get('@eventIdEncInvalid').then((eventIdEnc) => {
-      cy.get('[data-cy^="input-table-search-"]').first().clear().type(namaEvent);
-      cy.wait('@listEventBBT9Invalid');
-      cy.get(`[data-cy="btn-action-edit-${eventIdEnc}"]`, { timeout: 10000 })
-        .should('exist')
-        .scrollIntoView()
-        .click({ force: true });
-    });
+    // Tunggu modal BENAR-BENAR tertutup setelah save (animasi Bootstrap ~300ms)
+    // dan tabel selesai reload - lebih reliable daripada cy.wait('@listEventBBT9Invalid')
+    cy.get('#modalForm', { timeout: 10000 }).should('not.be.visible');
+    cy.wait(800); // Beri waktu DataTable selesai reload setelah save
 
-    cy.get('[data-cy="form-create-event"]').should('be.visible');
-    cy.get('[data-cy="input-nama_event"]').click().type('{selectall}{backspace}').should('have.value', '');
+    // Buka form Edit, kosongkan nama_event, submit
+    cy.get('@eventIdEncInvalid').then((eventIdEnc) => {
+      bukaFormEditEvent(eventIdEnc, namaEvent);
+
+      cy.get('[data-cy="input-nama_event"]')
+        .clear()
+        .should('have.value', '');
+    });
     cy.get('[data-cy="btn-simpan-event"]').click();
 
-    // Assert (Verifikasi UI)
+    // Assert (Verifikasi validasi gagal dengan 422)
     cy.wait('@updateEventBBT9Invalid').then((updateInterception) => {
       expect(updateInterception.response?.statusCode).to.equal(422);
       expect(Boolean(updateInterception.response?.body?.errors?.nama_event?.length)).to.equal(true);

@@ -6,13 +6,15 @@ const pilihOpsiPertama = (selector) => {
   });
 };
 
-const loginDenganSkenario = (scenario, expectedRole) => {
+const loginDenganSkenario = (scenario, expectedRole, expectedPath) => {
   cy.visit('/login');
   cy.get('[data-cy="btn-login-google"]')
     .should('be.visible')
     .invoke('attr', 'href', `/auth/google?cy_scenario=${scenario}`);
   cy.get('[data-cy="btn-login-google"]').click();
-  cy.location('pathname', { timeout: 10000 }).should('eq', '/app/event');
+  if (expectedPath) {
+    cy.location('pathname', { timeout: 10000 }).should('eq', expectedPath);
+  }
   cy.get('[data-cy="menu-user-toggle"]').click();
   cy.get('[data-cy="badge-active-role"]').should('contain', expectedRole);
 };
@@ -51,14 +53,21 @@ describe('BBT-15 Monitoring Tamu Aktif', () => {
   it('eksekutif masuk ke halaman monitoring kunjungan dan melihat daftar tamu aktif hari ini', () => {
     // Arrange (Kunjungi URL)
     buatKunjunganNonEventHariIni().then((kunjunganData) => {
-      loginDenganSkenario('eksekutif-role', 'Eksekutif');
+      loginDenganSkenario('eksekutif-role', 'Eksekutif', '/app/dashboard');
       cy.intercept('POST', '**/app/kunjungan/data/monitoring-hari-ini*').as('listMonitoringHariIni');
       cy.visit('/app/kunjungan/monitoring');
       cy.wait('@listMonitoringHariIni');
 
       // Act (Isi form/klik)
       cy.get('[data-cy="table-monitoring-kunjungan"]').should('be.visible');
-      cy.get('[data-cy^="input-table-search-"]').first().clear({ force: true }).type(`${kunjunganData.nama}{enter}`, { force: true });
+      cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+        const tableId = $el.attr('id').replace('customSearch-', '');
+        cy.window().then((win) => {
+          win.$(`#${tableId}`).DataTable().search(kunjunganData.nama).draw();
+        });
+      });
+      cy.wait('@listMonitoringHariIni');
+      cy.wait(300);
 
       // Assert (Verifikasi UI)
       cy.contains('[data-cy="table-monitoring-kunjungan"] tbody tr', kunjunganData.nama, { timeout: 10000 })
@@ -69,7 +78,7 @@ describe('BBT-15 Monitoring Tamu Aktif', () => {
 
   it('pengguna role mahasiswa ditolak saat mengakses halaman monitoring kunjungan', () => {
     // Arrange (Kunjungi URL)
-    loginDenganSkenario('mahasiswa-role', 'Mahasiswa');
+    loginDenganSkenario('mahasiswa-role', 'Mahasiswa', '/app/event');
 
     // Act (Isi form/klik)
     cy.request({
@@ -99,7 +108,7 @@ describe('BBT-15 Monitoring Tamu Aktif', () => {
 
   it('eksekutif tidak menemukan data saat mencari kata kunci yang tidak ada di monitoring kunjungan', () => {
     // Arrange (Kunjungi URL)
-    loginDenganSkenario('eksekutif-role', 'Eksekutif');
+    loginDenganSkenario('eksekutif-role', 'Eksekutif', '/app/dashboard');
     cy.intercept('POST', '**/app/kunjungan/data/monitoring-hari-ini*').as('listMonitoringNoMatch');
     cy.visit('/app/kunjungan/monitoring');
     cy.wait('@listMonitoringNoMatch');
@@ -107,7 +116,14 @@ describe('BBT-15 Monitoring Tamu Aktif', () => {
 
     // Act (Isi form/klik)
     cy.get('[data-cy="table-monitoring-kunjungan"]').should('be.visible');
-    cy.get('[data-cy^="input-table-search-"]').first().clear({ force: true }).type(`${kataKunciTidakAda}{enter}`, { force: true });
+    cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+      const tableId = $el.attr('id').replace('customSearch-', '');
+      cy.window().then((win) => {
+        win.$(`#${tableId}`).DataTable().search(kataKunciTidakAda).draw();
+      });
+    });
+    cy.wait('@listMonitoringNoMatch');
+    cy.wait(300);
 
     // Assert (Verifikasi UI)
     cy.get('[data-cy^="btn-action-detail-"]').should('not.exist');

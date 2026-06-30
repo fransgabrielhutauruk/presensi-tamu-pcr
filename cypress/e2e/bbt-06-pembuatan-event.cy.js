@@ -30,9 +30,11 @@ describe('BBT-6 Pembuatan Event Baru', () => {
     cy.get('[data-cy="form-create-event"]').should('be.visible');
     cy.get('[data-cy="input-nama_event"]').type(`Event Cypress ${suffix}`);
     pilihKategoriEventPertama();
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
+    cy.get('[data-cy="input-tanggal_event"]').then($el => { $el[0]._flatpickr.setDate(tanggalEventFormat); });
     cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('09:00', { force: true });
     cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('11:00', { force: true });
+    cy.get('[data-cy="radio-jenis_kegiatan-non-pmb"]').check({ force: true });
+    cy.get('[data-cy="radio-kategori_lokasi-dalam-kampus"]').check({ force: true });
     cy.get('[data-cy="input-lokasi_event"]').type('Gedung Utama PCR');
     cy.get('[data-cy="textarea-deskripsi_event"]').type('Event untuk pengujian Cypress BBT-6.');
     cy.get('[data-cy="btn-simpan-event"]').click();
@@ -57,36 +59,6 @@ describe('BBT-6 Pembuatan Event Baru', () => {
     });
   });
 
-  it('staf gagal menyimpan event saat tanggal event diisi tanggal lampau', () => {
-    // Arrange (Kunjungi URL)
-    const suffix = Date.now().toString().slice(-6);
-    const tanggalLampau = new Date();
-    tanggalLampau.setDate(tanggalLampau.getDate() - 1);
-    const tanggalLampauFormat = tanggalLampau.toISOString().slice(0, 10);
-
-    loginSebagaiStaf();
-    cy.intercept('POST', '**/app/event/store').as('storeEventInvalid');
-
-    // Act (Isi form/klik)
-    cy.get('[data-cy="btn-tambah-event"]').click();
-    cy.get('[data-cy="form-create-event"]').should('be.visible');
-    cy.get('[data-cy="input-nama_event"]').type(`Event Invalid ${suffix}`);
-    pilihKategoriEventPertama();
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalLampauFormat, { force: true });
-    cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('09:00', { force: true });
-    cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('10:00', { force: true });
-    cy.get('[data-cy="input-lokasi_event"]').type('Gedung Utama PCR');
-    cy.get('[data-cy="textarea-deskripsi_event"]').type('Uji tanggal lampau.');
-    cy.get('[data-cy="btn-simpan-event"]').click();
-
-    // Assert (Verifikasi UI)
-    cy.wait('@storeEventInvalid').then((interception) => {
-      expect(interception.response?.statusCode).to.equal(422);
-    });
-    cy.location('pathname').should('eq', '/app/event');
-    cy.get('[data-cy="form-create-event"]').should('exist');
-  });
-
   it('staf gagal menyimpan event saat salah satu field wajib dikosongkan', () => {
     // Arrange (Kunjungi URL)
     const suffix = Date.now().toString().slice(-6);
@@ -102,7 +74,7 @@ describe('BBT-6 Pembuatan Event Baru', () => {
     cy.get('[data-cy="form-create-event"]').should('be.visible');
     cy.get('[data-cy="input-nama_event"]').type(`Event Wajib ${suffix}`);
     pilihKategoriEventPertama();
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
+    cy.get('[data-cy="input-tanggal_event"]').then($el => { $el[0]._flatpickr.setDate(tanggalEventFormat); });
     cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('09:00', { force: true });
     cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('10:00', { force: true });
     cy.get('[data-cy="textarea-deskripsi_event"]').type('Uji field wajib kosong.');

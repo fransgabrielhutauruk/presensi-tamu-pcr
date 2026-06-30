@@ -21,19 +21,35 @@ const loginSebagaiAdmin = () => {
 
 const bukaHalamanValidasiKunjungan = () => {
   loginSebagaiAdmin();
-  cy.intercept('POST', '**/app/kunjungan/data/validasi-list*').as('listValidasiKunjungan');
-  cy.visit('/app/kunjungan/validasi');
+  cy.intercept('POST', '**/app/kunjungan-validasi/data/validasi-list*').as('listValidasiKunjungan');
+  cy.visit('/app/kunjungan-validasi');
   cy.wait('@listValidasiKunjungan');
   cy.get('[data-cy="table-validasi-kunjungan"]').should('be.visible');
 };
 
 const cariDataKunjunganByEmail = (email) => {
-  cy.get('[data-cy^="input-table-search-"]').first().clear({ force: true }).type(`${email}{enter}`, { force: true });
+  cy.intercept('POST', '**/app/kunjungan-validasi/data/validasi-list*').as('searchValidasiKunjungan');
+  cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+    const tableId = $el.attr('id').replace('customSearch-', '');
+    cy.window().then((win) => {
+      win.$(`#${tableId}`).DataTable().search(email).draw();
+    });
+  });
+  cy.wait('@searchValidasiKunjungan');
+  cy.wait(300);
   cy.contains('[data-cy="table-validasi-kunjungan"] tbody tr', email, { timeout: 10000 }).should('be.visible');
 };
 
 const pastikanDataKunjunganSudahTidakAda = (email) => {
-  cy.get('[data-cy^="input-table-search-"]').first().clear({ force: true }).type(`${email}{enter}`, { force: true });
+  cy.intercept('POST', '**/app/kunjungan-validasi/data/validasi-list*').as('searchValidasiKunjunganRefresh');
+  cy.get('[data-cy^="input-table-search-"]').first().then(($el) => {
+    const tableId = $el.attr('id').replace('customSearch-', '');
+    cy.window().then((win) => {
+      win.$(`#${tableId}`).DataTable().search(email).draw();
+    });
+  });
+  cy.wait('@searchValidasiKunjunganRefresh');
+  cy.wait(300);
   cy.get('[data-cy="table-validasi-kunjungan"] tbody', { timeout: 10000 }).should('not.contain', email);
 };
 

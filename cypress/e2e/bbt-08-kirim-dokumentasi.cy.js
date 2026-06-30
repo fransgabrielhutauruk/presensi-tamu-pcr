@@ -33,9 +33,11 @@ describe('BBT-8 Kirim Dokumentasi', () => {
     cy.get('[data-cy="form-create-event"]').should('be.visible');
     cy.get('[data-cy="input-nama_event"]').type(`Event BBT8 ${suffix}`);
     pilihKategoriEventPertama();
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
+    cy.get('[data-cy="input-tanggal_event"]').then($el => { $el[0]._flatpickr.setDate(tanggalEventFormat); });
     cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('10:00', { force: true });
     cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('12:00', { force: true });
+    cy.get('[data-cy="radio-jenis_kegiatan-non-pmb"]').check({ force: true });
+    cy.get('[data-cy="radio-kategori_lokasi-dalam-kampus"]').check({ force: true });
     cy.get('[data-cy="input-lokasi_event"]').type('Aula Utama PCR');
     cy.get('[data-cy="textarea-deskripsi_event"]').type('Event untuk pengujian BBT-8.');
     cy.get('[data-cy="btn-simpan-event"]').click();
@@ -88,9 +90,11 @@ describe('BBT-8 Kirim Dokumentasi', () => {
     cy.get('[data-cy="form-create-event"]').should('be.visible');
     cy.get('[data-cy="input-nama_event"]').type(`Event BBT8 Invalid URL ${suffix}`);
     pilihKategoriEventPertama();
-    cy.get('[data-cy="input-tanggal_event"]').clear().type(tanggalEventFormat, { force: true });
+    cy.get('[data-cy="input-tanggal_event"]').then($el => { $el[0]._flatpickr.setDate(tanggalEventFormat); });
     cy.get('[data-cy="input-waktu_mulai_event"]').clear().type('13:00', { force: true });
     cy.get('[data-cy="input-waktu_selesai_event"]').clear().type('15:00', { force: true });
+    cy.get('[data-cy="radio-jenis_kegiatan-non-pmb"]').check({ force: true });
+    cy.get('[data-cy="radio-kategori_lokasi-dalam-kampus"]').check({ force: true });
     cy.get('[data-cy="input-lokasi_event"]').type('Ruang Seminar PCR');
     cy.get('[data-cy="textarea-deskripsi_event"]').type('Event uji validasi URL dokumentasi BBT-8.');
     cy.get('[data-cy="btn-simpan-event"]').click();
