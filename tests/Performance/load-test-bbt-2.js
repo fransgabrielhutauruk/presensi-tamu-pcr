@@ -1,18 +1,26 @@
-import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
+import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
+import http from "k6/http";
+import { check, sleep } from "k6";
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:9000';
+const BASE_URL = __ENV.BASE_URL || "http://localhost:9000";
 
-const KATEGORI_TUJUAN = ['instansi', 'bisnis', 'ortu', 'informasi_kampus', 'lainnya'];
-const JENIS_KELAMIN = ['Laki-laki', 'Perempuan'];
-const TRANSPORTASI = ['Mobil', 'Motor', 'Bus', 'Ojek Online', 'Jalan Kaki'];
+const KATEGORI_TUJUAN = [
+    "instansi",
+    "bisnis",
+    "ortu",
+    "informasi_kampus",
+    "lainnya",
+];
+const JENIS_KELAMIN = ["Laki-laki", "Perempuan"];
+const TRANSPORTASI = ["Mobil", "Motor", "Bus", "Ojek Online", "Jalan Kaki"];
 
 export const options = {
     stages: [
-        { duration: '1m', target: 25 },
-        { duration: '1m', target: 100 },
-        { duration: '3m', target: 100 },
-        { duration: '1m', target: 0 },
+        { duration: "1m", target: 25 },
+        { duration: "1m", target: 100 },
+        { duration: "2m", target: 100 },
+        { duration: "1m", target: 0 },
     ],
 };
 
@@ -59,52 +67,52 @@ function buildPayload(kategoriTujuan) {
     };
 
     switch (kategoriTujuan) {
-        case 'instansi':
+        case "instansi":
             return {
                 ...payload,
                 instansi: `Instansi ${suffix}`,
-                jenis_instansi: 'Swasta',
-                jabatan: 'Staff',
-                pihak_dituju: 'Dosen',
+                jenis_instansi: "Swasta",
+                jabatan: "Staff",
+                pihak_dituju: "Dosen",
                 keperluan: `Kunjungan instansi ${suffix}`,
             };
 
-        case 'bisnis':
+        case "bisnis":
             return {
                 ...payload,
                 instansi: `Perusahaan ${suffix}`,
-                kategori_instansi: 'Teknologi',
-                jenis_perusahaan: 'Nasional',
-                skala_instansi: 'Menengah',
-                jabatan: 'Manager',
-                pihak_dituju: 'Staff',
+                kategori_instansi: "Teknologi",
+                jenis_perusahaan: "Nasional",
+                skala_instansi: "Menengah",
+                jabatan: "Manager",
+                pihak_dituju: "Staff",
                 keperluan: `Diskusi kerja sama ${suffix}`,
             };
 
-        case 'ortu':
+        case "ortu":
             return {
                 ...payload,
-                hubungan_dengan_mahasiswa: 'Orang Tua',
+                hubungan_dengan_mahasiswa: "Orang Tua",
                 nama_mahasiswa: `Mahasiswa ${suffix}`,
-                prodi_mahasiswa: 'Teknik Informatika',
+                prodi_mahasiswa: "Teknik Informatika",
                 nim_mahasiswa: suffix.slice(-10),
-                pihak_dituju: 'Dosen',
+                pihak_dituju: "Dosen",
                 keperluan: `Konsultasi akademik ${suffix}`,
             };
 
-        case 'informasi_kampus':
+        case "informasi_kampus":
             return {
                 ...payload,
                 asal_sekolah: `SMA ${suffix.slice(-4)}`,
-                prodi_diminati: 'Teknik Informatika',
+                prodi_diminati: "Teknik Informatika",
                 keperluan: `Mencari informasi kampus ${suffix}`,
             };
 
-        case 'lainnya':
+        case "lainnya":
         default:
             return {
                 ...payload,
-                pihak_dituju: 'Staff',
+                pihak_dituju: "Staff",
                 keperluan: `Keperluan lainnya ${suffix}`,
             };
     }
@@ -118,8 +126,8 @@ export default function () {
     const csrfToken = extractCsrfToken(formResponse.body);
 
     check(formResponse, {
-        'GET form non-event status 200': (r) => r.status === 200,
-        'CSRF token ditemukan': () => !!csrfToken,
+        "GET form non-event status 200": (r) => r.status === 200,
+        "CSRF token ditemukan": () => !!csrfToken,
     });
 
     if (!csrfToken) {
@@ -136,19 +144,28 @@ export default function () {
         {
             redirects: 0,
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+                "Content-Type": "application/x-www-form-urlencoded",
                 Referer: formUrl,
             },
-        }
+        },
     );
 
     const locationHeader = getLocationHeader(submitResponse.headers);
 
     check(submitResponse, {
-        'POST presensi status redirect': (r) => r.status === 302 || r.status === 303,
-        'Redirect ke halaman sukses': () =>
-            typeof locationHeader === 'string' && locationHeader.includes('/sukses/'),
+        "POST presensi status redirect": (r) =>
+            r.status === 302 || r.status === 303,
+        "Redirect ke halaman sukses": () =>
+            typeof locationHeader === "string" &&
+            locationHeader.includes("/sukses/"),
     });
 
     sleep(1);
+}
+
+export function handleSummary(data) {
+    return {
+        [`laporan-performa-${Date.now()}.html`]: htmlReport(data),
+        stdout: textSummary(data, { indent: " ", enableColors: true }),
+    };
 }

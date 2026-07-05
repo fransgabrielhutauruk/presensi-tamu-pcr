@@ -1,30 +1,38 @@
-import http from 'k6/http';
-import { check, sleep } from 'k6';
+import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
+import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
+import http from "k6/http";
+import { check, sleep } from "k6";
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:9000';
-const EVENT_ID_FROM_ENV = __ENV.EVENT_ID || '';
-const REQUEST_TIMEOUT = __ENV.REQUEST_TIMEOUT || '30s';
+const BASE_URL = __ENV.BASE_URL || "http://localhost:9000";
+const EVENT_ID_FROM_ENV = __ENV.EVENT_ID || "";
+const REQUEST_TIMEOUT = __ENV.REQUEST_TIMEOUT || "30s";
 const MAX_SETUP_RETRIES = Number(__ENV.SETUP_RETRIES || 3);
 
-const JENIS_KELAMIN = ['Laki-laki', 'Perempuan'];
-const DEFAULT_PERAN = ['Peserta', 'Narasumber', 'Panitia'];
-const DEFAULT_TRANSPORTASI = ['Mobil', 'Motor', 'Bus', 'Ojek Online', 'Jalan Kaki'];
+const JENIS_KELAMIN = ["Laki-laki", "Perempuan"];
+const DEFAULT_PERAN = ["Peserta", "Narasumber", "Panitia"];
+const DEFAULT_TRANSPORTASI = [
+    "Mobil",
+    "Motor",
+    "Bus",
+    "Ojek Online",
+    "Jalan Kaki",
+];
 const INVALID_EVENT_SEGMENTS = new Set([
-    'list',
-    'store',
-    'presensi',
-    'presensi-civitas',
-    'civitas-store',
-    'check-civitas',
-    'fetch-external-data',
+    "list",
+    "store",
+    "presensi",
+    "presensi-civitas",
+    "civitas-store",
+    "check-civitas",
+    "fetch-external-data",
 ]);
 
 export const options = {
     stages: [
-        { duration: '30s', target: 250 },
-        { duration: '30s', target: 500 },
-        { duration: '3m', target: 500 },
-        { duration: '1m', target: 0 },
+        { duration: "1m", target: 200 }, // 1. Naik perlahan ke 200 user dalam 1 menit
+        { duration: "1m", target: 500 }, // 2. Naik lagi hingga mencapai puncak 500 user di menit ke-2
+        { duration: "2m", target: 500 }, // 3. Tahan beban konstan 500 user selama 2 menit (Uji Ketahanan)
+        { duration: "1m", target: 0 }, // 4. Turunkan perlahan ke 0 user (Cooling down)
     ],
 };
 
@@ -33,12 +41,19 @@ function pick(arr) {
 }
 
 function buildSuffix() {
-    const randomPart = Math.floor(Math.random() * 1000000000);
+    const randomPart = Math.floor(Math.random() * 100000);
     return `${Date.now()}${randomPart}`;
 }
 
+// Tambahkan header tiruan browser agar tidak diblokir firewall (WAF)
+const customHeaders = {
+    "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+};
+
 function extractCsrfToken(html) {
-    if (typeof html !== 'string' || !html) {
+    if (typeof html !== "string" || !html) {
         return null;
     }
 
@@ -52,7 +67,7 @@ function extractCsrfToken(html) {
 }
 
 function extractHiddenEventId(html) {
-    if (typeof html !== 'string' || !html) {
+    if (typeof html !== "string" || !html) {
         return null;
     }
 
@@ -61,12 +76,15 @@ function extractHiddenEventId(html) {
 }
 
 function extractSelectOptions(html, fieldName) {
-    if (typeof html !== 'string' || !html) {
+    if (typeof html !== "string" || !html) {
         return [];
     }
 
     const selectMatch = html.match(
-        new RegExp(`<select[^>]*name="${fieldName}"[^>]*>([\\s\\S]*?)<\\/select>`, 'i')
+        new RegExp(
+            `<select[^>]*name="${fieldName}"[^>]*>([\\s\\S]*?)<\\/select>`,
+            "i",
+        ),
     );
 
     if (!selectMatch || !selectMatch[1]) {
@@ -78,7 +96,7 @@ function extractSelectOptions(html, fieldName) {
     let optionMatch = optionRegex.exec(selectMatch[1]);
 
     while (optionMatch !== null) {
-        const value = (optionMatch[1] || '').trim();
+        const value = (optionMatch[1] || "").trim();
         if (value) {
             values.push(value);
         }
@@ -89,7 +107,7 @@ function extractSelectOptions(html, fieldName) {
 }
 
 function extractEventIdFromListHtml(html) {
-    if (typeof html !== 'string' || !html) {
+    if (typeof html !== "string" || !html) {
         return null;
     }
 
@@ -97,13 +115,17 @@ function extractEventIdFromListHtml(html) {
     let anchorMatch = anchorRegex.exec(html);
 
     while (anchorMatch !== null) {
-        const anchorTag = anchorMatch[0] || '';
+        const anchorTag = anchorMatch[0] || "";
         const hrefMatch = anchorTag.match(/\bhref="([^"]+)"/i);
-        const href = hrefMatch && hrefMatch[1] ? hrefMatch[1] : '';
+        const href = hrefMatch && hrefMatch[1] ? hrefMatch[1] : "";
         const pathMatch = href.match(/\/event\/([^/?#"]+)/i);
-        const candidateId = pathMatch && pathMatch[1] ? pathMatch[1].trim() : '';
+        const candidateId =
+            pathMatch && pathMatch[1] ? pathMatch[1].trim() : "";
 
-        if (candidateId && !INVALID_EVENT_SEGMENTS.has(candidateId.toLowerCase())) {
+        if (
+            candidateId &&
+            !INVALID_EVENT_SEGMENTS.has(candidateId.toLowerCase())
+        ) {
             return candidateId;
         }
 
@@ -114,7 +136,7 @@ function extractEventIdFromListHtml(html) {
 }
 
 function isValidEventId(eventId) {
-    if (typeof eventId !== 'string') {
+    if (typeof eventId !== "string") {
         return false;
     }
 
@@ -123,7 +145,7 @@ function isValidEventId(eventId) {
         return false;
     }
 
-    if (trimmed.includes('/')) {
+    if (trimmed.includes("/")) {
         return false;
     }
 
@@ -138,14 +160,15 @@ function resolveEventIdFromList() {
     for (let attempt = 1; attempt <= MAX_SETUP_RETRIES; attempt++) {
         const listResponse = http.get(`${BASE_URL}/event/list`, {
             timeout: REQUEST_TIMEOUT,
-            responseType: 'text',
+            responseType: "text",
         });
-        const listBody = typeof listResponse.body === 'string' ? listResponse.body : '';
+        const listBody =
+            typeof listResponse.body === "string" ? listResponse.body : "";
         const eventId = extractEventIdFromListHtml(listBody);
 
         const isHealthyResponse = check(listResponse, {
-            'GET event list status 200': (r) => r.status === 200,
-            'Event ID valid dari list': () => isValidEventId(eventId),
+            "GET event list status 200": (r) => r.status === 200,
+            "Event ID valid dari list": () => isValidEventId(eventId),
         });
 
         if (isHealthyResponse && isValidEventId(eventId)) {
@@ -166,18 +189,17 @@ function getLocationHeader(headers) {
 }
 
 function postPresensiEvent(formUrl, payload) {
-    return http.post(
-        `${BASE_URL}/event/store`,
-        payload,
-        {
-            redirects: 0,
-            timeout: REQUEST_TIMEOUT,
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
+    return http.post(`${BASE_URL}/event/store`, payload, {
+        redirects: 0,
+        timeout: REQUEST_TIMEOUT,
+        headers: Object.assign(
+            {
+                "Content-Type": "application/x-www-form-urlencoded",
                 Referer: formUrl,
             },
-        }
-    );
+            customHeaders,
+        ), // Menggabungkan header default dengan User-Agent browser
+    });
 }
 
 export function setup() {
@@ -186,7 +208,7 @@ export function setup() {
 
     if (!eventId) {
         throw new Error(
-            'Tidak menemukan event_id valid dari /event/list. Pastikan ada event hari ini, atau jalankan dengan -e EVENT_ID=<hashed_event_id>.'
+            "Tidak menemukan event_id valid dari /event/list. Pastikan ada event hari ini, atau jalankan dengan -e EVENT_ID=<hashed_event_id>.",
         );
     }
 
@@ -194,13 +216,17 @@ export function setup() {
 }
 
 export default function (setupData) {
-    const setupEventId = setupData && setupData.eventId ? setupData.eventId : '';
+    const setupEventId =
+        setupData && setupData.eventId ? setupData.eventId : "";
     const candidateEventId = EVENT_ID_FROM_ENV || setupEventId;
     const eventId = isValidEventId(candidateEventId) ? candidateEventId : null;
 
-    check({ eventId }, {
-        'Event ID tersedia': () => !!eventId,
-    });
+    check(
+        { eventId },
+        {
+            "Event ID tersedia": () => !!eventId,
+        },
+    );
 
     if (!eventId) {
         sleep(1);
@@ -210,17 +236,20 @@ export default function (setupData) {
     const nonCivitasFormUrl = `${BASE_URL}/event/presensi/${eventId}`;
     const formResponse = http.get(nonCivitasFormUrl, {
         timeout: REQUEST_TIMEOUT,
-        responseType: 'text',
+        responseType: "text",
     });
-    const formBody = typeof formResponse.body === 'string' ? formResponse.body : '';
+    const formBody =
+        typeof formResponse.body === "string" ? formResponse.body : "";
     const csrfToken = extractCsrfToken(formBody);
     const hiddenEventIdCandidate = extractHiddenEventId(formBody) || eventId;
-    const hiddenEventId = isValidEventId(hiddenEventIdCandidate) ? hiddenEventIdCandidate : null;
+    const hiddenEventId = isValidEventId(hiddenEventIdCandidate)
+        ? hiddenEventIdCandidate
+        : null;
 
     const formOk = check(formResponse, {
-        'GET form presensi event status 200': (r) => r.status === 200,
-        'CSRF token ditemukan': () => !!csrfToken,
-        'Hidden event_id ditemukan': () => !!hiddenEventId,
+        "GET form presensi event status 200": (r) => r.status === 200,
+        "CSRF token ditemukan": () => !!csrfToken,
+        "Hidden event_id ditemukan": () => !!hiddenEventId,
     });
 
     if (!formOk || !csrfToken || !hiddenEventId) {
@@ -228,8 +257,8 @@ export default function (setupData) {
         return;
     }
 
-    const peranOptions = extractSelectOptions(formBody, 'peran');
-    const transportasiOptions = extractSelectOptions(formBody, 'transportasi');
+    const peranOptions = extractSelectOptions(formBody, "peran");
+    const transportasiOptions = extractSelectOptions(formBody, "transportasi");
     const suffix = buildSuffix();
 
     const payload = {
@@ -239,23 +268,30 @@ export default function (setupData) {
         jenis_kelamin: pick(JENIS_KELAMIN),
         nomor_telepon: `08${suffix.slice(-10)}`,
         email: `event.load.${suffix}@example.com`,
-        institusi: `Institusi ${suffix.slice(-6)}`,
+        instansi: `Instansi ${suffix.slice(-6)}`,
         peran: pick(peranOptions.length > 0 ? peranOptions : DEFAULT_PERAN),
-        transportasi: pick(transportasiOptions.length > 0 ? transportasiOptions : DEFAULT_TRANSPORTASI),
+        transportasi: pick(
+            transportasiOptions.length > 0
+                ? transportasiOptions
+                : DEFAULT_TRANSPORTASI,
+        ),
     };
 
     let submitResponse = postPresensiEvent(nonCivitasFormUrl, payload);
     if (submitResponse.status === 419) {
         const refreshFormResponse = http.get(nonCivitasFormUrl, {
             timeout: REQUEST_TIMEOUT,
-            responseType: 'text',
+            responseType: "text",
         });
-        const refreshBody = typeof refreshFormResponse.body === 'string' ? refreshFormResponse.body : '';
+        const refreshBody =
+            typeof refreshFormResponse.body === "string"
+                ? refreshFormResponse.body
+                : "";
         const refreshedToken = extractCsrfToken(refreshBody);
 
         check(refreshFormResponse, {
-            'GET refresh form status 200': (r) => r.status === 200,
-            'Refresh CSRF token ditemukan': () => !!refreshedToken,
+            "GET refresh form status 200": (r) => r.status === 200,
+            "Refresh CSRF token ditemukan": () => !!refreshedToken,
         });
 
         if (refreshedToken) {
@@ -267,10 +303,20 @@ export default function (setupData) {
     const locationHeader = getLocationHeader(submitResponse.headers);
 
     check(submitResponse, {
-        'POST presensi event status redirect': (r) => r.status === 302 || r.status === 303,
-        'Redirect ke halaman sukses': () =>
-            typeof locationHeader === 'string' && locationHeader.includes('/sukses/'),
+        "POST presensi event status redirect": (r) =>
+            r.status === 302 || r.status === 303,
+        "Redirect ke halaman sukses": () =>
+            typeof locationHeader === "string" &&
+            locationHeader.includes("/sukses/"),
     });
 
-    sleep(1);
+    sleep(Math.random() * 3 + 5);
+}
+
+export function handleSummary(data) {
+    return {
+        [`laporan-performa-load-test-bbt-3-${Date.now()}.html`]:
+            htmlReport(data),
+        stdout: textSummary(data, { indent: " ", enableColors: true }),
+    };
 }
