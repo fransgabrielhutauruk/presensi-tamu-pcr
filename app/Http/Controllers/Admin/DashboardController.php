@@ -50,7 +50,7 @@ class DashboardController extends Controller
             'widgets' => [
                 [
                     'title' => 'Total Kunjungan',
-                    'value' => \App\Models\Kunjungan::get()->count(),
+                    'value' => \App\Models\Kunjungan::count(),
                     'icon' => 'ki-people',
                     'color' => 'success',
                     'link' => route('app.kunjungan.index')
@@ -186,9 +186,17 @@ class DashboardController extends Controller
 
     private function getTrendKunjungan()
     {
-        $data = \App\Models\Kunjungan::selectRaw('CAST(created_at AS DATE) as tanggal, COUNT(*) as total')
+        $driver = DB::connection()->getDriverName();
+
+        if ($driver === 'sqlsrv') {
+            $dateExpr = 'CAST(created_at AS DATE)';
+        } else {
+            $dateExpr = 'DATE(created_at)';
+        }
+
+        $data = \App\Models\Kunjungan::selectRaw("{$dateExpr} as tanggal, COUNT(*) as total")
             ->whereDate('created_at', '>=', now()->subDays(7))
-            ->groupBy(DB::raw('CAST(created_at AS DATE)'))
+            ->groupBy(DB::raw($dateExpr))
             ->orderBy('tanggal')
             ->get();
 
