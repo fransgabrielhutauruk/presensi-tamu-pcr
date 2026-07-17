@@ -1,19 +1,19 @@
 <?php
 
-use App\Http\Middleware\SetLocale;
-use App\Http\Middleware\AjaxRequest;
-use App\Http\Middleware\EnableCypressMock;
-use Illuminate\Foundation\Application;
 use App\Enums\UserRole;
-use Illuminate\Http\Request;
+use App\Http\Middleware\AjaxRequest;
 use App\Http\Middleware\CheckActiveRole;
+use App\Http\Middleware\EnableCypressMock;
+use App\Http\Middleware\SetLocale;
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
-        web: __DIR__ . '/../routes/web.php',
-        commands: __DIR__ . '/../routes/console.php',
+        web: __DIR__.'/../routes/web.php',
+        commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {

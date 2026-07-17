@@ -9,7 +9,7 @@ return [
     'logout' => 'Keluar',
     'register' => 'Daftar',
     'dashboard' => 'Dashboard',
-    
+
     // Actions
     'save' => 'Simpan',
     'edit' => 'Edit',
@@ -27,7 +27,7 @@ return [
     'next' => 'Selanjutnya',
     'previous' => 'Sebelumnya',
     'close' => 'Tutup',
-    
+
     // Status
     'active' => 'Aktif',
     'inactive' => 'Tidak Aktif',
@@ -37,7 +37,7 @@ return [
     'completed' => 'Selesai',
     'processing' => 'Memproses...',
     'draft' => 'Draft',
-    
+
     // Messages
     'success' => 'Berhasil',
     'error' => 'Terjadi Kesalahan',
@@ -49,7 +49,7 @@ return [
     'data_saved' => 'Data berhasil disimpan',
     'data_updated' => 'Data berhasil diperbarui',
     'data_deleted' => 'Data berhasil dihapus',
-    
+
     // Form Labels
     'name' => 'Nama',
     'email' => 'Email',
@@ -64,7 +64,7 @@ return [
     'notes' => 'Catatan',
     'required' => 'Wajib diisi',
     'optional' => 'Opsional',
-    
+
     // Language
     'language_switched' => 'Bahasa berhasil diubah',
 ];

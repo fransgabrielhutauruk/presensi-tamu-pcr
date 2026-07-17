@@ -18,7 +18,7 @@ class TamuFactory extends Factory
             'nama_tamu' => fake()->name(),
             'jenis_kelamin_tamu' => fake()->randomElement(['Laki-laki', 'Perempuan']),
             'email_tamu' => fake()->safeEmail(),
-            'nomor_telepon_tamu' => '08' . fake()->numerify('##########'),
+            'nomor_telepon_tamu' => '08'.fake()->numerify('##########'),
         ];
     }
 }

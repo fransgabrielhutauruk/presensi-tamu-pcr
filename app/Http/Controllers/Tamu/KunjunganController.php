@@ -50,6 +50,7 @@ class KunjunganController extends Controller
                     return redirect()->route('tamu.feedback', $kunjunganId)
                         ->with('info', 'Checkout sudah dilakukan, mohon lengkapi feedback kunjungan Anda.');
                 }
+
                 return redirect()->route('tamu.home')
                     ->with('info', 'Anda telah menyelesaikan seluruh proses kunjungan.');
             }
@@ -69,7 +70,7 @@ class KunjunganController extends Controller
 
             $kunjungan->update([
                 'is_checkout' => true,
-                'checkout_time' => now()
+                'checkout_time' => now(),
             ]);
 
             return redirect()->route('tamu.feedback', $kunjunganId);
@@ -89,7 +90,7 @@ class KunjunganController extends Controller
             return view(
                 'contents.tamu.pages.feedback',
                 [
-                    'kunjunganId' => $kunjunganId
+                    'kunjunganId' => $kunjunganId,
                 ]
             );
         }
@@ -128,7 +129,7 @@ class KunjunganController extends Controller
     {
         $query = Kunjungan::query();
 
-        if (!empty($relations)) {
+        if (! empty($relations)) {
             $query->with($relations);
         }
 
@@ -142,6 +143,6 @@ class KunjunganController extends Controller
 
     private function logException(string $message, Throwable $exception): void
     {
-        Log::error($message . ': ' . $exception->getMessage());
+        Log::error($message.': '.$exception->getMessage());
     }
 }

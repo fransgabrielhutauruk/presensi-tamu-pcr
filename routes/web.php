@@ -1,21 +1,21 @@
 <?php
 
 use App\Enums\UserRole;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ActivityLogController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EventController;
 use App\Http\Controllers\Admin\FeedbackController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KunjunganController;
 use App\Http\Controllers\Admin\KunjunganMonitoringController;
 use App\Http\Controllers\Admin\KunjunganValidasiController;
-use App\Http\Controllers\Admin\ActivityLogController;
 use App\Http\Controllers\Admin\MasterController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-require __DIR__ . "/web-frontend.php";
+require __DIR__.'/web-frontend.php';
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -24,10 +24,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/switch-role', [AuthController::class, 'switchRole'])->name('switch.role');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';
 
 Route::prefix('app')
-    ->middleware(['auth', 'active-role:' . implode(',', UserRole::getAllRoles())])->group(function () {
+    ->middleware(['auth', 'active-role:'.implode(',', UserRole::getAllRoles())])->group(function () {
         Route::post('kunjungan/detail-data', function (Request $request) {
             return app(KunjunganController::class)->data($request, 'detail');
         })->name('app.kunjungan.detail-data');
@@ -47,7 +47,7 @@ Route::prefix('app')
         Route::post('kunjungan/bulk-force-delete', [KunjunganValidasiController::class, 'bulkForceDelete'])
             ->name('app.kunjungan.bulk-force-delete');
 
-        Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifSecurityRoles()))->group(function () {
+        Route::middleware('active-role:'.implode(',', UserRole::getAdminEksekutifSecurityRoles()))->group(function () {
             Route::get('kunjungan/monitoring', [KunjunganMonitoringController::class, 'index'])
                 ->name('app.kunjungan.monitoring');
             Route::any('kunjungan/data/monitoring-hari-ini/{param2?}/{param3?}/{param4?}', [KunjunganMonitoringController::class, 'data'])
@@ -60,17 +60,17 @@ Route::prefix('app')
             generalRoute(FeedbackController::class, 'feedback', 'app');
         });
 
-        Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifStafMahasiswaRoles()))->group(function () {
+        Route::middleware('active-role:'.implode(',', UserRole::getAdminEksekutifStafMahasiswaRoles()))->group(function () {
             Route::get('event/qr/{eventId}', [EventController::class, 'showQrCode'])->name('app.event.qr-code');
             Route::post('event/store-vip-guest', [EventController::class, 'storeVipGuest'])->name('app.event.store-vip-guest');
             generalRoute(EventController::class, 'event', 'app');
         });
 
-        Route::middleware('active-role:' . implode(',', UserRole::getAdminEksekutifRoles()))->group(function () {
+        Route::middleware('active-role:'.implode(',', UserRole::getAdminEksekutifRoles()))->group(function () {
             generalRoute(DashboardController::class, 'dashboard', 'app');
         });
 
-        Route::middleware('active-role:' . UserRole::ADMIN->value)->group(function () {
+        Route::middleware('active-role:'.UserRole::ADMIN->value)->group(function () {
             generalRoute(UserController::class, 'user', 'app');
             generalRoute(ActivityLogController::class, 'log-aktivitas', 'app');
             generalRoute(MasterController::class, 'master', 'app');

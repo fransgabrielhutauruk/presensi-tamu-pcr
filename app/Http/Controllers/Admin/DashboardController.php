@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
-    function index()
+    public function index()
     {
-        $this->title        = 'Dashboard';
-        $this->activeMenu   = 'dashboard';
+        $this->title = 'Dashboard';
+        $this->activeMenu = 'dashboard';
         $this->breadCrump[] = ['title' => 'Dashboard', 'link' => url()->current()];
 
         $userRole = session('active_role');
@@ -19,7 +19,7 @@ class DashboardController extends Controller
 
         $this->dataView([
             'userRole' => $userRole,
-            'dashboardData' => $dashboardData
+            'dashboardData' => $dashboardData,
         ]);
 
         return $this->view('admin.dashboard');
@@ -53,21 +53,21 @@ class DashboardController extends Controller
                     'value' => \App\Models\Kunjungan::count(),
                     'icon' => 'ki-people',
                     'color' => 'success',
-                    'link' => route('app.kunjungan.index')
+                    'link' => route('app.kunjungan.index'),
                 ],
                 [
                     'title' => 'Kunjungan Event',
                     'value' => \App\Models\Kunjungan::whereNotNull('event_id')->count(),
                     'icon' => 'ki-calendar-tick',
                     'color' => 'info',
-                    'link' => route('app.kunjungan.index', ['filter_jenis_kunjungan' => 'event'])
+                    'link' => route('app.kunjungan.index', ['filter_jenis_kunjungan' => 'event']),
                 ],
                 [
                     'title' => 'Kunjungan Non-Event',
                     'value' => \App\Models\Kunjungan::whereNull('event_id')->count(),
                     'icon' => 'ki-user',
                     'color' => 'primary',
-                    'link' => route('app.kunjungan.index', ['filter_jenis_kunjungan' => 'non_event'])
+                    'link' => route('app.kunjungan.index', ['filter_jenis_kunjungan' => 'non_event']),
 
                 ],
                 [
@@ -75,41 +75,41 @@ class DashboardController extends Controller
                     'value' => \App\Models\Kunjungan::where('status_validasi', false)->count(),
                     'icon' => 'ki-notification-status',
                     'color' => 'warning',
-                    'link' => route('app.kunjungan-validasi.index')
+                    'link' => route('app.kunjungan-validasi.index'),
                 ],
                 [
                     'title' => 'Total Event',
                     'value' => \App\Models\Event::count(),
                     'icon' => 'ki-calendar',
                     'color' => 'success',
-                    'link' => route('app.event.index')
+                    'link' => route('app.event.index'),
                 ],
                 [
                     'title' => 'Event Mendatang',
                     'value' => \App\Models\Event::whereDate('tanggal_event', '>=', today())->count(),
                     'icon' => 'ki-calendar-add',
                     'color' => 'warning',
-                    'link' => route('app.event.index', ['filter_status' => 'mendatang'])
+                    'link' => route('app.event.index', ['filter_status' => 'mendatang']),
                 ],
                 [
                     'title' => 'Total Feedback',
                     'value' => \App\Models\Feedback::count(),
                     'icon' => 'ki-message-text',
                     'color' => 'danger',
-                    'link' => route('app.feedback.index')
+                    'link' => route('app.feedback.index'),
                 ],
                 [
                     'title' => 'Total Pengguna',
                     'value' => \App\Models\User::count(),
                     'icon' => 'ki-profile-user',
                     'color' => 'dark',
-                    'link' => route('app.user.index')
+                    'link' => route('app.user.index'),
                 ],
             ],
             'charts' => [
                 'kunjunganPerBulan' => $this->getKunjunganPerBulan(),
                 'eventAktifHariIni' => $this->getEventAktifHariIni(),
-            ]
+            ],
         ];
     }
 
@@ -122,7 +122,7 @@ class DashboardController extends Controller
                     'title' => 'Kunjungan Hari Ini',
                     'value' => \App\Models\Kunjungan::whereDate('created_at', today())->count(),
                     'icon' => 'ki-calendar-tick',
-                    'color' => 'primary'
+                    'color' => 'primary',
                 ],
                 [
                     'title' => 'Kunjungan Bulan Ini',
@@ -130,19 +130,19 @@ class DashboardController extends Controller
                         ->whereYear('created_at', now()->year)
                         ->count(),
                     'icon' => 'ki-chart-line',
-                    'color' => 'success'
+                    'color' => 'success',
                 ],
                 [
                     'title' => 'Total Event',
                     'value' => \App\Models\Event::count(),
                     'icon' => 'ki-calendar-add',
-                    'color' => 'warning'
+                    'color' => 'warning',
                 ],
             ],
             'charts' => [
                 'statistikKunjungan' => $this->getStatistikKunjungan(),
                 'trendKunjungan' => $this->getTrendKunjungan(),
-            ]
+            ],
         ];
     }
 

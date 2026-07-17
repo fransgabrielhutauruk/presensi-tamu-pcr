@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Feedback;
-use Database\Factories\KunjunganFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

@@ -28,7 +28,7 @@ class KunjunganMonitoringController extends Controller
 
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)
-            ->ajax(route('app.kunjungan.data') . '/' . self::PARAM_MONITORING)
+            ->ajax(route('app.kunjungan.data').'/'.self::PARAM_MONITORING)
             ->columns([
                 Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'className' => 'text-nowrap text-center']),
                 Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'className' => 'text-center']),
@@ -42,11 +42,11 @@ class KunjunganMonitoringController extends Controller
             ]);
 
         $this->dataView([
-            'dataTable'               => $dataTable,
-            'totalKunjunganHariIni'   => $stats['total'],
-            'kunjunganSudahCheckout'  => $stats['checkout'],
-            'kunjunganBelumCheckout'  => $stats['belum_checkout'],
-            'tanggalHariIni'          => tanggal($today->toDateString()),
+            'dataTable' => $dataTable,
+            'totalKunjunganHariIni' => $stats['total'],
+            'kunjunganSudahCheckout' => $stats['checkout'],
+            'kunjunganBelumCheckout' => $stats['belum_checkout'],
+            'tanggalHariIni' => tanggal($today->toDateString()),
         ]);
 
         return $this->view('admin.monitoring.list');
@@ -58,12 +58,12 @@ class KunjunganMonitoringController extends Controller
             abort(404, 'Halaman tidak ditemukan');
         }
 
-        $today                = Carbon::today();
+        $today = Carbon::today();
         $filterJenisKunjungan = $req->input('filter_jenis_kunjungan', '');
-        $filterCheckout       = $req->input('filter_is_checkout', '');
-        $filterJK             = $req->input('filter_jenis_kelamin', '');
-        $filterIdentitas      = $req->input('filter_identitas', '');
-        $start                = (int) $req->input('start', 0);
+        $filterCheckout = $req->input('filter_is_checkout', '');
+        $filterJK = $req->input('filter_jenis_kelamin', '');
+        $filterIdentitas = $req->input('filter_identitas', '');
+        $start = (int) $req->input('start', 0);
 
         $query = Kunjungan::select([
             'kunjungan.kunjungan_id',
@@ -101,23 +101,23 @@ class KunjunganMonitoringController extends Controller
                 $q->whereNull('kunjungan.event_id')
                     ->orWhere('event.kategori_lokasi', 'dalam_kampus');
             })
-            ->when(!empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
+            ->when(! empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
                 match ($filterJenisKunjungan) {
-                    'event'     => $q->whereNotNull('kunjungan.event_id'),
+                    'event' => $q->whereNotNull('kunjungan.event_id'),
                     'non_event' => $q->whereNull('kunjungan.event_id'),
-                    default     => null,
+                    default => null,
                 };
             })
             ->when($filterCheckout === '1' || $filterCheckout === '0', function ($q) use ($filterCheckout) {
                 $q->where('kunjungan.is_checkout', $filterCheckout === '1');
             })
-            ->when(!empty($filterJK), function ($q) use ($filterJK) {
+            ->when(! empty($filterJK), function ($q) use ($filterJK) {
                 $q->where(function ($q) use ($filterJK) {
                     $q->where('tamu.jenis_kelamin_tamu', $filterJK)
                         ->orWhere('civitas.jenis_kelamin', $filterJK);
                 });
             })
-            ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
+            ->when(! empty($filterIdentitas), function ($q) use ($filterIdentitas) {
                 if ($filterIdentitas === 'vip') {
                     $q->where('kunjungan.identitas', 'non-civitas')
                         ->where('kunjungan.is_vip', 1);
@@ -133,16 +133,17 @@ class KunjunganMonitoringController extends Controller
             ->addColumn('no', function () use (&$start) {
                 return ++$start;
             })
-            ->addColumn('nama', fn($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
+            ->addColumn('nama', fn ($row) => $row->nama_tamu ?? $row->nama_civitas ?? '-')
             ->addColumn('jenis_kelamin', function ($row) {
                 return $row->jenis_kelamin_tamu ?? $row->jenis_kelamin ?? '-';
             })
-            ->addColumn('identitas', fn($row) => Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip))
+            ->addColumn('identitas', fn ($row) => Kunjungan::getIdentitasBadge($row->identitas, $row->is_vip))
             ->addColumn('jenis_kunjungan', function ($row) {
                 $detail = $row->event_id
                     ? ($row->event?->nama_event ?? $row->nama_event)
                     : (KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-');
                 $badge = Kunjungan::getJenisKunjunganBadge($row->event_id);
+
                 return "{$detail}<br/>{$badge}";
             })
             ->addColumn('jam_kedatangan', function ($row) {
@@ -161,13 +162,14 @@ class KunjunganMonitoringController extends Controller
                     : '<span class="badge badge-secondary">Belum Checkout</span>';
             })
             ->addColumn('action', function ($row) {
-                $id         = encid($row->kunjungan_id);
+                $id = encid($row->kunjungan_id);
                 $dataAction = [
-                    'id'  => $id,
+                    'id' => $id,
                     'btn' => [
                         ['action' => 'detail', 'title' => 'Lihat Detail', 'attr' => ['jf-detail' => $id]],
-                    ]
+                    ],
                 ];
+
                 return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
             })
             ->rawColumns(['identitas', 'jenis_kunjungan', 'waktu_checkout', 'action'])
@@ -180,7 +182,7 @@ class KunjunganMonitoringController extends Controller
             ->orderColumn('jenis_kunjungan', 'kunjungan.event_id $1')
             ->filterColumn('nama', function ($query, $keyword) {
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('tamu.nama_tamu',      'like', "%{$keyword}%")
+                    $q->where('tamu.nama_tamu', 'like', "%{$keyword}%")
                         ->orWhere('civitas.nama_civitas', 'like', "%{$keyword}%");
                 });
             })
@@ -193,7 +195,7 @@ class KunjunganMonitoringController extends Controller
                 }
                 $query->where(function ($q) use ($matchedValues, $keyword) {
 
-                    if (!empty($matchedValues)) {
+                    if (! empty($matchedValues)) {
                         $q->whereIn('kunjungan.kategori_tujuan', $matchedValues);
                     } else {
                         $q->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
@@ -211,7 +213,7 @@ class KunjunganMonitoringController extends Controller
             ->filterColumn('jam_kedatangan', function ($query, $keyword) {
                 $driver = DB::connection()->getDriverName();
                 if ($driver === 'sqlsrv') {
-                    $query->whereRaw("CONVERT(VARCHAR(8), kunjungan.created_at, 108) LIKE ?", ["%{$keyword}%"]);
+                    $query->whereRaw('CONVERT(VARCHAR(8), kunjungan.created_at, 108) LIKE ?', ["%{$keyword}%"]);
                 } else {
                     $query->whereRaw("TIME_FORMAT(kunjungan.created_at, '%H:%i:%s') LIKE ?", ["%{$keyword}%"]);
                 }
@@ -219,7 +221,7 @@ class KunjunganMonitoringController extends Controller
             ->filterColumn('waktu_keluar', function ($query, $keyword) {
                 $driver = DB::connection()->getDriverName();
                 if ($driver === 'sqlsrv') {
-                    $query->whereRaw("CONVERT(VARCHAR(5), kunjungan.waktu_keluar, 108) LIKE ?", ["%{$keyword}%"]);
+                    $query->whereRaw('CONVERT(VARCHAR(5), kunjungan.waktu_keluar, 108) LIKE ?', ["%{$keyword}%"]);
                 } else {
                     $query->whereRaw("TIME_FORMAT(kunjungan.waktu_keluar, '%H:%i') LIKE ?", ["%{$keyword}%"]);
                 }
@@ -233,7 +235,7 @@ class KunjunganMonitoringController extends Controller
                         ->where(function ($q) use ($keyword) {
                             $driver = DB::connection()->getDriverName();
                             if ($driver === 'sqlsrv') {
-                                $q->whereRaw("CONVERT(VARCHAR(8), kunjungan.checkout_time, 108) LIKE ?", ["%{$keyword}%"]);
+                                $q->whereRaw('CONVERT(VARCHAR(8), kunjungan.checkout_time, 108) LIKE ?', ["%{$keyword}%"]);
                             } else {
                                 $q->whereRaw("TIME_FORMAT(kunjungan.checkout_time, '%H:%i:%s') LIKE ?", ["%{$keyword}%"]);
                             }
@@ -248,8 +250,8 @@ class KunjunganMonitoringController extends Controller
         $stats = $this->getTodayStatistics();
 
         return response()->json([
-            'success'                => true,
-            'totalKunjunganHariIni'  => $stats['total'],
+            'success' => true,
+            'totalKunjunganHariIni' => $stats['total'],
             'kunjunganSudahCheckout' => $stats['checkout'],
             'kunjunganBelumCheckout' => $stats['belum_checkout'],
         ]);

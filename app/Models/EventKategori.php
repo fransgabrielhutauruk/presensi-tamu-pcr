@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Facades\CauserResolver;
 use Spatie\Activitylog\LogOptions;
@@ -14,8 +14,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
 class EventKategori extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use LogsActivity;
+    use SoftDeletes;
 
     /**
      * definisi nama table
@@ -55,7 +55,7 @@ class EventKategori extends Model
         'eventkategori_id',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     public function events(): HasMany
@@ -86,15 +86,13 @@ class EventKategori extends Model
         });
 
         static::restoring(function ($model) {
-            $model->deleted_by = NULL;
+            $model->deleted_by = null;
         });
     }
 
     /**
      * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
      * pencatatan log menggunakan spatie/activitylogging
-     *
-     * @return LogOptions
      */
     public function getActivitylogOptions(): LogOptions
     {
@@ -108,6 +106,7 @@ class EventKategori extends Model
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
+
                 return "{$aksi} kategori event: {$this->nama_kategori}";
             });
     }
@@ -117,7 +116,7 @@ class EventKategori extends Model
      * proses insert dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $data
+     * @param  mixed  $data
      * @return void
      */
     public static function insertBatch($data = [])
@@ -132,11 +131,11 @@ class EventKategori extends Model
     /**
      * fungsi kustom, untuk proses hapus data dengan kondisi (where option)
      * kondisi where akan melakukan hapus data belalui query builder
-     * proses hapus akan dilakukan berulang untuk setiap data dengan looping 
+     * proses hapus akan dilakukan berulang untuk setiap data dengan looping
      * penghapusan dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $where
+     * @param  mixed  $where
      * @return void
      */
     public static function deleteDataWhere($where)
@@ -152,12 +151,12 @@ class EventKategori extends Model
     /**
      * fungsi kustom, untuk proses update data dengan kondisi (where option)
      * kondisi where akan melakukan update data belalui query builder
-     * proses update akan dilakukan berulang untuk setiap data dengan looping 
+     * proses update akan dilakukan berulang untuk setiap data dengan looping
      * pembaruan data dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $where
-     * @param  mixed $data
+     * @param  mixed  $where
+     * @param  mixed  $data
      * @return void
      */
     public static function updateDataWhere($where, $data)
@@ -176,7 +175,7 @@ class EventKategori extends Model
      * query builder pada data detail digunakan untuk optimasi hasil query yang lebih cepat
      * function detail ini biasa digunakan sebagai penyedia data untuk datatable
      *
-     * @param  mixed $where
+     * @param  mixed  $where
      */
     public static function getDataDetail($where = [], $whereBinding = [], $get = true)
     {

@@ -29,7 +29,7 @@ class ActivityLogController extends Controller
 
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)
-            ->ajax(route('app.log-aktivitas.data') . '/list')
+            ->ajax(route('app.log-aktivitas.data').'/list')
             ->columns([
                 Column::make(['title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
                 Column::make(['title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
@@ -71,17 +71,17 @@ class ActivityLogController extends Controller
                 'sys_activity_log.created_at',
                 'sys_activity_log.updated_at',
                 'users.name as user_name',
-                'users.email'
+                'users.email',
             ])
                 ->leftJoin('users', 'sys_activity_log.causer_id', '=', 'users.id')
-                ->when(!empty($filterUser), fn($q) => $q->where('sys_activity_log.causer_id', $filterUser))
-                ->when(!empty($filterEvent), fn($q) => $q->where(function ($sq) use ($filterEvent) {
+                ->when(! empty($filterUser), fn ($q) => $q->where('sys_activity_log.causer_id', $filterUser))
+                ->when(! empty($filterEvent), fn ($q) => $q->where(function ($sq) use ($filterEvent) {
                     $sq->where('sys_activity_log.event', $filterEvent)
                         ->orWhere('sys_activity_log.description', $filterEvent);
                 }))
-                ->when(!empty($filterSubject), fn($q) => $q->where('sys_activity_log.subject_type', $filterSubject))
-                ->when(!empty($filterDateFrom), fn($q) => $q->whereDate('sys_activity_log.created_at', '>=', $filterDateFrom))
-                ->when(!empty($filterDateTo), fn($q) => $q->whereDate('sys_activity_log.created_at', '<=', $filterDateTo));
+                ->when(! empty($filterSubject), fn ($q) => $q->where('sys_activity_log.subject_type', $filterSubject))
+                ->when(! empty($filterDateFrom), fn ($q) => $q->whereDate('sys_activity_log.created_at', '>=', $filterDateFrom))
+                ->when(! empty($filterDateTo), fn ($q) => $q->whereDate('sys_activity_log.created_at', '<=', $filterDateTo));
 
             $start = (int) $req->input('start', 0);
 
@@ -102,24 +102,27 @@ class ActivityLogController extends Controller
                     $subjectType = $row->subject_type ?? '-';
                     if ($subjectType !== '-') {
                         $parts = explode('\\', $subjectType);
+
                         return end($parts);
                     }
+
                     return '-';
                 })
                 ->addColumn('action', function ($row) {
                     $id = $row->id;
                     $dataAction = [
-                        'id'  => $id,
+                        'id' => $id,
                         'btn' => [
                             [
                                 'action' => 'detail',
-                                'attr'   => [
-                                    'onclick' => 'viewDetail(' . $id . ')',
-                                    'data-cy' => 'btn-action-detail-log-' . $id
-                                ]
+                                'attr' => [
+                                    'onclick' => 'viewDetail('.$id.')',
+                                    'data-cy' => 'btn-action-detail-log-'.$id,
+                                ],
                             ],
-                        ]
+                        ],
                     ];
+
                     return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
                 ->rawColumns(['action'])
@@ -127,38 +130,39 @@ class ActivityLogController extends Controller
                 ->orderColumn('user', 'users.name $1')
                 ->orderColumn('description', 'sys_activity_log.description $1')
                 ->orderColumn('subject_type', 'sys_activity_log.subject_type $1')
-                ->filterColumn('created_at', fn($q, $keyword) => dtFilterByDateKeyword($q, $keyword, 'sys_activity_log.created_at'))
-                ->filterColumn('user', fn($q, $keyword) => $q->where('users.name', 'like', "%{$keyword}%"))
-                ->filterColumn('description', fn($q, $keyword) => $q->where('sys_activity_log.description', 'like', "%{$keyword}%"))
-                ->filterColumn('subject_type', fn($q, $keyword) => $q->where('sys_activity_log.subject_type', 'like', "%{$keyword}%"));
+                ->filterColumn('created_at', fn ($q, $keyword) => dtFilterByDateKeyword($q, $keyword, 'sys_activity_log.created_at'))
+                ->filterColumn('user', fn ($q, $keyword) => $q->where('users.name', 'like', "%{$keyword}%"))
+                ->filterColumn('description', fn ($q, $keyword) => $q->where('sys_activity_log.description', 'like', "%{$keyword}%"))
+                ->filterColumn('subject_type', fn ($q, $keyword) => $q->where('sys_activity_log.subject_type', 'like', "%{$keyword}%"));
 
             if ($req->has('export') && $req->input('export') == 'true') {
                 $response = $dt->toArray();
 
                 $exportData = array_map(function ($row) {
                     return [
-                        'No'              => $row['no'] ?? '',
-                        'Waktu'           => strip_tags($row['created_at'] ?? ''),
-                        'User'            => strip_tags($row['user'] ?? ''),
-                        'Email'           => strip_tags($row['email'] ?? ''),
-                        'Aktivitas'       => strip_tags($row['description'] ?? ''),
-                        'Subjek'          => strip_tags($row['subject_type'] ?? ''),
+                        'No' => $row['no'] ?? '',
+                        'Waktu' => strip_tags($row['created_at'] ?? ''),
+                        'User' => strip_tags($row['user'] ?? ''),
+                        'Email' => strip_tags($row['email'] ?? ''),
+                        'Aktivitas' => strip_tags($row['description'] ?? ''),
+                        'Subjek' => strip_tags($row['subject_type'] ?? ''),
                     ];
                 }, $response['data']);
 
                 $response['data'] = $exportData;
+
                 return response()->json($response);
             }
 
             return $dt->toJson();
-        } else if ($param1 === 'detail') {
+        } elseif ($param1 === 'detail') {
             $id = $req->input('id');
             $log = Activity::with('causer', 'subject')->find($id);
 
-            if (!$log) {
+            if (! $log) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Log tidak ditemukan'
+                    'message' => 'Log tidak ditemukan',
                 ], 404);
             }
 
@@ -171,13 +175,13 @@ class ActivityLogController extends Controller
                 'user_email' => $log->causer ? $log->causer->email : '-',
                 'subject_type' => $log->subject_type,
                 'subject_id' => $log->subject_id,
-                'properties' => $log->properties ?? []
+                'properties' => $log->properties ?? [],
             ];
 
             return response()->json([
                 'status' => true,
                 'message' => 'Data loaded',
-                'data' => $data
+                'data' => $data,
             ]);
         } else {
             abort(404, 'Halaman tidak ditemukan');

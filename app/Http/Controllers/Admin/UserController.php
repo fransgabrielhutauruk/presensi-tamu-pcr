@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\User;
 use App\Enums\UserRole;
-use Illuminate\Http\Request;
-use Yajra\DataTables\DataTables;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
-use Yajra\DataTables\Html\Column;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Blade;
+use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Html\Column;
 
 class UserController extends Controller
 {
@@ -31,7 +31,7 @@ class UserController extends Controller
         $allRoles = Role::orderBy('name')->get();
 
         $builder = app('datatables.html');
-        $dataTable = $builder->serverSide(true)->ajax(route('app.user.data') . '/list')->columns([
+        $dataTable = $builder->serverSide(true)->ajax(route('app.user.data').'/list')->columns([
             Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
             Column::make(['width' => '15%', 'title' => 'Aksi', 'data' => 'action', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
             Column::make(['title' => 'Nama', 'data' => 'name']),
@@ -42,7 +42,7 @@ class UserController extends Controller
         $this->dataView([
             'dataTable' => $dataTable,
             'roles' => $roles,
-            'allRoles' => $allRoles
+            'allRoles' => $allRoles,
         ]);
 
         return $this->view('admin.pengguna.list');
@@ -55,7 +55,7 @@ class UserController extends Controller
             $query = User::with('roles')
                 ->select('users.*')
                 ->withMin('roles', 'name')
-                ->when(!empty($filterRole), function ($q) use ($filterRole) {
+                ->when(! empty($filterRole), function ($q) use ($filterRole) {
                     $q->whereHas('roles', function ($sq) use ($filterRole) {
                         $sq->where('name', $filterRole);
                     });
@@ -69,17 +69,19 @@ class UserController extends Controller
                 })
                 ->addColumn('role', function ($row) {
                     $userRoles = $row->roles->pluck('name')->toArray();
-                    return !empty($userRoles) ? implode(', ', $userRoles) : 'No Role';
+
+                    return ! empty($userRoles) ? implode(', ', $userRoles) : 'No Role';
                 })
                 ->addColumn('action', function ($row) {
                     $id = encid($row->id);
                     $dataAction = [
-                        'id'  => $id,
+                        'id' => $id,
                         'btn' => [
                             ['action' => 'edit', 'attr' => ['jf-edit' => $id]],
                             ['action' => 'delete', 'attr' => ['jf-delete' => $id]],
-                        ]
+                        ],
                     ];
+
                     return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
                 ->rawColumns(['action'])
@@ -98,7 +100,7 @@ class UserController extends Controller
                     });
                 })
                 ->toJson();
-        } else if ($param1 === 'detail') {
+        } elseif ($param1 === 'detail') {
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
             ]);
@@ -110,7 +112,7 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Data loaded',
-                'data' => $userData
+                'data' => $userData,
             ]);
         } else {
             abort(404, 'Halaman tidak ditemukan');
@@ -136,22 +138,23 @@ class UserController extends Controller
                 $inserted = User::create($data);
 
                 $roles = $req->input('roles', []);
-                if (!empty($roles)) {
+                if (! empty($roles)) {
                     $validRoles = array_intersect($roles, ['Admin', 'Eksekutif', 'Security']);
-                    if (!empty($validRoles)) {
+                    if (! empty($validRoles)) {
                         $inserted->assignRole($validRoles);
                     }
                 }
 
                 DB::commit();
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Pengguna berhasil ditambah.',
-                    'data' => ['id' => encid($inserted->id)]
+                    'data' => ['id' => encid($inserted->id)],
                 ]);
             } catch (\Throwable $th) {
                 DB::rollback();
-                abort(404, 'Tambah data gagal, ' . $th->getMessage());
+                abort(404, 'Tambah data gagal, '.$th->getMessage());
             }
         } else {
             abort(404, 'Halaman tidak ditemukan');
@@ -172,13 +175,14 @@ class UserController extends Controller
                 $currData->delete();
 
                 DB::commit();
+
                 return response()->json([
                     'status' => true,
-                    'message' => 'Data berhasil dihapus'
+                    'message' => 'Data berhasil dihapus',
                 ]);
             } catch (\Throwable $th) {
                 DB::rollback();
-                abort(404, 'Hapus data gagal, ' . $th->getMessage());
+                abort(404, 'Hapus data gagal, '.$th->getMessage());
             }
         } else {
             abort(404, 'Halaman tidak ditemukan');
@@ -213,14 +217,15 @@ class UserController extends Controller
 
                 $currData->syncRoles($allRoles);
                 DB::commit();
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Update data berhasil.',
-                    'data' => ['id' => $id]
+                    'data' => ['id' => $id],
                 ]);
             } catch (\Throwable $th) {
                 DB::rollback();
-                abort(404, 'Update data gagal, ' . $th->getMessage());
+                abort(404, 'Update data gagal, '.$th->getMessage());
             }
         } else {
             abort(404, 'Halaman tidak ditemukan');

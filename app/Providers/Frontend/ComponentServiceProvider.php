@@ -2,9 +2,7 @@
 
 namespace App\Providers\Frontend;
 
-use App\Models\Konten\KontenJurusan;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 
 class ComponentServiceProvider extends ServiceProvider
 {

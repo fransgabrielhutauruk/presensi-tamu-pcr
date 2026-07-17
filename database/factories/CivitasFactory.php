@@ -19,7 +19,7 @@ class CivitasFactory extends Factory
             'nip' => null,
             'nim' => null,
             'jenis_kelamin' => fake()->randomElement(['Laki-laki', 'Perempuan']),
-            'nomor_telepon' => '08' . fake()->numerify('##########'),
+            'nomor_telepon' => '08'.fake()->numerify('##########'),
             'email' => fake()->safeEmail(),
         ];
     }

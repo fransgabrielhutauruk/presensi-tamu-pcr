@@ -23,7 +23,7 @@ class KunjunganValidasiController extends Controller
 
         $builder = app('datatables.html');
         $dataTable = $builder->serverSide(true)
-            ->ajax(route('app.kunjungan-validasi.data') . '/validasi-list')
+            ->ajax(route('app.kunjungan-validasi.data').'/validasi-list')
             ->columns([
                 Column::make([
                     'width' => '3%',
@@ -32,13 +32,13 @@ class KunjunganValidasiController extends Controller
                     'data' => 'checkbox',
                     'orderable' => false,
                     'className' => 'text-center',
-                    'searchable' => false
+                    'searchable' => false,
                 ]),
                 Column::make([
                     'title' => 'Aksi',
                     'data' => 'action',
                     'orderable' => false,
-                    'className' => 'text-nowrap text-center'
+                    'className' => 'text-nowrap text-center',
                 ]),
                 Column::make([
                     'title' => 'Waktu Kunjungan',
@@ -50,7 +50,7 @@ class KunjunganValidasiController extends Controller
                     'title' => 'No',
                     'data' => 'no',
                     'orderable' => false,
-                    'className' => 'text-center'
+                    'className' => 'text-center',
                 ]),
                 Column::make([
                     'title' => 'Identitas',
@@ -84,14 +84,14 @@ class KunjunganValidasiController extends Controller
         if ($param1 == 'dihapus') {
             $this->title = 'Kunjungan yang Dihapus';
             $this->activeMenu = 'validasi-kunjungan-dihapus';
-            $this->breadCrump[] = ['title' => 'Kunjungan yang Dihapus', 'link' =>  url()->current()];
+            $this->breadCrump[] = ['title' => 'Kunjungan yang Dihapus', 'link' => url()->current()];
 
             $countValidasi = Kunjungan::where('status_validasi', false)->whereNull('deleted_at')->count();
             $countDihapus = Kunjungan::where('status_validasi', false)->onlyTrashed()->count();
 
             $builder = app('datatables.html');
             $dataTable = $builder->serverSide(true)
-                ->ajax(route('app.kunjungan-validasi.data') . '/validasi-dihapus-list')
+                ->ajax(route('app.kunjungan-validasi.data').'/validasi-dihapus-list')
                 ->columns([
                     Column::make([
                         'width' => '3%',
@@ -100,13 +100,13 @@ class KunjunganValidasiController extends Controller
                         'data' => 'checkbox',
                         'orderable' => false,
                         'className' => 'text-center',
-                        'searchable' => false
+                        'searchable' => false,
                     ]),
                     Column::make([
                         'title' => 'Aksi',
                         'data' => 'action',
                         'orderable' => false,
-                        'className' => 'text-nowrap text-center'
+                        'className' => 'text-nowrap text-center',
                     ]),
                     Column::make([
                         'title' => 'Waktu Kunjungan',
@@ -118,7 +118,7 @@ class KunjunganValidasiController extends Controller
                         'title' => 'No',
                         'data' => 'no',
                         'orderable' => false,
-                        'className' => 'text-center'
+                        'className' => 'text-center',
                     ]),
                     Column::make([
                         'title' => 'Identitas',
@@ -154,15 +154,15 @@ class KunjunganValidasiController extends Controller
 
     public function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
-        if ($param1 !== '' && !in_array($param1, ['validasi-list', 'validasi-dihapus-list'])) {
+        if ($param1 !== '' && ! in_array($param1, ['validasi-list', 'validasi-dihapus-list'])) {
             abort(404, 'Halaman tidak ditemukan');
         }
 
-        $filterJK             = $req->input('filter_jenis_kelamin', '');
-        $filterIdentitas      = $req->input('filter_identitas', '');
+        $filterJK = $req->input('filter_jenis_kelamin', '');
+        $filterIdentitas = $req->input('filter_identitas', '');
         $filterJenisKunjungan = $req->input('filter_jenis_kunjungan', '');
-        $filterDateFrom       = $req->input('filter_date_from', '');
-        $filterDateTo         = $req->input('filter_date_to', '');
+        $filterDateFrom = $req->input('filter_date_from', '');
+        $filterDateTo = $req->input('filter_date_to', '');
 
         $query = Kunjungan::withTrashed()->select([
             'kunjungan.kunjungan_id',
@@ -204,13 +204,13 @@ class KunjunganValidasiController extends Controller
                     ->orWhereNotNull('event.event_id');
             })
             ->where('kunjungan.status_validasi', false)
-            ->when(!empty($filterJK), function ($q) use ($filterJK) {
+            ->when(! empty($filterJK), function ($q) use ($filterJK) {
                 $q->where(function ($q) use ($filterJK) {
                     $q->where('tamu.jenis_kelamin_tamu', $filterJK)
                         ->orWhere('civitas.jenis_kelamin', $filterJK);
                 });
             })
-            ->when(!empty($filterIdentitas), function ($q) use ($filterIdentitas) {
+            ->when(! empty($filterIdentitas), function ($q) use ($filterIdentitas) {
                 if ($filterIdentitas === 'vip') {
                     $q->where('kunjungan.identitas', 'non-civitas')
                         ->where('kunjungan.is_vip', 1);
@@ -221,15 +221,15 @@ class KunjunganValidasiController extends Controller
                     $q->where('kunjungan.identitas', $filterIdentitas);
                 }
             })
-            ->when(!empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
+            ->when(! empty($filterJenisKunjungan), function ($q) use ($filterJenisKunjungan) {
                 if ($filterJenisKunjungan === 'event') {
                     $q->whereNotNull('kunjungan.event_id');
                 } else {
                     $q->whereNull('kunjungan.event_id');
                 }
             })
-            ->when(!empty($filterDateFrom), fn($q) => $q->whereDate('kunjungan.created_at', '>=', $filterDateFrom))
-            ->when(!empty($filterDateTo), fn($q) => $q->whereDate('kunjungan.created_at', '<=', $filterDateTo));
+            ->when(! empty($filterDateFrom), fn ($q) => $q->whereDate('kunjungan.created_at', '>=', $filterDateFrom))
+            ->when(! empty($filterDateTo), fn ($q) => $q->whereDate('kunjungan.created_at', '<=', $filterDateTo));
 
         if ($param1 === 'validasi-dihapus-list') {
             $query->whereNotNull('kunjungan.deleted_at');
@@ -242,9 +242,10 @@ class KunjunganValidasiController extends Controller
         return DataTables::of($query)
             ->addColumn('checkbox', function ($row) {
                 $id = encid($row->kunjungan_id);
+
                 return '<div class="form-check form-check-sm form-check-custom form-check-solid">'
-                    . '<input class="form-check-input row-checkbox" type="checkbox" value="' . $id . '" data-id="' . $id . '" data-cy="checkbox-row-validasi-kunjungan-' . $id . '">'
-                    . '</div>';
+                    .'<input class="form-check-input row-checkbox" type="checkbox" value="'.$id.'" data-id="'.$id.'" data-cy="checkbox-row-validasi-kunjungan-'.$id.'">'
+                    .'</div>';
             })
             ->addColumn('no', function () use (&$start) {
                 return ++$start;
@@ -269,19 +270,21 @@ class KunjunganValidasiController extends Controller
                     ? ($row->event?->nama_event ?? $row->nama_event)
                     : (KategoriTujuanEnum::getDescription($row->kategori_tujuan?->value) ?? '-');
                 $badge = Kunjungan::getJenisKunjunganBadge($row->event_id);
+
                 return "{$detail}<br/>{$badge}";
             })
             ->addColumn('waktu_kunjungan', function ($row) {
-                return $row->created_at ? tanggal($row->created_at) . ' ' . Carbon::parse($row->created_at)->setTimezone(config('app.timezone'))->format('H:i') : '-';
+                return $row->created_at ? tanggal($row->created_at).' '.Carbon::parse($row->created_at)->setTimezone(config('app.timezone'))->format('H:i') : '-';
             })
             ->addColumn('action', function ($row) {
                 $id = encid($row->kunjungan_id);
                 $dataAction = [
-                    'id'  => $id,
+                    'id' => $id,
                     'btn' => [
                         ['action' => 'detail', 'title' => 'Lihat Detail', 'attr' => ['jf-detail' => $id]],
-                    ]
+                    ],
                 ];
+
                 return Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
             })
             ->rawColumns(['checkbox', 'identitas', 'jenis_kunjungan', 'action'])
@@ -292,8 +295,7 @@ class KunjunganValidasiController extends Controller
             ->orderColumn('email', 'COALESCE(tamu.email_tamu, civitas.email) $1')
             ->orderColumn('nomor_telepon', 'COALESCE(tamu.nomor_telepon_tamu, civitas.nomor_telepon) $1')
             ->orderColumn('jenis_kunjungan', 'kunjungan.event_id $1')
-            ->filterColumn('waktu_kunjungan', fn($query, $keyword) =>
-            dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
+            ->filterColumn('waktu_kunjungan', fn ($query, $keyword) => dtFilterByDateKeyword($query, $keyword, 'kunjungan.created_at'))
             ->filterColumn('identitas', function ($query, $keyword) {
                 $query->where('kunjungan.identitas', 'like', "%{$keyword}%");
             })
@@ -324,7 +326,7 @@ class KunjunganValidasiController extends Controller
                 }
                 $query->where(function ($q) use ($matchedValues, $keyword) {
 
-                    if (!empty($matchedValues)) {
+                    if (! empty($matchedValues)) {
                         $q->whereIn('kunjungan.kategori_tujuan', $matchedValues);
                     } else {
                         $q->where('kunjungan.kategori_tujuan', 'like', "%{$keyword}%");
@@ -350,9 +352,10 @@ class KunjunganValidasiController extends Controller
         try {
             $currData->update(['status_validasi' => true]);
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => 'Kunjungan berhasil divalidasi'
+                'message' => 'Kunjungan berhasil divalidasi',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -368,9 +371,10 @@ class KunjunganValidasiController extends Controller
         try {
             $currData->delete();
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => 'Kunjungan berhasil dihapus'
+                'message' => 'Kunjungan berhasil dihapus',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -395,22 +399,24 @@ class KunjunganValidasiController extends Controller
 
             if ($action === 'validate') {
                 Kunjungan::whereIn('kunjungan_id', $decodedIds)->update(['status_validasi' => true]);
-                $message = count($kunjungans) . ' kunjungan berhasil divalidasi';
+                $message = count($kunjungans).' kunjungan berhasil divalidasi';
             } else {
                 Kunjungan::whereIn('kunjungan_id', $decodedIds)->delete();
-                $message = count($kunjungans) . ' kunjungan berhasil dihapus';
+                $message = count($kunjungans).' kunjungan berhasil dihapus';
             }
 
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => $message
+                'message' => $message,
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
             abort(500, 'Gagal melakukan bulk action, kesalahan database');
         }
     }
+
     public function restoreSingle(Request $request, $id): JsonResponse
     {
         $currData = Kunjungan::withTrashed()->findOrFail(decid($id));
@@ -419,9 +425,10 @@ class KunjunganValidasiController extends Controller
         try {
             $currData->restore();
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => 'Data kunjungan berhasil direstore'
+                'message' => 'Data kunjungan berhasil direstore',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -437,9 +444,10 @@ class KunjunganValidasiController extends Controller
         try {
             $currData->forceDelete();
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => 'Data kunjungan berhasil dihapus permanen'
+                'message' => 'Data kunjungan berhasil dihapus permanen',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -463,9 +471,10 @@ class KunjunganValidasiController extends Controller
             Kunjungan::onlyTrashed()->whereIn('kunjungan_id', $decodedIds)->restore();
 
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => count($kunjungans) . ' kunjungan berhasil direstore'
+                'message' => count($kunjungans).' kunjungan berhasil direstore',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -491,9 +500,10 @@ class KunjunganValidasiController extends Controller
             }
 
             DB::commit();
+
             return response()->json([
                 'status' => true,
-                'message' => count($kunjungans) . ' kunjungan berhasil dihapus permanen'
+                'message' => count($kunjungans).' kunjungan berhasil dihapus permanen',
             ]);
         } catch (\Throwable $th) {
             DB::rollBack();

@@ -10,7 +10,7 @@ abstract class TestCase extends BaseTestCase
 {
     public function createApplication()
     {
-        $testingDatabasePath = __DIR__ . '/../database/testing.sqlite';
+        $testingDatabasePath = __DIR__.'/../database/testing.sqlite';
 
         if (! file_exists($testingDatabasePath)) {
             touch($testingDatabasePath);
@@ -27,7 +27,7 @@ abstract class TestCase extends BaseTestCase
         $_SERVER['DB_CONNECTION'] = 'sqlite';
         $_SERVER['DB_DATABASE'] = $testingDatabasePath;
 
-        $app = require __DIR__ . '/../bootstrap/app.php';
+        $app = require __DIR__.'/../bootstrap/app.php';
 
         $app->make(Kernel::class)->bootstrap();
 

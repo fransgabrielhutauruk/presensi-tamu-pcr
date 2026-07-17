@@ -12,7 +12,7 @@ enum UserRole: string
 
     public static function getAllRoles(): array
     {
-        return array_map(fn($role) => $role->value, self::cases());
+        return array_map(fn ($role) => $role->value, self::cases());
     }
 
     public static function getAdminEksekutifStafMahasiswaRoles(): array

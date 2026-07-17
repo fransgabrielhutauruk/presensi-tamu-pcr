@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\MstOpsiKunjungan;
+use Illuminate\Database\Seeder;
 
 class MstOpsiKunjunganSeeder extends Seeder
 {
@@ -19,29 +19,29 @@ class MstOpsiKunjunganSeeder extends Seeder
                 'nilai_opsi' => [
                     [
                         'id' => 'Direktur',
-                        'en' => 'Director'
+                        'en' => 'Director',
                     ],
                     [
                         'id' => 'Penjaminan Mutu',
-                        'en' => 'Quality Assurance'
+                        'en' => 'Quality Assurance',
                     ],
                     [
                         'id' => 'Bidang Akademik dan Inovasi Pembelajaran',
-                        'en' => 'Academic Field and Learning Innovation'
+                        'en' => 'Academic Field and Learning Innovation',
                     ],
                     [
                         'id' => 'Bidang Sumber Daya',
-                        'en' => 'Resource Field'
+                        'en' => 'Resource Field',
                     ],
                     [
                         'id' => 'Bidang Keuangan, Perencanaan dan Kelembagaan',
-                        'en' => 'Finance, Planning and Institutional Affairs'
+                        'en' => 'Finance, Planning and Institutional Affairs',
                     ],
                     [
                         'id' => 'Bidang Kemahasiswaan, Pemasaran, dan Kemitraan',
-                        'en' => 'Student Affairs, Marketing, and Partnerships'
+                        'en' => 'Student Affairs, Marketing, and Partnerships',
                     ],
-                ]
+                ],
             ],
             [
                 'nama_opsi' => 'pihak_dituju_ortu',
@@ -49,25 +49,25 @@ class MstOpsiKunjunganSeeder extends Seeder
                 'nilai_opsi' => [
                     [
                         'id' => 'Bagian Administrasi Akademik (BAAK)',
-                        'en' => 'Academic Administration Section'
+                        'en' => 'Academic Administration Section',
                     ],
                     [
                         'id' => 'Bagian Keuangan',
-                        'en' => 'Financial Department'
+                        'en' => 'Financial Department',
                     ],
                     [
                         'id' => 'Dosen Wali',
-                        'en' => 'Guardian lecturer'
+                        'en' => 'Guardian lecturer',
                     ],
                     [
                         'id' => 'Ketua Program Studi',
-                        'en' => 'Head of The Study Program'
+                        'en' => 'Head of The Study Program',
                     ],
                     [
                         'id' => 'Kemahasiswaan',
-                        'en' => 'Student Affairs'
+                        'en' => 'Student Affairs',
                     ],
-                ]
+                ],
             ],
             [
                 'nama_opsi' => 'prodi',
@@ -75,66 +75,66 @@ class MstOpsiKunjunganSeeder extends Seeder
                 'nilai_opsi' => [
                     [
                         'id' => 'Teknik Informatika (TI)',
-                        'en' => 'Computer Engineering'
+                        'en' => 'Computer Engineering',
                     ],
                     [
                         'id' => 'Sistem Informasi (SI)',
-                        'en' => 'Information Systems'
+                        'en' => 'Information Systems',
                     ],
                     [
                         'id' => 'Teknologi Rekayasa Komputer (TRK)',
-                        'en' => 'Computer Engineering Technology'
+                        'en' => 'Computer Engineering Technology',
                     ],
                     [
                         'id' => 'Magister Terapan Teknik Komputer (MTTK)',
-                        'en' => 'Master of Applied Computer Engineering'
+                        'en' => 'Master of Applied Computer Engineering',
                     ],
                     [
                         'id' => 'Teknologi Rekayasa Jaringan Telekomunikasi (TRJT)',
-                        'en' => 'Telecommunication Network Engineering Technology'
+                        'en' => 'Telecommunication Network Engineering Technology',
                     ],
                     [
                         'id' => 'Teknik Listrik (TL)',
-                        'en' => 'Electrical Engineering'
+                        'en' => 'Electrical Engineering',
                     ],
                     [
                         'id' => 'Teknik Elektronika (TET)',
-                        'en' => 'Electronics Engineering'
+                        'en' => 'Electronics Engineering',
                     ],
                     [
                         'id' => 'Teknologi Rekayasa Sistem Elektronika (TRSE)',
-                        'en' => 'Electronics System Engineering Technology'
+                        'en' => 'Electronics System Engineering Technology',
                     ],
                     [
                         'id' => 'Teknologi Rekayasa Mekatronika (TRM)',
-                        'en' => 'Mechatronics Engineering Technology'
+                        'en' => 'Mechatronics Engineering Technology',
                     ],
                     [
                         'id' => 'Teknik Mesin (TMS)',
-                        'en' => 'Mechanical Engineering'
+                        'en' => 'Mechanical Engineering',
                     ],
                     [
                         'id' => 'Hubungan Masyarakat dan Komunikasi Digital (HMKD)',
-                        'en' => 'Public Relations and Digital Communication'
+                        'en' => 'Public Relations and Digital Communication',
                     ],
                     [
                         'id' => 'Akuntansi Perpajakan (AKTP)',
-                        'en' => 'Tax Accounting'
+                        'en' => 'Tax Accounting',
                     ],
                     [
                         'id' => 'Bisnis Digital (BD)',
-                        'en' => 'Digital Business'
+                        'en' => 'Digital Business',
                     ],
                     [
                         'id' => 'Animasi',
-                        'en' => 'Animation'
+                        'en' => 'Animation',
                     ],
                     [
                         'id' => 'Kecerdasan Buatan dan Robotika',
-                        'en' => 'Artificial Intelligence and Robotics'
-                    ]
-                ]
-            ]
+                        'en' => 'Artificial Intelligence and Robotics',
+                    ],
+                ],
+            ],
         ];
 
         foreach ($opsiData as $data) {

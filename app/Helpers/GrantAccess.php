@@ -1,9 +1,5 @@
 <?php
 
-use App\Models\Karirhub\Pencaker\Pencaker;
-use App\Models\Karirhub\Perusahaan\Perusahaan;
-use App\Models\User;
-use App\Models\Master\Kelas;
 use Illuminate\Support\Facades\Auth;
 
 function userRoles()
@@ -13,27 +9,27 @@ function userRoles()
 
 function userId()
 {
-    return Auth::user() ? Auth::user()->id : NULL;
+    return Auth::user() ? Auth::user()->id : null;
 }
 
 function userName()
 {
-    return Auth::user() ? Auth::user()->name : NULL;
+    return Auth::user() ? Auth::user()->name : null;
 }
 
 function userType()
 {
-    return Auth::user() ? Auth::user()->type : NULL;
+    return Auth::user() ? Auth::user()->type : null;
 }
 
 function userInisial()
 {
-    return Auth::user() ? Auth::user()->username : NULL;
+    return Auth::user() ? Auth::user()->username : null;
 }
 
 function userAvatar()
 {
-    $foto = Auth::user() ? Auth::user()->avatar : NULL;
+    $foto = Auth::user() ? Auth::user()->avatar : null;
 
     return avatar($foto);
 }
@@ -45,9 +41,11 @@ function causerActivityLog()
 
 /**
  * has role or permission
- * @var array $role_or_permission 
+ *
+ * @var array $role_or_permission
  * @var string $role_or_permission => delimitier |
- * @return boolean
+ *
+ * @return bool
  */
 function hasRope($role_or_permission)
 {
@@ -58,8 +56,9 @@ function hasRope($role_or_permission)
         : explode('|', $roleOrPermission);
 
     $user = auth()->user();
-    if (!$user)
+    if (! $user) {
         return false;
+    }
 
     if ($user->canAny($rolesOrPermissions) || $user->hasAnyRole($rolesOrPermissions)) {
         return true;
@@ -70,9 +69,11 @@ function hasRope($role_or_permission)
 
 /**
  * unless role or permission
- * @var array $role_or_permission 
+ *
+ * @var array $role_or_permission
  * @var string $role_or_permission => delimitier |
- * @return boolean
+ *
+ * @return bool
  */
 function unlessRope($role_or_permission)
 {
@@ -83,8 +84,9 @@ function unlessRope($role_or_permission)
         : explode('|', $roleOrPermission);
 
     $user = auth()->user();
-    if (!$user)
+    if (! $user) {
         return false;
+    }
 
     if ($user->canAny($rolesOrPermissions) || $user->hasAnyRole($rolesOrPermissions)) {
         return false;
@@ -95,8 +97,10 @@ function unlessRope($role_or_permission)
 
 /**
  * allow role or permission
- * @var array $role_or_permission 
+ *
+ * @var array $role_or_permission
  * @var string $role_or_permission => delimitier |
+ *
  * @return void
  */
 function allowRope($role_or_permission)
@@ -106,8 +110,10 @@ function allowRope($role_or_permission)
 
 /**
  * prevent role or permission
- * @var array $role_or_permission 
+ *
+ * @var array $role_or_permission
  * @var string $role_or_permission => delimitier |
+ *
  * @param [type] $role_or_permission
  * @return void
  */

@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

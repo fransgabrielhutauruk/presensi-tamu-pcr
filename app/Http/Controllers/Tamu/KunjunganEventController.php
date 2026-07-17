@@ -23,11 +23,17 @@ use Throwable;
 class KunjunganEventController extends Controller
 {
     private const SOURCE_CIVITAS = 'civitas';
+
     private const SOURCE_DM_PEGAWAI = 'dm_pegawai';
+
     private const SOURCE_API_MAHASISWA = 'api_mahasiswa';
+
     private const SOURCE_NOT_FOUND = 'not_found';
+
     private const SOURCE_INVALID_IDENTIFIER = 'invalid_identifier';
+
     private const SOURCE_EXTERNAL_ERROR = 'external_error';
+
     private CypressTestingService $cypressTestingService;
 
     public function __construct(CypressTestingService $cypressTestingService)
@@ -75,7 +81,7 @@ class KunjunganEventController extends Controller
 
             return view('contents.tamu.pages.event.identitas', compact('event', 'eventId'));
         } catch (Throwable $exception) {
-            Log::error('Gagal memuat halaman identitas: ' . $exception->getMessage());
+            Log::error('Gagal memuat halaman identitas: '.$exception->getMessage());
 
             return redirect()->route('tamu.home')->with('error', 'Event tidak ditemukan.');
         }
@@ -150,7 +156,7 @@ class KunjunganEventController extends Controller
 
             return redirect()->route('tamu.sukses', $kunjunganIdHashed);
         } catch (Throwable $exception) {
-            Log::error('Gagal menyimpan presensi luar: ' . $exception->getMessage());
+            Log::error('Gagal menyimpan presensi luar: '.$exception->getMessage());
 
             return redirect()->back()
                 ->withInput()
@@ -182,7 +188,7 @@ class KunjunganEventController extends Controller
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'nomor_telepon' => 'required|numeric',
             'email' => 'required|email',
-            'peran' => 'required'
+            'peran' => 'required',
         ]);
         if ($validator->fails()) {
             return redirect()->back()
@@ -218,7 +224,7 @@ class KunjunganEventController extends Controller
 
             return redirect()->route('tamu.sukses', $kunjunganIdHashed);
         } catch (Throwable $exception) {
-            Log::error('Gagal menyimpan presensi event civitas: ' . $exception->getMessage());
+            Log::error('Gagal menyimpan presensi event civitas: '.$exception->getMessage());
 
             return redirect()->back()
                 ->withInput()
@@ -249,7 +255,7 @@ class KunjunganEventController extends Controller
                         'jenis_kelamin' => $civitas->jenis_kelamin,
                         'nomor_telepon' => $civitas->nomor_telepon,
                         'email' => $civitas->email,
-                    ]
+                    ],
                 ]);
             }
 
@@ -261,7 +267,7 @@ class KunjunganEventController extends Controller
                 'autofilled_fields' => [],
             ]);
         } catch (Throwable $exception) {
-            Log::error('Error checking civitas data: ' . $exception->getMessage());
+            Log::error('Error checking civitas data: '.$exception->getMessage());
 
             return $this->jsonServerErrorResponse('Terjadi kesalahan saat memeriksa data');
         }
@@ -298,7 +304,7 @@ class KunjunganEventController extends Controller
 
             return response()->json($lookupResult, $lookupResult['http_code'] ?? 404);
         } catch (Throwable $exception) {
-            Log::error('Error fetching external data: ' . $exception->getMessage());
+            Log::error('Error fetching external data: '.$exception->getMessage());
 
             return $this->jsonServerErrorResponse('Terjadi kesalahan saat mengambil data. Silahkan isi seluruh data di bawah.', self::SOURCE_EXTERNAL_ERROR);
         }
@@ -306,7 +312,7 @@ class KunjunganEventController extends Controller
 
     private function resolveIdentifierType(string $nimNip): ?string
     {
-        if (!preg_match('/^(\d{6}|\d{10})$/', $nimNip)) {
+        if (! preg_match('/^(\d{6}|\d{10})$/', $nimNip)) {
             return null;
         }
 
@@ -331,7 +337,7 @@ class KunjunganEventController extends Controller
     {
         $pegawai = DmPegawai::where('nip', $nip)->first();
 
-        if (!$pegawai) {
+        if (! $pegawai) {
             return [
                 'status' => false,
                 'source' => self::SOURCE_NOT_FOUND,
@@ -363,8 +369,8 @@ class KunjunganEventController extends Controller
 
         if (empty($apiUrl) || empty($apiKey)) {
             Log::error('Mahasiswa API config missing', [
-                'url_set' => !empty($apiUrl),
-                'key_set' => !empty($apiKey),
+                'url_set' => ! empty($apiUrl),
+                'key_set' => ! empty($apiKey),
             ]);
 
             return [
@@ -377,7 +383,7 @@ class KunjunganEventController extends Controller
         }
 
         $queryParams = ['nim' => $nim];
-        if (!empty($apiCollection)) {
+        if (! empty($apiCollection)) {
             $queryParams['collection'] = $apiCollection;
         }
 
@@ -388,10 +394,10 @@ class KunjunganEventController extends Controller
             ])
             ->get($apiUrl, $queryParams);
 
-        if (!$response->successful()) {
+        if (! $response->successful()) {
             Log::error('API Mahasiswa request failed', [
                 'status' => $response->status(),
-                'body' => $response->body()
+                'body' => $response->body(),
             ]);
 
             return [
@@ -405,7 +411,7 @@ class KunjunganEventController extends Controller
         $responseData = $response->json();
         $items = is_array($responseData) ? ($responseData['items'] ?? null) : null;
 
-        if (!is_array($items) || empty($items) || !is_array($items[0] ?? null)) {
+        if (! is_array($items) || empty($items) || ! is_array($items[0] ?? null)) {
             return [
                 'status' => false,
                 'source' => self::SOURCE_NOT_FOUND,
@@ -452,12 +458,13 @@ class KunjunganEventController extends Controller
     {
         $currentDate = now()->format('Y-m-d');
 
-        if (!empty($event->tanggal_selesai_event)) {
+        if (! empty($event->tanggal_selesai_event)) {
             return $event->tanggal_selesai_event < $currentDate;
         }
 
         return $event->tanggal_event && $event->tanggal_event < $currentDate;
     }
+
     private function buildTamuData(Request $request): array
     {
         return [
@@ -551,7 +558,7 @@ class KunjunganEventController extends Controller
         return response()->json([
             'status' => false,
             'source' => self::SOURCE_INVALID_IDENTIFIER,
-            'message' => 'Format NIM/NIP tidak valid. Gunakan 6 digit NIP atau 10 digit NIM.'
+            'message' => 'Format NIM/NIP tidak valid. Gunakan 6 digit NIP atau 10 digit NIM.',
         ], 400);
     }
 

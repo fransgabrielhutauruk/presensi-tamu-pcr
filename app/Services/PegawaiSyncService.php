@@ -9,7 +9,9 @@ use Illuminate\Support\Facades\Log;
 class PegawaiSyncService
 {
     protected string $apiUrl;
+
     protected string $apiKey;
+
     protected int $timeout;
 
     public function __construct()
@@ -29,15 +31,15 @@ class PegawaiSyncService
                 ])
                 ->get($this->apiUrl);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::error('Pegawai API request failed', [
                     'status' => $response->status(),
-                    'body' => $response->body()
+                    'body' => $response->body(),
                 ]);
 
                 return [
                     'success' => false,
-                    'message' => 'API request failed with status: ' . $response->status(),
+                    'message' => 'API request failed with status: '.$response->status(),
                     'synced' => 0,
                     'failed' => 0,
                 ];
@@ -45,9 +47,9 @@ class PegawaiSyncService
 
             $data = $response->json();
 
-            if (!isset($data['status']) || $data['status'] !== 200) {
+            if (! isset($data['status']) || $data['status'] !== 200) {
                 Log::error('Pegawai API returned error', ['response' => $data]);
-                
+
                 return [
                     'success' => false,
                     'message' => $data['message'] ?? 'Unknown API error',
@@ -57,10 +59,10 @@ class PegawaiSyncService
             }
 
             $items = $data['items'] ?? [];
-            
+
             if (empty($items)) {
                 Log::warning('Pegawai API returned empty items');
-                
+
                 return [
                     'success' => true,
                     'message' => 'No data to sync',
@@ -77,6 +79,7 @@ class PegawaiSyncService
                     if (empty($item['nip'])) {
                         Log::warning('Skipping item with empty NIP', ['item' => $item]);
                         $failed++;
+
                         continue;
                     }
 
@@ -87,12 +90,12 @@ class PegawaiSyncService
                     ];
 
                     DmPegawai::upsertByNip($pegawaiData);
-                    
+
                     $synced++;
                 } catch (\Exception $e) {
                     Log::error('Failed to sync pegawai item', [
                         'nip' => $item['nip'] ?? 'unknown',
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                     $failed++;
                 }
@@ -100,7 +103,7 @@ class PegawaiSyncService
 
             return [
                 'success' => true,
-                'message' => "Berhasil sinkronisasi {$synced} data pegawai" . ($failed > 0 ? ", {$failed} gagal" : ""),
+                'message' => "Berhasil sinkronisasi {$synced} data pegawai".($failed > 0 ? ", {$failed} gagal" : ''),
                 'synced' => $synced,
                 'failed' => $failed,
                 'total' => count($items),
@@ -109,12 +112,12 @@ class PegawaiSyncService
         } catch (\Exception $e) {
             Log::error('Pegawai sync exception', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
 
             return [
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),
+                'message' => 'Error: '.$e->getMessage(),
                 'synced' => 0,
                 'failed' => 0,
             ];

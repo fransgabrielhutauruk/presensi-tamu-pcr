@@ -108,7 +108,7 @@ class EtlSyncKunjungan extends Command
                 ->chunkById(1000, function ($rows) use ($dwh) {
                     $kategoriLokasiMap = [
                         'dalam_kampus' => 'Dalam Kampus',
-                        'luar_kampus'  => 'Luar Kampus',
+                        'luar_kampus' => 'Luar Kampus',
                     ];
                     foreach ($rows as $row) {
                         $dwh->table('dim_event')->updateOrInsert(
@@ -337,7 +337,7 @@ class EtlSyncKunjungan extends Command
 
             return Command::SUCCESS;
         } catch (\Throwable $exception) {
-            $this->error('Sync gagal: ' . $exception->getMessage());
+            $this->error('Sync gagal: '.$exception->getMessage());
             report($exception);
 
             return Command::FAILURE;

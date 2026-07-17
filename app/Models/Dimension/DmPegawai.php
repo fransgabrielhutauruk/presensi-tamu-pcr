@@ -13,6 +13,7 @@ class DmPegawai extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'dm_pegawai';
+
     protected $primaryKey = 'pegawai_id';
 
     protected $fillable = [
@@ -65,6 +66,7 @@ class DmPegawai extends Model
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
+
                 return "{$aksi} pegawai";
             });
     }

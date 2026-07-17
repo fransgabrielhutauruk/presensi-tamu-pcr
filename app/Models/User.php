@@ -3,18 +3,18 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Support\Facades\DB;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\Notifiable;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Spatie\Activitylog\Facades\CauserResolver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Facades\CauserResolver;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles, LogsActivity;
+    use HasFactory, HasRoles, LogsActivity, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -60,24 +60,25 @@ class User extends Authenticatable
             ->from($table)
             ->where(notRaw($where))
             ->whereRaw(withRaw($where), $whereBinding);
+
         return $get ? $query->get() : $query;
     }
 
     /**
      * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
      * pencatatan log menggunakan spatie/activitylogging
-     *
-     * @return LogOptions
      */
     public function getActivitylogOptions(): LogOptions
     {
         CauserResolver::setCauser(causerActivityLog());
+
         return LogOptions::defaults()
             ->logOnly($this->fillable)
             ->logOnlyDirty()
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
+
                 return "{$aksi} pengguna: {$this->name}";
             });
     }

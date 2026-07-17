@@ -66,7 +66,7 @@ describe('BBT-18 Melihat QR Code Presensi Event', function () {
         $response = $this
             ->actingAs($admin)
             ->withSession(['active_role' => UserRole::ADMIN->value])
-            ->get(route('app.event.qr-code', $eventIdEnc) . '?generate=true');
+            ->get(route('app.event.qr-code', $eventIdEnc).'?generate=true');
 
         // Assertion
         $response->assertOk();

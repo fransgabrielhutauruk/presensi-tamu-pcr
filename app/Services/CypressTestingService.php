@@ -84,7 +84,7 @@ class CypressTestingService
 
     public function setMockActiveRole(Request $request): void
     {
-        if (!$this->isMockEnabled($request) || !$request->hasSession()) {
+        if (! $this->isMockEnabled($request) || ! $request->hasSession()) {
             return;
         }
 

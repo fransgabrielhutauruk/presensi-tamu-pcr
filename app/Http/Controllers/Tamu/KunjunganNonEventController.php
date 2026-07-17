@@ -25,7 +25,7 @@ class KunjunganNonEventController extends Controller
     {
         $tujuan = $request->get('tujuan');
 
-        if (!$tujuan || !KategoriTujuanEnum::isValid($tujuan)) {
+        if (! $tujuan || ! KategoriTujuanEnum::isValid($tujuan)) {
             return redirect()->route('tamu.non-event.tujuan')
                 ->with('error', 'Silahkan pilih tujuan kunjungan yang sesuai.');
         }
@@ -33,7 +33,7 @@ class KunjunganNonEventController extends Controller
         $options = MstOpsiKunjungan::getMultipleDropdownOptions([
             'pihak_dituju',
             'pihak_dituju_ortu',
-            'prodi'
+            'prodi',
         ], app()->getLocale());
 
         return view('contents.tamu.pages.non-event.form-presensi', compact('tujuan', 'options'));
@@ -56,7 +56,7 @@ class KunjunganNonEventController extends Controller
 
             return redirect()->route('tamu.sukses', $kunjunganIdHashed);
         } catch (Throwable $exception) {
-            Log::error('Failed to store presensi: ' . $exception->getMessage());
+            Log::error('Failed to store presensi: '.$exception->getMessage());
 
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan');
         }

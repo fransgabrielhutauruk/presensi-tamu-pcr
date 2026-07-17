@@ -5,14 +5,16 @@ namespace App\Http\Controllers;
 abstract class Controller
 {
     public $pageData = [];
-    public $title = NULL;
-    public $activeRoot = NULL;
-    public $activeMenu = NULL;
+
+    public $title = null;
+
+    public $activeRoot = null;
+
+    public $activeMenu = null;
+
     public $breadCrump = [];
 
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     public function dataView(array $var)
     {
@@ -23,12 +25,13 @@ abstract class Controller
 
     public function view($param1)
     {
-        $this->pageData['title']      = $this->title;
+        $this->pageData['title'] = $this->title;
         $this->pageData['activeRoot'] = $this->activeRoot;
         $this->pageData['activeMenu'] = $this->activeMenu;
         $this->pageData['breadCrump'] = $this->breadCrump;
 
         $pageData = (object) $this->pageData;
-        return view('contents.' . $param1, array_merge(compact('pageData'), $this->pageData));
+
+        return view('contents.'.$param1, array_merge(compact('pageData'), $this->pageData));
     }
 }

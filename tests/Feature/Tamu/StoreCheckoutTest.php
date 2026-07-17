@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Kunjungan;
 use Database\Factories\FeedbackFactory;
 use Database\Factories\KunjunganFactory;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;

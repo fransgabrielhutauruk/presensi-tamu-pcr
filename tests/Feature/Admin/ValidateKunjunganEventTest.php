@@ -2,7 +2,6 @@
 
 use App\Enums\UserRole;
 use App\Models\Event;
-use App\Models\Kunjungan;
 use App\Models\User;
 use Database\Factories\KunjunganFactory;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;

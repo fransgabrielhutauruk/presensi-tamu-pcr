@@ -11,12 +11,13 @@ class LanguageController extends Controller
 
     public function switch(Request $request, $locale)
     {
-        if (!in_array($locale, $this->availableLocales)) {
+        if (! in_array($locale, $this->availableLocales)) {
             abort(404, 'Language not supported');
         }
         Session::put('locale', $locale);
         $previousUrl = $request->header('Referer') ?? route('tamu.home');
         $previousUrl = preg_replace('/[?&]lang=[^&]*/', '', $previousUrl);
+
         return redirect($previousUrl);
     }
 
@@ -28,7 +29,7 @@ class LanguageController extends Controller
         return response()->json([
             'current' => $currentLocale,
             'info' => $locales[$currentLocale] ?? $locales['id'],
-            'available' => $locales
+            'available' => $locales,
         ]);
     }
 }

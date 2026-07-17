@@ -151,9 +151,9 @@ describe('BBT-10 Mengelola Data Kunjungan', function () {
                         'name' => 'nama',
                         'searchable' => 'true',
                         'orderable' => 'true',
-                        'search' => ['value' => '', 'regex' => 'false']
-                    ]
-                ]
+                        'search' => ['value' => '', 'regex' => 'false'],
+                    ],
+                ],
             ]);
 
         // Assertion

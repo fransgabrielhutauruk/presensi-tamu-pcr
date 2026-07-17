@@ -3,24 +3,25 @@
 use App\Models\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpFoundation\File\File;
 use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * @author Delza Biondy <email>
+ *
  * @d
  */
-if (!function_exists('uploadMedia')) {
+if (! function_exists('uploadMedia')) {
 
     function uploadMedia($key, $default_path = 'media')
     {
         $request = app(Request::class);
         try {
-            if (!Storage::disk('public')->exists($default_path)) {
+            if (! Storage::disk('public')->exists($default_path)) {
                 Storage::disk('public')->makeDirectory($default_path);
             }
 
-            if (!$request->hasFile($key)) {
+            if (! $request->hasFile($key)) {
                 return [
                     'status' => false,
                     'message' => 'No file uploaded.',
@@ -29,18 +30,18 @@ if (!function_exists('uploadMedia')) {
 
             $file = $request->file($key);
 
-            if (!$file->isValid()) {
+            if (! $file->isValid()) {
                 return [
                     'status' => false,
                     'message' => 'File is not valid.',
                 ];
             }
 
-            $filename = Str::uuid()->toString() . '.' . $file->getClientOriginalExtension();
+            $filename = Str::uuid()->toString().'.'.$file->getClientOriginalExtension();
 
             $path = $file->storeAs($default_path, $filename, 'public');
 
-            if (!Storage::disk('public')->exists($path)) {
+            if (! Storage::disk('public')->exists($path)) {
                 return [
                     'status' => false,
                     'message' => 'File gagal disimpan ke storage.',
@@ -70,7 +71,6 @@ if (!function_exists('uploadMedia')) {
 }
 
 /**
- *
  * Removed because changes in table has media
  *
  *

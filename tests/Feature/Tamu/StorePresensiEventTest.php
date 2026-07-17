@@ -1,14 +1,12 @@
 <?php
 
-use App\Models\Civitas;
 use App\Models\Kunjungan;
-use App\Models\Tamu;
 use Database\Factories\CivitasFactory;
 use Database\Factories\DmPegawaiFactory;
 use Database\Factories\EventFactory;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
@@ -282,7 +280,7 @@ describe('BBT-3 Pengisian Presensi Event', function () {
         $fetchResponse = $this->postJson(route('tamu.event.fetch-external-data'), [
             'nim_nip' => '2312098765',
         ]);
-        
+
         $payload = [
             'event_id' => encid((string) $event->event_id),
             'nim_nip' => '2312098765',

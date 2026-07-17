@@ -15,6 +15,7 @@ class CheckoutReminderMail extends Mailable implements ShouldQueue
     use Queueable, SerializesModels;
 
     public $kunjungan;
+
     public $checkoutUrl;
 
     /**

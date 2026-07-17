@@ -10,7 +10,7 @@ class EnableCypressMock
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!app()->environment('local')) {
+        if (! app()->environment('local')) {
             return $next($request);
         }
 

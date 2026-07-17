@@ -9,7 +9,7 @@ return [
     'logout' => 'Logout',
     'register' => 'Register',
     'dashboard' => 'Dashboard',
-    
+
     // Actions
     'save' => 'Save',
     'edit' => 'Edit',
@@ -27,7 +27,7 @@ return [
     'next' => 'Next',
     'previous' => 'Previous',
     'close' => 'Close',
-    
+
     // Status
     'active' => 'Active',
     'inactive' => 'Inactive',
@@ -37,7 +37,7 @@ return [
     'completed' => 'Completed',
     'processing' => 'Processing',
     'draft' => 'Draft',
-    
+
     // Messages
     'success' => 'Success',
     'error' => 'Error Occurred',
@@ -49,7 +49,7 @@ return [
     'data_saved' => 'Data saved successfully',
     'data_updated' => 'Data updated successfully',
     'data_deleted' => 'Data deleted successfully',
-    
+
     // Form Labels
     'name' => 'Name',
     'email' => 'Email',
@@ -64,7 +64,7 @@ return [
     'notes' => 'Notes',
     'required' => 'Required',
     'optional' => 'Optional',
-    
+
     // Language
     'language_switched' => 'Language switched successfully',
 ];

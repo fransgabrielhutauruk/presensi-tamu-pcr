@@ -1,42 +1,41 @@
 <?php
 
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Vinkla\Hashids\Facades\Hashids;
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Request;
+use Vinkla\Hashids\Facades\Hashids;
 
 /**
  * fungsi untuk membuat route yang uumum secara otomatis,
  * agar line di file web route lebih sederhana
  *
- * @param  mixed $controllerClass : nama|path controller tujuan
- * @param  mixed $fiture : nama|prefix|method yang dituju dari controller yang di panggil (sekaligus untuk penamaan route)
- * @param  mixed $ajaxOnly : parameter apakah method2 yang dimaksud hanya diizinkan di akses melalui XMLHttpRequest
+ * @param  mixed  $controllerClass  : nama|path controller tujuan
+ * @param  mixed  $fiture  : nama|prefix|method yang dituju dari controller yang di panggil (sekaligus untuk penamaan route)
+ * @param  mixed  $ajaxOnly  : parameter apakah method2 yang dimaksud hanya diizinkan di akses melalui XMLHttpRequest
  * @return void
  */
 function generalRoute($controllerClass, $fiture, $prefix = '', $ajaxOnly = true)
 {
-    $baseMethod = ['store', 'update', 'destroy', 'data']; //'index', 'show',
-    $prefix     = $prefix ? $prefix . '.' . $fiture : $fiture;
+    $baseMethod = ['store', 'update', 'destroy', 'data']; // 'index', 'show',
+    $prefix = $prefix ? $prefix.'.'.$fiture : $fiture;
 
     // routing untuk mengarahkan ke methode index
     if (method_exists($controllerClass, 'index')) {
-        app('router')->any("$fiture/", $controllerClass . "@index")->name($prefix . ".index"); // index
+        app('router')->any("$fiture/", $controllerClass.'@index')->name($prefix.'.index'); // index
     }
 
     // routing untuk methode 'store', 'update', 'destroy', 'data' dengan opsi middleware ajax
     foreach ($baseMethod as $key => $method) {
         if (method_exists($controllerClass, $method)) {
-            app('router')->any("$fiture/$method/{param1?}/{param2?}/{param3?}/{param4?}", $controllerClass . "@$method")->middleware($ajaxOnly ? ['ajax'] : [])->name($prefix . ".$method");
+            app('router')->any("$fiture/$method/{param1?}/{param2?}/{param3?}/{param4?}", $controllerClass."@$method")->middleware($ajaxOnly ? ['ajax'] : [])->name($prefix.".$method");
         }
     }
 
     // routing untuk methode show, tidak perlu memanggil method nya show jika tidak termasuk di routing sebelumnya
     // misal user/show/detail menjadi user/detail -> sama dengan methode show dengan param1 detail
     if (method_exists($controllerClass, 'show')) {
-        app('router')->any("$fiture/{param1?}/{param2?}/{param3?}/{param4?}", $controllerClass . "@show")->name($prefix . ".show"); // show
+        app('router')->any("$fiture/{param1?}/{param2?}/{param3?}/{param4?}", $controllerClass.'@show')->name($prefix.'.show'); // show
     }
 }
 
@@ -55,19 +54,18 @@ function encid(string $id = ''): string
  * fungsi untuk mendecrypt id dengan hashid dari vinkla
  *
  * @param [type] $id
- * @return integer
  */
 function decid(string $id = ''): int
 {
     $dec = Hashids::decode($id);
+
     return $dec ? $dec[0] : 0;
 }
 
 /**
  * untuk otomasi parameter array where di query builder
  *
- * @param  mixed $where
- * @return array
+ * @param  mixed  $where
  */
 function notRaw($where = []): array
 {
@@ -87,7 +85,7 @@ function notRaw($where = []): array
  * mengakomodir param where ['key is not null'] => '';
  * mengakomodir param where ['key >= 5'] => '';
  *
- * @param  mixed $where
+ * @param  mixed  $where
  * @return array
  */
 function withRaw($where = []): string
@@ -106,9 +104,9 @@ function withRaw($where = []): string
 function success($status = true, $message = '', $data = [])
 {
     return response()->json([
-        'status'  => $status,
+        'status' => $status,
         'message' => $message,
-        'data'    => $data,
+        'data' => $data,
     ]);
 }
 
@@ -120,24 +118,27 @@ function isSnap()
 function clean_post($key = '')
 {
     $req = request();
+
     return $req->method() == 'POST' ? trim(strip_tags($req->input($key))) : '';
 }
 
 function clean_script($key = '')
 {
     $req = request();
+
     return $req->method() == 'POST' ? trim(str_replace('script>', 's c r i p t >', $req->input($key))) : '';
 }
 
 function eventActivityLogBahasa($eventName)
 {
     $ev = [
-        'created'      => 'Menambahkan data ',
-        'updated'      => 'Mengubah data',
-        'deleted'      => 'Menghapus data',
-        'restored'     => 'Mengembalikan data',
+        'created' => 'Menambahkan data ',
+        'updated' => 'Mengubah data',
+        'deleted' => 'Menghapus data',
+        'restored' => 'Mengembalikan data',
         'forceDeleted' => 'Menghapus permanen data',
     ];
+
     return isset($ev[$eventName]) ? $ev[$eventName] : 'Melakukan aksi pada data';
 }
 
@@ -154,20 +155,23 @@ function normalizeString($str = '')
     $str = preg_replace('/[\r\n\t ]+/', ' ', $str);
     $str = preg_replace('/[\"\*\/\:\<\>\?\'\|]+/', ' ', $str);
     $str = strtolower($str);
-    $str = html_entity_decode($str, ENT_QUOTES, "utf-8");
-    $str = htmlentities($str, ENT_QUOTES, "utf-8");
-    $str = preg_replace("/(&)([a-z])([a-z]+;)/i", '$2', $str);
+    $str = html_entity_decode($str, ENT_QUOTES, 'utf-8');
+    $str = htmlentities($str, ENT_QUOTES, 'utf-8');
+    $str = preg_replace('/(&)([a-z])([a-z]+;)/i', '$2', $str);
     $str = str_replace([' ', '.'], ['-', '-'], $str);
     $str = rawurlencode($str);
     $str = str_replace('%', '-', $str);
+
     return $str;
 }
 
 function cut_words($phrase, $max_words)
 {
     $phrase_array = explode(' ', $phrase);
-    if (count($phrase_array) > $max_words && $max_words > 0)
-        $phrase = implode(' ', array_slice($phrase_array, 0, $max_words)) . '...';
+    if (count($phrase_array) > $max_words && $max_words > 0) {
+        $phrase = implode(' ', array_slice($phrase_array, 0, $max_words)).'...';
+    }
+
     return $phrase;
 }
 
@@ -176,7 +180,7 @@ function cut_string($phrase, $max_words)
     if (strlen($phrase) > $max_words) {
         $outputString = substr($phrase, 0, $max_words);
 
-        return $outputString . '...';
+        return $outputString.'...';
     } else {
         return $phrase;
     }
@@ -184,12 +188,12 @@ function cut_string($phrase, $max_words)
 
 function textToStringMultipleList($string = '')
 {
-    $string   = preg_split('/(\r?\n)+/', $string);
+    $string = preg_split('/(\r?\n)+/', $string);
     $inString = '';
     foreach ($string as $line) {
-        $inString .= "'" . trim($line) . "',";
+        $inString .= "'".trim($line)."',";
     }
-    $inString = rtrim($inString, ",");
+    $inString = rtrim($inString, ',');
 
     return $inString;
 }
@@ -226,31 +230,32 @@ function time_history($tanggal)
     return \Carbon\Carbon::parse($tanggal)->diffForHumans();
 }
 
-function duration($start = "", $end = "")
+function duration($start = '', $end = '')
 {
     $strStart = $start;
-    $strEnd   = $end;
+    $strEnd = $end;
 
     $dteStart = new DateTime($strStart);
-    $dteEnd   = new DateTime($strEnd);
+    $dteEnd = new DateTime($strEnd);
 
     $interval = date_diff($dteStart, $dteEnd);
 
-    $DaysToSecconds   = $interval->format('%a') * ((60 * 60) * 24);
-    $HoursToSeconds   = $interval->format('%H') * (60 * 60);
+    $DaysToSecconds = $interval->format('%a') * ((60 * 60) * 24);
+    $HoursToSeconds = $interval->format('%H') * (60 * 60);
     $MinutesToSeconds = $interval->format('%I') * 60;
     $SecondsToSeconds = $interval->format('%S');
 
     $TotalMinutes = $DaysToSecconds + $HoursToSeconds + $MinutesToSeconds + $SecondsToSeconds;
+
     return $TotalMinutes;
 }
 
 function tanggal($date, $sparator = ' ', $time = false)
 {
-    $dayDate  = date('Y-m-d', strtotime($date));
+    $dayDate = date('Y-m-d', strtotime($date));
     $timeDate = date('H:i', strtotime($date));
 
-    $bulan = array(
+    $bulan = [
         1 => 'Januari',
         'Februari',
         'Maret',
@@ -262,24 +267,24 @@ function tanggal($date, $sparator = ' ', $time = false)
         'September',
         'Oktober',
         'November',
-        'Desember'
-    );
+        'Desember',
+    ];
     $split = explode('-', $dayDate);
 
-    return $split[2] . $sparator . $bulan[(int) $split[1]] . $sparator . $split[0] . ($time ? ' ' . $timeDate : '');
+    return $split[2].$sparator.$bulan[(int) $split[1]].$sparator.$split[0].($time ? ' '.$timeDate : '');
 }
 
 function dateTime(string $date = '', string $format = 'Y-m-d H:i:s', string $modify = '', $as_object = false)
 {
     $timezone = new DateTimeZone('Asia/Jakarta');
-    $date     = $date ? Carbon::parse($date, 'Asia/Jakarta') : Carbon::now('Asia/Jakarta');
+    $date = $date ? Carbon::parse($date, 'Asia/Jakarta') : Carbon::now('Asia/Jakarta');
 
     // Extract the number and the unit from the modification string
     preg_match('/([+-]\d+)\s*(seconds|minutes|hours|days|weeks|months|years)/', $modify, $matches);
 
     if (count($matches) === 3) {
         $number = (int) $matches[1];
-        $unit   = $matches[2];
+        $unit = $matches[2];
 
         switch ($unit) {
             case 'seconds':
@@ -349,13 +354,13 @@ function dateTime(string $date = '', string $format = 'Y-m-d H:i:s', string $mod
     // return $as_object ? $dateTime : $dateTime->format($format);
 }
 
-if (!function_exists('periodeStatus')) {
+if (! function_exists('periodeStatus')) {
     /**
      * Determine the status of a period based on the current date.
      *
-     * @param string $startDate The start date of the period.
-     * @param string $endDate The end date of the period.
-     * @param string $format The date format, default is 'Y-m-d'.
+     * @param  string  $startDate  The start date of the period.
+     * @param  string  $endDate  The end date of the period.
+     * @param  string  $format  The date format, default is 'Y-m-d'.
      * @return string Returns 'mendatang' (upcoming), 'berlangsung' (ongoing), or 'berlalu' (past).
      */
     function periodeStatus($startDate, $endDate, $format = 'Y-m-d H:i:s')
@@ -365,8 +370,8 @@ if (!function_exists('periodeStatus')) {
 
         // Create DateTime objects for the start date, end date, and current date
         $start = DateTime::createFromFormat($format, $startDate, $timezone);
-        $end   = DateTime::createFromFormat($format, $endDate, $timezone);
-        $now   = new DateTime('now', $timezone);
+        $end = DateTime::createFromFormat($format, $endDate, $timezone);
+        $now = new DateTime('now', $timezone);
 
         // Check if the current date is before the start date
         if ($now < $start) {
@@ -386,18 +391,19 @@ if (!function_exists('periodeStatus')) {
 function defaultPassword($length = 10)
 {
     $str = substr(str_shuffle('123456789ABCDEFGHJKLMNPQRSTUVWXYZ#@&%abcdehmnrst'), 0, $length);
+
     return $str;
 }
 
-//added by DZB
+// added by DZB
 function convertFileSize($size = 0, $unit = 'KB')
 {
     if ($size <= 0) {
-        return "0 B";
+        return '0 B';
     }
 
-    $units     = ['B', 'KB', 'MB', 'GB', 'TB'];
-    $unit      = strtoupper($unit); // Pastikan satuan dalam huruf besar
+    $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    $unit = strtoupper($unit); // Pastikan satuan dalam huruf besar
     $unitIndex = array_search($unit, $units);
 
     if ($unitIndex === false) {
@@ -416,7 +422,7 @@ function convertFileSize($size = 0, $unit = 'KB')
     }
 
     // Format dengan maksimal 2 angka di belakang koma
-    return number_format($size, 2) . ' ' . $unit;
+    return number_format($size, 2).' '.$unit;
 }
 
 /**
@@ -428,19 +434,18 @@ function convertFileSize($size = 0, $unit = 'KB')
  *   ->filterColumn('waktu_kunjungan', fn($q, $kw) => dtFilterByDateKeyword($q, $kw, 'kunjungan.created_at'))
  *   ->filterColumn('tanggal_event',   fn($q, $kw) => dtFilterByDateKeyword($q, $kw, 'event.tanggal_event', 10))
  *
- * @param  mixed  $query   Eloquent / query builder instance
- * @param  string $keyword Keyword yang diinput user pada search DataTables
+ * @param  mixed  $query  Eloquent / query builder instance
+ * @param  string  $keyword  Keyword yang diinput user pada search DataTables
  * @param  int    $length  Panjang VARCHAR hasil CONVERT: 20 untuk DATETIME, 10 untuk DATE saja
 
- * @param  int    $length  Panjang hasil: 20 untuk DATETIME, 10 untuk DATE saja
- * @return void
+ * @param  int  $length  Panjang hasil: 20 untuk DATETIME, 10 untuk DATE saja
  */
 function dtFilterByDateKeyword($query, string $keyword, string $column, int $length = 20): void
 {
     $months = [
-        'januari'   => 1,  'februari' => 2,  'maret'    => 3,  'april'    => 4,
-        'mei'       => 5,  'juni'     => 6,  'juli'     => 7,  'agustus'  => 8,
-        'september' => 9,  'oktober'  => 10, 'november' => 11, 'desember' => 12,
+        'januari' => 1,  'februari' => 2,  'maret' => 3,  'april' => 4,
+        'mei' => 5,  'juni' => 6,  'juli' => 7,  'agustus' => 8,
+        'september' => 9,  'oktober' => 10, 'november' => 11, 'desember' => 12,
     ];
 
     $lc = strtolower(trim($keyword));

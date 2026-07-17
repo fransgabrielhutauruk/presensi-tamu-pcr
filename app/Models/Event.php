@@ -7,22 +7,20 @@
 
 namespace App\Models;
 
-
-use App\Models\EventKategori;
-use Illuminate\Support\Facades\DB;
-use Spatie\Activitylog\LogOptions;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Spatie\Activitylog\Traits\LogsActivity;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Activitylog\Facades\CauserResolver;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Facades\CauserResolver;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Event extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use LogsActivity;
+    use SoftDeletes;
 
     /**
      * definisi nama table
@@ -74,7 +72,7 @@ class Event extends Model
         'event_id',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     public function eventKategori(): BelongsTo
@@ -105,15 +103,13 @@ class Event extends Model
         });
 
         static::restoring(function ($model) {
-            $model->deleted_by = NULL;
+            $model->deleted_by = null;
         });
     }
 
     /**
      * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
      * pencatatan log menggunakan spatie/activitylogging
-     *
-     * @return LogOptions
      */
     public function getActivitylogOptions(): LogOptions
     {
@@ -125,33 +121,33 @@ class Event extends Model
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
+
                 return "{$aksi} event: {$this->nama_event}";
             });
     }
 
-
     public function getFormattedDateRangeAttribute()
     {
-        if (!$this->tanggal_event) {
+        if (! $this->tanggal_event) {
             return '-';
         }
 
         $start = \Carbon\Carbon::parse($this->tanggal_event);
         $end = $this->tanggal_selesai_event ? \Carbon\Carbon::parse($this->tanggal_selesai_event) : null;
-        
-        if (!$end || $start->toDateString() === $end->toDateString()) {
+
+        if (! $end || $start->toDateString() === $end->toDateString()) {
             return $start->isoFormat('dddd, D MMMM Y');
         }
 
         if ($start->month === $end->month && $start->year === $end->year) {
-            return $start->format('d') . ' s/d ' . $end->isoFormat('D MMMM Y');
+            return $start->format('d').' s/d '.$end->isoFormat('D MMMM Y');
         }
 
         if ($start->year === $end->year) {
-            return $start->isoFormat('D MMMM') . ' s/d ' . $end->isoFormat('D MMMM Y');
+            return $start->isoFormat('D MMMM').' s/d '.$end->isoFormat('D MMMM Y');
         }
 
-        return $start->isoFormat('D MMMM Y') . ' s/d ' . $end->isoFormat('D MMMM Y');
+        return $start->isoFormat('D MMMM Y').' s/d '.$end->isoFormat('D MMMM Y');
     }
 
     /**
@@ -159,7 +155,7 @@ class Event extends Model
      * proses insert dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $data
+     * @param  mixed  $data
      * @return void
      */
     public static function insertBatch($data = [])
@@ -174,38 +170,42 @@ class Event extends Model
     /**
      * fungsi kustom, untuk proses hapus data dengan kondisi (where option)
      * kondisi where akan melakukan hapus data belalui query builder
-     * proses hapus akan dilakukan berulang untuk setiap data dengan looping 
+     * proses hapus akan dilakukan berulang untuk setiap data dengan looping
      * penghapusan dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $where
+     * @param  mixed  $where
      * @return void
      */
     public static function deleteDataWhere($where)
     {
         $dt = self::where($where)->get();
-        if ($dt)
-            foreach ($dt as $key => $value)
+        if ($dt) {
+            foreach ($dt as $key => $value) {
                 $value->delete();
+            }
+        }
     }
 
     /**
      * fungsi kustom, untuk proses update data dengan kondisi (where option)
      * kondisi where akan melakukan update data belalui query builder
-     * proses update akan dilakukan berulang untuk setiap data dengan looping 
+     * proses update akan dilakukan berulang untuk setiap data dengan looping
      * pembaruan data dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $where
-     * @param  mixed $data
+     * @param  mixed  $where
+     * @param  mixed  $data
      * @return void
      */
     public static function updateDataWhere($where, $data)
     {
         $dt = self::where($where)->get();
-        if ($dt)
-            foreach ($dt as $key => $value)
+        if ($dt) {
+            foreach ($dt as $key => $value) {
                 $value->update($data);
+            }
+        }
     }
 
     /**
@@ -214,7 +214,7 @@ class Event extends Model
      * query builder pada data detail digunakan untuk optimasi hasil query yang lebih cepat
      * function detail ini biasa digunakan sebagai penyedia data untuk datatable
      *
-     * @param  mixed $where
+     * @param  mixed  $where
      */
     public static function getDataDetail($where = [], $whereBinding = [], $get = true)
     {

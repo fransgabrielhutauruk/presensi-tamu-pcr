@@ -14,13 +14,13 @@
 /**
  * Memecah string menjadi larik baris berdasarkan aturan cerdas.
  *
- * @param string $text Teks masukan yang akan dipecah.
- * @param int $maxLength Panjang maksimum umum untuk setiap baris (panjang efektif, mengabaikan karakter spesial dan tag HTML). Default adalah 20.
- * @param array $delimiters Larik string pemisah. Jika ditemukan, teks akan dipecah pada pemisah ini, dan pemisah akan disertakan di akhir baris pertama.
+ * @param  string  $text  Teks masukan yang akan dipecah.
+ * @param  int  $maxLength  Panjang maksimum umum untuk setiap baris (panjang efektif, mengabaikan karakter spesial dan tag HTML). Default adalah 20.
+ * @param  array  $delimiters  Larik string pemisah. Jika ditemukan, teks akan dipecah pada pemisah ini, dan pemisah akan disertakan di akhir baris pertama.
  * @return array Larik string, di mana setiap string adalah baris yang dipecah.
  */
-if (!function_exists('smartSplit')) {
-    function smartSplit(string $text = "", int $maxLength = 20, array $delimiters = []): array
+if (! function_exists('smartSplit')) {
+    function smartSplit(string $text = '', int $maxLength = 20, array $delimiters = []): array
     {
         // Menginisialisasi larik untuk menyimpan baris-baris hasil.
         $lines = [];
@@ -100,7 +100,6 @@ if (!function_exists('smartSplit')) {
                 $potentialLineBreakPointRaw = $i + 1; // Terus maju bahkan jika belum mencapai maxLength
             }
 
-
             // Jika sisa teks lebih pendek dari atau sama dengan maxLength (setelah menghitung efektif),
             // tambahkan sebagai baris terakhir dan keluar dari perulangan.
             if ($potentialLineBreakPointRaw === strlen($remainingText)) {
@@ -119,9 +118,9 @@ if (!function_exists('smartSplit')) {
             $isWordCutOff = false;
             // Memeriksa karakter di posisi sebelum titik potong potensial (jika ada dan bukan spasi).
             // Kita harus memeriksa karakter asli di `remainingText`.
-            if (isset($remainingText[$potentialLineBreakPointRaw - 1]) && !ctype_space($remainingText[$potentialLineBreakPointRaw - 1])) {
+            if (isset($remainingText[$potentialLineBreakPointRaw - 1]) && ! ctype_space($remainingText[$potentialLineBreakPointRaw - 1])) {
                 // Memeriksa karakter di posisi titik potong potensial (jika ada dan bukan spasi).
-                if (isset($remainingText[$potentialLineBreakPointRaw]) && !ctype_space($remainingText[$potentialLineBreakPointRaw])) {
+                if (isset($remainingText[$potentialLineBreakPointRaw]) && ! ctype_space($remainingText[$potentialLineBreakPointRaw])) {
                     $isWordCutOff = true;
                 }
             }
@@ -130,13 +129,13 @@ if (!function_exists('smartSplit')) {
             if ($isWordCutOff) {
                 // Mencari awal kata yang terpotong.
                 $wordStartRaw = $potentialLineBreakPointRaw - 1;
-                while ($wordStartRaw > 0 && isset($remainingText[$wordStartRaw - 1]) && !ctype_space($remainingText[$wordStartRaw - 1])) {
+                while ($wordStartRaw > 0 && isset($remainingText[$wordStartRaw - 1]) && ! ctype_space($remainingText[$wordStartRaw - 1])) {
                     $wordStartRaw--;
                 }
 
                 // Mencari akhir kata yang terpotong.
                 $wordEndRaw = $potentialLineBreakPointRaw;
-                while ($wordEndRaw < strlen($remainingText) && isset($remainingText[$wordEndRaw]) && !ctype_space($remainingText[$wordEndRaw])) {
+                while ($wordEndRaw < strlen($remainingText) && isset($remainingText[$wordEndRaw]) && ! ctype_space($remainingText[$wordEndRaw])) {
                     $wordEndRaw++;
                 }
 
@@ -195,21 +194,21 @@ if (!function_exists('smartSplit')) {
     }
 }
 
-
 /**
  * Menghitung "panjang efektif" dari sebuah string dengan mengabaikan karakter spesial dan tag HTML.
  * Karakter spesial didefinisikan sebagai apa pun yang bukan huruf, angka, atau spasi.
  *
- * @param string $str String yang akan dihitung panjang efektifnya.
+ * @param  string  $str  String yang akan dihitung panjang efektifnya.
  * @return int Panjang efektif dari string.
  */
-if (!function_exists('getSmartLength')) {
+if (! function_exists('getSmartLength')) {
     function getSmartLength(string $str): int
     {
         // Menghapus semua tag HTML dari string.
         $strippedHtml = strip_tags($str);
         // Menghapus semua karakter yang bukan alfanumerik atau spasi.
         $cleanStr = preg_replace('/[^a-zA-Z0-9\s]/', '', $strippedHtml);
+
         // Mengembalikan panjang string yang telah dibersihkan.
         return strlen($cleanStr);
     }
@@ -217,8 +216,9 @@ if (!function_exists('getSmartLength')) {
 
 /**
  * Mengubah sebuah associative array yang memiliki data array sehingga mengambil data pertama dari setiap array.
- * @param array|object $array Array atau objek yang akan di-flatten.
- * @param bool $asObjects Jika true, mengembalikan hasil sebagai objek; jika false, mengembalikan sebagai array.
+ *
+ * @param  array|object  $array  Array atau objek yang akan di-flatten.
+ * @param  bool  $asObjects  Jika true, mengembalikan hasil sebagai objek; jika false, mengembalikan sebagai array.
  * @return mixed Hasil flatten dari array atau objek.
  *
  * Contoh penggunaan:
@@ -236,11 +236,11 @@ if (!function_exists('getSmartLength')) {
  * ];
  * ```
  */
-if (!function_exists('extractFirstElement')) {
+if (! function_exists('extractFirstElement')) {
     function extractFirstElement($array, $asObjects = true)
     {
         // Mempastikan bahwa input adalah array atau objek.
-        if (!is_array($array) && !is_object($array)) {
+        if (! is_array($array) && ! is_object($array)) {
             return $array; // Jika bukan array atau objek, kembalikan nilai aslinya.
         }
 
@@ -269,18 +269,19 @@ if (!function_exists('extractFirstElement')) {
 
 /**
  * Mengambil elemen pertama dari setiap array dalam array multidimensi.
- * @param array $array Array yang akan di-flatten.
- * @param bool $asObjects Jika true, mengembalikan hasil sebagai objek; jika false, mengembalikan sebagai array.
+ *
+ * @param  array  $array  Array yang akan di-flatten.
+ * @param  bool  $asObjects  Jika true, mengembalikan hasil sebagai objek; jika false, mengembalikan sebagai array.
  * @return array|object Hasil flatten dari array atau objek.
  */
-if (!function_exists('extractEachFirstElement')) {
+if (! function_exists('extractEachFirstElement')) {
     function extractEachFirstElement($array, $asObjects = true)
     {
-        if (!is_array($array)) {
+        if (! is_array($array)) {
             return $array; // Jika bukan array, kembalikan nilai aslinya.
         }
 
-        return array_map(fn($item) => extractFirstElement($item), $array);
+        return array_map(fn ($item) => extractFirstElement($item), $array);
     }
 }
 
@@ -296,16 +297,16 @@ if (!function_exists('extractEachFirstElement')) {
  * // Hasilnya akan mengisi properti dari objek $konten dengan nilai-nilai yang sesuai.
  * ```
  */
-if (!function_exists('kontenMapping')) {
+if (! function_exists('kontenMapping')) {
     function kontenMapping($konten, $values, $keys)
     {
         // Memastikan bahwa $konten adalah objek atau array.
-        if (!is_object($konten) && !is_array($konten)) {
+        if (! is_object($konten) && ! is_array($konten)) {
             return;
         }
 
         // Memastikan bahwa $keys adalah array.
-        if (!is_array($keys) || empty($keys)) {
+        if (! is_array($keys) || empty($keys)) {
             return; // Jika $keys bukan array atau kosong, keluar dari fungsi.
         }
 
@@ -328,16 +329,16 @@ if (!function_exists('kontenMapping')) {
 /**
  * Melakukan mapping data konten yang memiliki banyak data secara efisien.
  */
-if (!function_exists('kontenMappingMany')) {
+if (! function_exists('kontenMappingMany')) {
     function kontenMappingMany($konten, $values, $keys)
     {
         // Memastikan bahwa $konten adalah objek atau array.
-        if (!is_object($konten) && !is_array($konten)) {
+        if (! is_object($konten) && ! is_array($konten)) {
             return;
         }
 
         // Memastikan bahwa $keys adalah array.
-        if (!is_array($keys) || empty($keys)) {
+        if (! is_array($keys) || empty($keys)) {
             return; // Jika $keys bukan array atau kosong, keluar dari fungsi.
         }
 

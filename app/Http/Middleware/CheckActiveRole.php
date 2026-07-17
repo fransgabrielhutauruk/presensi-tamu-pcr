@@ -16,16 +16,16 @@ class CheckActiveRole
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
-        
+
         $activeRole = getActiveRole();
-        
-        if (!$activeRole || !in_array($activeRole, $roles)) {
-            abort(403, 'Anda tidak memiliki akses untuk halaman ini dengan role ' . ($activeRole ?? 'tanpa role'));
+
+        if (! $activeRole || ! in_array($activeRole, $roles)) {
+            abort(403, 'Anda tidak memiliki akses untuk halaman ini dengan role '.($activeRole ?? 'tanpa role'));
         }
-        
+
         return $next($request);
     }
 }

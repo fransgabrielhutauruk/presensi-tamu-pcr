@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use Laravel\Socialite\Facades\Socialite;
-use App\Models\User;
 use App\Enums\UserRole;
+use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\CypressTestingService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Illuminate\Http\Request;
+use Laravel\Socialite\Facades\Socialite;
 use Spatie\Permission\Models\Role;
 
 class AuthController extends Controller
@@ -45,12 +45,12 @@ class AuthController extends Controller
             [$email, $name, $mockRoles] = $this->resolveGoogleIdentity($request, $provider);
             $isPcrEmail = Str::endsWith($email, ['@pcr.ac.id', '@mahasiswa.pcr.ac.id']);
             $user = User::where('email', $email)->first();
-            
-            if (!$isPcrEmail && !$user) {
+
+            if (! $isPcrEmail && ! $user) {
                 return redirect()->route('login')->with(['error' => 'Akses ditolak. Gunakan email @pcr.ac.id atau gunakan email yang sudah didaftarkan oleh Admin.']);
             }
 
-            if (!$user) {
+            if (! $user) {
                 $user = User::create([
                     'name' => $name,
                     'email' => $email,
@@ -67,7 +67,7 @@ class AuthController extends Controller
                 ->event('login')
                 ->withProperties([
                     'ip' => request()->ip(),
-                    'user_agent' => request()->header('User-Agent')
+                    'user_agent' => request()->header('User-Agent'),
                 ])
                 ->log('Login ke sistem');
 
@@ -88,10 +88,10 @@ class AuthController extends Controller
         $userRoles = $user->roles->pluck('name')->toArray();
         $allowedRoles = UserRole::getAllRoles();
 
-        if (!in_array($role, $userRoles) || !in_array($role, $allowedRoles)) {
+        if (! in_array($role, $userRoles) || ! in_array($role, $allowedRoles)) {
             return response()->json([
                 'status' => false,
-                'message' => 'Role tidak valid atau tidak dimiliki'
+                'message' => 'Role tidak valid atau tidak dimiliki',
             ]);
         }
 
@@ -99,8 +99,8 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Role berhasil diubah ke ' . $role,
-            'redirect' => UserRole::getDefaultRoute($role)
+            'message' => 'Role berhasil diubah ke '.$role,
+            'redirect' => UserRole::getDefaultRoute($role),
         ]);
     }
 
@@ -124,7 +124,7 @@ class AuthController extends Controller
 
     private function assignRoles(User $user, string $email, array $mockRoles = []): void
     {
-        if (!empty($mockRoles)) {
+        if (! empty($mockRoles)) {
             foreach ($mockRoles as $roleName) {
                 Role::firstOrCreate([
                     'name' => $roleName,
@@ -133,6 +133,7 @@ class AuthController extends Controller
             }
 
             $user->syncRoles($mockRoles);
+
             return;
         }
 

@@ -7,20 +7,15 @@
 
 namespace App\Models;
 
-use App\Models\Kunjungan;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Query\JoinClause;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 
 class Feedback extends Model
 {
     use SoftDeletes;
-    
+
     /**
      * definisi nama table
      *
@@ -34,7 +29,6 @@ class Feedback extends Model
      * @var string
      */
     protected $primaryKey = 'feedback_id';
-
 
     /**
      * kolom-kolom yang dapat di ubah data nya
@@ -58,7 +52,7 @@ class Feedback extends Model
     protected $casts = [
         'created_by' => 'string',
         'updated_by' => 'string',
-        'deleted_by' => 'string'
+        'deleted_by' => 'string',
     ];
 
     public static array $exceptEdit = [
@@ -68,7 +62,7 @@ class Feedback extends Model
         'deleted_by',
         'created_at',
         'updated_at',
-        'deleted_at'
+        'deleted_at',
     ];
 
     /**
@@ -101,7 +95,7 @@ class Feedback extends Model
      * proses insert dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $data
+     * @param  mixed  $data
      * @return void
      */
     public static function insertBatch($data = [])
@@ -116,38 +110,42 @@ class Feedback extends Model
     /**
      * fungsi kustom, untuk proses hapus data dengan kondisi (where option)
      * kondisi where akan melakukan hapus data belalui query builder
-     * proses hapus akan dilakukan berulang untuk setiap data dengan looping 
+     * proses hapus akan dilakukan berulang untuk setiap data dengan looping
      * penghapusan dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $where
+     * @param  mixed  $where
      * @return void
      */
     public static function deleteDataWhere($where)
     {
         $dt = self::where($where)->get();
-        if ($dt)
-            foreach ($dt as $key => $value)
+        if ($dt) {
+            foreach ($dt as $key => $value) {
                 $value->delete();
+            }
+        }
     }
 
     /**
      * fungsi kustom, untuk proses update data dengan kondisi (where option)
      * kondisi where akan melakukan update data belalui query builder
-     * proses update akan dilakukan berulang untuk setiap data dengan looping 
+     * proses update akan dilakukan berulang untuk setiap data dengan looping
      * pembaruan data dilakukan berulang agar event trigger dari ORM dijalankan
      * event trigger diperlukan untuk proses pencatatan logging model secara otomatis
      *
-     * @param  mixed $where
-     * @param  mixed $data
+     * @param  mixed  $where
+     * @param  mixed  $data
      * @return void
      */
     public static function updateDataWhere($where, $data)
     {
         $dt = self::where($where)->get();
-        if ($dt)
-            foreach ($dt as $key => $value)
+        if ($dt) {
+            foreach ($dt as $key => $value) {
                 $value->update($data);
+            }
+        }
     }
 
     /**
@@ -156,16 +154,17 @@ class Feedback extends Model
      * query builder pada data detail digunakan untuk optimasi hasil query yang lebih cepat
      * function detail ini biasa digunakan sebagai penyedia data untuk datatable
      *
-     * @param  mixed $where
+     * @param  mixed  $where
      */
     public static function getDataDetail($where = [], $whereBinding = [], $get = true)
     {
         $query = DB::table('')
             ->selectRaw('*')
-            ->from((new self)->table . ' as a')
+            ->from((new self)->table.' as a')
             ->where(notRaw($where))
             ->whereRaw(withRaw($where), $whereBinding)
             ->whereNull('a.deleted_at');
+
         return $get ? $query->get() : $query;
     }
 

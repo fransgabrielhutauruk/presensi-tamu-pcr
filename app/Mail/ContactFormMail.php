@@ -3,7 +3,6 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -29,7 +28,7 @@ class ContactFormMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pesan dari Formulir Kontak: ' . $this->data['subject'],
+            subject: 'Pesan dari Formulir Kontak: '.$this->data['subject'],
         );
     }
 
@@ -41,8 +40,8 @@ class ContactFormMail extends Mailable
         return new Content(
             markdown: 'emails.contact-form', // Assuming you will create this Blade markdown email template
             with: [
-                'name'    => $this->data['name'],
-                'email'   => $this->data['email'],
+                'name' => $this->data['name'],
+                'email' => $this->data['email'],
                 'subject' => $this->data['subject'],
                 'message' => $this->data['message'],
             ],

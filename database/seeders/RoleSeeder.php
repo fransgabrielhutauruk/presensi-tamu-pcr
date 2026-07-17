@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
@@ -29,7 +29,7 @@ class RoleSeeder extends Seeder
             ]
         );
 
-        if ($user->wasRecentlyCreated || !$user->hasAnyRole($roles)) {
+        if ($user->wasRecentlyCreated || ! $user->hasAnyRole($roles)) {
             $rolesToAssign = array_diff($roles, ['Staf']);
             $user->assignRole($rolesToAssign);
         }

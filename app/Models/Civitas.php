@@ -11,6 +11,7 @@ class Civitas extends Model
     use HasFactory, SoftDeletes;
 
     protected $table = 'civitas';
+
     protected $primaryKey = 'civitas_id';
 
     protected $fillable = [

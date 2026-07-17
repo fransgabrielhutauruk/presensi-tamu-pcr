@@ -2,25 +2,22 @@
 
 namespace App\Models;
 
-use App\Models\Tamu;
-use App\Models\Event;
-use App\Models\Feedback;
-use App\Models\KunjunganDetail;
 use App\Enums\KategoriTujuanEnum;
-use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\Facades\CauserResolver;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Kunjungan extends Model
 {
     use HasFactory;
-    use SoftDeletes;
     use LogsActivity;
+    use SoftDeletes;
 
     protected $table = 'kunjungan';
+
     protected $primaryKey = 'kunjungan_id';
 
     protected $fillable = [
@@ -46,7 +43,7 @@ class Kunjungan extends Model
         'waktu_presensi' => 'datetime',
         'checkout_time' => 'datetime',
         'reminder_sent_at' => 'datetime',
-        'kategori_tujuan' => KategoriTujuanEnum::class
+        'kategori_tujuan' => KategoriTujuanEnum::class,
     ];
 
     public function tamu()
@@ -83,13 +80,13 @@ class Kunjungan extends Model
         } elseif ($is_vip == true) {
             return '<span class="badge badge-info">Non-Civitas (VIP)</span>';
         } else {
-            return '<span class="badge badge-light">' . ($identitas ?? 'Tidak Diketahui') . '</span>';
+            return '<span class="badge badge-light">'.($identitas ?? 'Tidak Diketahui').'</span>';
         }
     }
 
     public static function getJenisKunjunganBadge($eventId): string
     {
-        if (!empty($eventId)) {
+        if (! empty($eventId)) {
             return '<span class="badge badge-warning">Event</span>';
         } else {
             return '<span class="badge badge-primary">Non-Event</span>';
@@ -137,25 +134,25 @@ class Kunjungan extends Model
         });
 
         static::restoring(function ($model) {
-            $model->deleted_by = NULL;
+            $model->deleted_by = null;
         });
     }
 
     /**
      * fungsi yang di panggil setelah proses crud selesai dijalankan (event trigger) untuk proses pencatatan log
      * pencatatan log menggunakan spatie/activitylogging
-     *
-     * @return LogOptions
      */
     public function getActivitylogOptions(): LogOptions
     {
         CauserResolver::setCauser(causerActivityLog());
+
         return LogOptions::defaults()
             ->logOnly($this->fillable)
             ->logOnlyDirty()
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
+
                 return "{$aksi} kunjungan";
             });
     }

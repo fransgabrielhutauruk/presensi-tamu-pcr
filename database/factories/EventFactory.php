@@ -19,7 +19,7 @@ class EventFactory extends Factory
 
         return [
             'eventkategori_id' => EventKategoriFactory::new()->create()->eventkategori_id,
-            'nama_event' => 'Event ' . fake()->unique()->word(),
+            'nama_event' => 'Event '.fake()->unique()->word(),
             'deskripsi_event' => fake()->sentence(),
             'tanggal_event' => now()->toDateString(),
             'tanggal_selesai_event' => now()->addDays(2)->toDateString(),

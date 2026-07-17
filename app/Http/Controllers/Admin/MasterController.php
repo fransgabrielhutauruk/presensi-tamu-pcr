@@ -15,23 +15,24 @@ use Yajra\DataTables\Html\Column;
 class MasterController extends Controller
 {
     protected $sosial_medias = [];
-    function __construct()
+
+    public function __construct()
     {
-        $this->activeRoot   = 'master';
+        $this->activeRoot = 'master';
         $this->breadCrump[] = ['title' => 'Master', 'link' => url('')];
     }
 
-    function index() {}
+    public function index() {}
 
     public function show($param1 = '', $param2 = '')
     {
         if ($param1 === 'pegawai') {
-            $this->title        = 'Kelola Data Pegawai';
-            $this->activeMenu   = 'pegawai';
+            $this->title = 'Kelola Data Pegawai';
+            $this->activeMenu = 'pegawai';
             $this->breadCrump[] = ['title' => 'Pegawai', 'link' => url()->current()];
 
-            $builder   = app('datatables.html');
-            $dataTable = $builder->serverSide(true)->ajax(route('app.master.data') . '/pegawai-list')->columns([
+            $builder = app('datatables.html');
+            $dataTable = $builder->serverSide(true)->ajax(route('app.master.data').'/pegawai-list')->columns([
                 Column::make(['width' => '5%', 'title' => 'No', 'data' => 'no', 'orderable' => false, 'searchable' => false, 'className' => 'text-center']),
                 Column::make(['width' => '15%', 'title' => 'NIP', 'data' => 'nip']),
                 Column::make(['width' => '40%', 'title' => 'Nama Pegawai', 'data' => 'nama']),
@@ -48,38 +49,38 @@ class MasterController extends Controller
         }
     }
 
-    function store(Request $req, $param1 = ''): JsonResponse
+    public function store(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 === 'sync-pegawai') {
             try {
-                $syncService = new PegawaiSyncService();
+                $syncService = new PegawaiSyncService;
                 $result = $syncService->syncPegawai();
 
                 if ($result['success']) {
                     return response()->json([
-                        'status'  => true,
+                        'status' => true,
                         'message' => $result['message'],
-                        'data'    => [
+                        'data' => [
                             'synced' => $result['synced'],
                             'failed' => $result['failed'],
-                            'total'  => $result['total'] ?? 0,
-                        ]
+                            'total' => $result['total'] ?? 0,
+                        ],
                     ]);
                 } else {
                     return response()->json([
-                        'status'  => false,
-                        'message' => $result['message']
+                        'status' => false,
+                        'message' => $result['message'],
                     ], 500);
                 }
             } catch (\Exception $e) {
                 Log::error('Pegawai sync error in controller', [
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
+                    'trace' => $e->getTraceAsString(),
                 ]);
 
                 return response()->json([
-                    'status'  => false,
-                    'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                    'status' => false,
+                    'message' => 'Terjadi kesalahan: '.$e->getMessage(),
                 ], 500);
             }
         } else {
@@ -87,7 +88,7 @@ class MasterController extends Controller
         }
     }
 
-    function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
+    public function data(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
         if ($param1 === 'pegawai-list') {
             $query = DmPegawai::select('dm_pegawai.*');
@@ -101,9 +102,10 @@ class MasterController extends Controller
                 ->addColumn('action', function ($row) {
                     $id = encid($row->pegawai_id);
                     $dataAction = [
-                        'id'  => $id,
-                        'btn' => []
+                        'id' => $id,
+                        'btn' => [],
                     ];
+
                     return (string) Blade::render('<x-btn.actiontable :id="$id" :btn="$btn"/>', $dataAction);
                 })
                 ->rawColumns(['action'])

@@ -10,11 +10,12 @@ class Tamu extends Model
     use HasFactory;
 
     protected $table = 'tamu';
+
     protected $primaryKey = 'tamu_id';
 
     protected $fillable = [
         'nama_tamu',
-        'jenis_kelamin_tamu', 
+        'jenis_kelamin_tamu',
         'email_tamu',
         'nomor_telepon_tamu',
     ];

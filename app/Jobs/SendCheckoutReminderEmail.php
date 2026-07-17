@@ -3,19 +3,20 @@
 namespace App\Jobs;
 
 use App\Mail\CheckoutReminderMail;
+use App\Models\Kunjungan;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Kunjungan;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class SendCheckoutReminderEmail implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     protected $kunjunganId;
+
     protected $adminEmail;
 
     /**
@@ -35,7 +36,7 @@ class SendCheckoutReminderEmail implements ShouldQueue
         try {
             $kunjungan = Kunjungan::with('tamu')->find($this->kunjunganId);
 
-            if (!$kunjungan || $kunjungan->is_checkout) {
+            if (! $kunjungan || $kunjungan->is_checkout) {
                 return;
             }
 
@@ -46,7 +47,7 @@ class SendCheckoutReminderEmail implements ShouldQueue
 
             $kunjungan->update(['reminder_sent_at' => now()]);
         } catch (\Exception $e) {
-            Log::error("Error sending checkout reminder email: " . $e->getMessage());
+            Log::error('Error sending checkout reminder email: '.$e->getMessage());
             throw $e;
         }
     }

@@ -2,16 +2,16 @@
 
 namespace App\Providers;
 
-use App\Http\View\Composers\SiteIdentityComposer;
 use App\Http\View\Composers\HeaderMenuComposer;
+use App\Http\View\Composers\SiteIdentityComposer;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 /**
  * View Service Provider
- * 
+ *
  * Service provider untuk mendaftarkan view composers
- * 
+ *
  * @author wahyudibinsaid
  */
 class ViewServiceProvider extends ServiceProvider
@@ -32,7 +32,7 @@ class ViewServiceProvider extends ServiceProvider
         // Register Site Identity Composer for frontend layouts
         View::composer([
             'layouts.frontend.*',
-            'contents.frontend.*'
+            'contents.frontend.*',
         ], SiteIdentityComposer::class);
 
         // Register Header Menu Composer for header partial

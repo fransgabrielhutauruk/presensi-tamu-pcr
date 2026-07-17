@@ -2,20 +2,20 @@
 
 namespace App\Jobs;
 
+use App\Models\Kunjungan;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use App\Models\Kunjungan;
-use Twilio\Rest\Client;
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
+use Twilio\Rest\Client;
 
 class SendWhatsAppReminder implements ShouldQueue
 {
-    use Queueable, InteractsWithQueue, SerializesModels;
+    use InteractsWithQueue, Queueable, SerializesModels;
 
     protected $kunjunganId;
+
     protected $adminPhoneNumber;
 
     /**
@@ -35,7 +35,7 @@ class SendWhatsAppReminder implements ShouldQueue
         try {
             $kunjungan = Kunjungan::with('tamu')->find($this->kunjunganId);
 
-            if (!$kunjungan || $kunjungan->is_checkout) {
+            if (! $kunjungan || $kunjungan->is_checkout) {
                 return;
             }
 
@@ -44,7 +44,7 @@ class SendWhatsAppReminder implements ShouldQueue
             $twilio = new Client($sid, $token);
 
             $gender = $kunjungan->tamu->jenis_kelamin_tamu;
-            $pakBu = ($gender == "Laki-laki") ? "Pak" : "Bu";
+            $pakBu = ($gender == 'Laki-laki') ? 'Pak' : 'Bu';
             $name = $kunjungan->tamu->nama_tamu;
             $kunjunganIdHashed = (string) encid($this->kunjunganId);
 
@@ -54,19 +54,19 @@ class SendWhatsAppReminder implements ShouldQueue
             $twilio->messages->create(
                 "whatsapp:$adminPhoneNumber",
                 [
-                    "from" => "whatsapp:+14155238886",
-                    "contentSid" => "HX03bab76d5b2d2f19101d105042ef53d6",
-                    "contentVariables" => json_encode([
-                        "pak_bu" => $pakBu,
-                        "name" => $name,
-                        "kunjungan_id" => $kunjunganIdHashed
+                    'from' => 'whatsapp:+14155238886',
+                    'contentSid' => 'HX03bab76d5b2d2f19101d105042ef53d6',
+                    'contentVariables' => json_encode([
+                        'pak_bu' => $pakBu,
+                        'name' => $name,
+                        'kunjungan_id' => $kunjunganIdHashed,
                     ]),
                 ]
             );
 
             $kunjungan->update(['reminder_sent_at' => now()]);
         } catch (\Exception $e) {
-            Log::error("Error sending WhatsApp reminder: " . $e->getMessage());
+            Log::error('Error sending WhatsApp reminder: '.$e->getMessage());
         }
     }
 
@@ -74,11 +74,12 @@ class SendWhatsAppReminder implements ShouldQueue
     {
         $cleaned = preg_replace('/[^0-9]/', '', $phoneNumber);
         if (substr($cleaned, 0, 1) === '0') {
-            return '+62' . substr($cleaned, 1);
+            return '+62'.substr($cleaned, 1);
         }
         if (substr($cleaned, 0, 2) === '62') {
-            return '+' . $cleaned;
+            return '+'.$cleaned;
         }
-        return '+62' . $cleaned;
+
+        return '+62'.$cleaned;
     }
 }

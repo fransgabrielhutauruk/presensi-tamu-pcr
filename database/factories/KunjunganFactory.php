@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Kunjungan;
-use Database\Factories\TamuFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

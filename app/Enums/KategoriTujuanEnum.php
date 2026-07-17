@@ -26,19 +26,24 @@ enum KategoriTujuanEnum: string
     public static function getDescription(?string $value): string
     {
         $enum = self::tryFrom($value);
+
         return $enum?->description() ?? '';
     }
 
     public static function fromValue(?string $value): ?self
     {
-        if (!$value) return null;
+        if (! $value) {
+            return null;
+        }
 
         return self::tryFrom($value);
     }
 
     public static function isValid(?string $value): bool
     {
-        if (!$value) return false;
+        if (! $value) {
+            return false;
+        }
 
         return in_array($value, array_column(self::cases(), 'value'));
     }

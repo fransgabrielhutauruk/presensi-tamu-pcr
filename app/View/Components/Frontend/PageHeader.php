@@ -4,12 +4,12 @@ namespace App\View\Components\Frontend;
 
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\File;
 use Illuminate\View\Component;
 
 class PageHeader extends Component
 {
     private array $breadcrumb_items;
+
     /**
      * Create a new component instance.
      */
@@ -23,7 +23,7 @@ class PageHeader extends Component
         ];
 
         // Merge provided breadcrumbs with default ones
-        if (!empty($this->breadcrumbs)) {
+        if (! empty($this->breadcrumbs)) {
             $this->breadcrumb_items = array_merge($this->breadcrumb_items, $this->breadcrumbs);
         }
 

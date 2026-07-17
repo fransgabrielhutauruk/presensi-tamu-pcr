@@ -2,11 +2,10 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
-use App\Models\Kunjungan;
 use App\Jobs\SendCheckoutReminderEmail;
+use App\Models\Kunjungan;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Console\Command;
 
 class ProcessScheduledReminders extends Command
 {
