@@ -195,8 +195,6 @@ class UserController extends Controller
             validate_and_response([
                 'name' => ['Nama', 'required'],
                 'email' => ['Email', 'required|email'],
-                'roles' => ['Role', 'array|required'],
-                'roles.*' => ['Role', 'required|in:Admin,Eksekutif,Security'],
             ]);
 
             $id = $req->input('id');
