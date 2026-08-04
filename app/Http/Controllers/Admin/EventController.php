@@ -210,11 +210,15 @@ class EventController extends Controller
     public function store(Request $req, $param1 = ''): JsonResponse
     {
         if ($param1 == '') {
+            $kategoriId = decid(request('eventkategori_id') ?? "");
+            $kategori = EventKategori::find($kategoriId);
+            $isKategoriTarget = $kategori && $kategori->nama_kategori === 'Kemahasiswaan, Pemasaran, dan Kemitraan';
+            $ruleJenisKegiatan = $isKategoriTarget ? 'required|in:pmb,non_pmb' : 'nullable|in:pmb,non_pmb';
             validate_and_response([
                 'nama_event' => ['Nama Event', 'required'],
                 'eventkategori_id' => ['Kategori Event', 'required'],
                 'kategori_lokasi' => ['Kategori Lokasi', 'required|in:dalam_kampus,luar_kampus'],
-                'jenis_kegiatan' => ['Jenis Kegiatan', 'required|in:pmb,non_pmb'],
+                'jenis_kegiatan' => ['Jenis Kegiatan', $ruleJenisKegiatan],
                 'tanggal_event' => ['Tanggal Event', 'required', 'string'],
                 'waktu_mulai_event' => ['Waktu Mulai', 'required|date_format:H:i'],
                 'waktu_selesai_event' => ['Waktu Selesai', 'required|date_format:H:i'],
@@ -262,12 +266,16 @@ class EventController extends Controller
     public function update(Request $req, $param1 = '', $param2 = ''): JsonResponse
     {
         if ($param1 == '') {
+            $kategoriId = decid(request('eventkategori_id') ?? "");
+            $kategori = EventKategori::find($kategoriId);
+            $isKategoriTarget = $kategori && $kategori->nama_kategori === 'Kemahasiswaan, Pemasaran, dan Kemitraan';
+            $ruleJenisKegiatan = $isKategoriTarget ? 'required|in:pmb,non_pmb' : 'nullable|in:pmb,non_pmb';
             validate_and_response([
                 'id' => ['Parameter data', 'required'],
                 'nama_event' => ['Nama Event', 'required'],
                 'eventkategori_id' => ['Kategori Event', 'required'],
                 'kategori_lokasi' => ['Kategori Lokasi', 'required|in:dalam_kampus,luar_kampus'],
-                'jenis_kegiatan' => ['Jenis Kegiatan', 'required|in:pmb,non_pmb'],
+                'jenis_kegiatan' => ['Jenis Kegiatan', $ruleJenisKegiatan],
                 'tanggal_event' => ['Tanggal Event', 'required', 'string'],
                 'link_dokumentasi_event' => ['Link Dokumentasi', 'nullable|url'],
             ]);

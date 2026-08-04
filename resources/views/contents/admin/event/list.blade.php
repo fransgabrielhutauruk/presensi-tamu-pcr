@@ -97,7 +97,7 @@
                     @endforeach
                 </x-form.select>
             </div>
-            <div class="row mb-3 mb-4">
+            <div class="row mb-3 mb-4" id="field-jenis-kegiatan" style="display: none;">
                 <div class="col-md-auto mb-0">
                     <x-form.radio-group name="jenis_kegiatan" label="Jenis Kegiatan" required :options="['pmb' => 'PMB', 'non_pmb' => 'Non PMB']"
                         data-cy-prefix="radio-jenis_kegiatan" />
@@ -162,6 +162,18 @@
     <script>
         const eventListTableSelector = 'table[jf-list="datatable"]';
         const documentationFieldSelector = '#field-link-dokumentasi';
+        const jenisKegiatanFieldSelector = '#field-jenis-kegiatan';
+        const targetKategoriText = 'Kemahasiswaan, Pemasaran, dan Kemitraan';
+
+        function toggleJenisKegiatanField(selectEl) {
+            const selectedOption = selectEl.options[selectEl.selectedIndex];
+            const selectedText = selectedOption ? selectedOption.textContent.trim() : '';
+            const shouldShow = selectedText === targetKategoriText;
+            $(jenisKegiatanFieldSelector).toggle(shouldShow);
+            if (!shouldShow) {
+                $('input[name="jenis_kegiatan"]').prop('checked', false);
+            }
+        }
 
         function toggleDocumentationField(shouldShow) {
             $(documentationFieldSelector).toggle(Boolean(shouldShow));
@@ -192,10 +204,17 @@
 
         $(document).on('click', '[jf-edit]', function() {
             toggleDocumentationField(true);
+            setTimeout(function() {
+                const kategoriSelect = document.querySelector('select[name="eventkategori_id"]');
+                if (kategoriSelect) {
+                    toggleJenisKegiatanField(kategoriSelect);
+                }
+            }, 300);
         });
 
         $(document).on('click', '[jf-add]', function() {
             toggleDocumentationField(false);
+            $(jenisKegiatanFieldSelector).hide();
             $('input[name="kategori_lokasi"]').prop('checked', false);
             $('input[name="jenis_kegiatan"]').prop('checked', false);
             $('#is_range').prop('checked', false).trigger('change');
@@ -227,6 +246,13 @@
             $('#is_range').on('change', function() {
                 initFlatpickr(this.checked);
             });
+
+            const kategoriSelect = document.querySelector('select[name="eventkategori_id"]');
+            if (kategoriSelect) {
+                $(kategoriSelect).on('change', function() {
+                    toggleJenisKegiatanField(this);
+                });
+            }
         });
 
         $('#dataTableBuilder').on('preXhr.dt', function(e, settings, data) {
