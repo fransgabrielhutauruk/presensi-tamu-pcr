@@ -14,20 +14,32 @@ class EventKategoriSeeder extends Seeder
     {
         $categories = [
             [
-                'nama_kategori' => 'PMB',
-                'deskripsi_kategori' => 'Penerimaan Mahasiswa Baru',
-                'updated_by' => null,
-                'deleted_by' => null,
+                'nama_kategori' => 'Akademik dan Inovasi Pembelajaran',
                 'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'nama_kategori' => 'BP2M',
-                'deskripsi_kategori' => 'Bagian Penelitian dan Pengabdian Kepada Masyarakat',
-                'updated_by' => null,
-                'deleted_by' => null,
+                'nama_kategori' => 'Sumber Daya',
                 'created_at' => now(),
-                'updated_at' => now(),
+            ],
+            [
+                'nama_kategori' => 'Keuangan, Perencanaan, dan Kelembagaan',
+                'created_at' => now(),
+            ],
+            [
+                'nama_kategori' => 'Kemahasiswaan, Pemasaran, dan Kemitraan',
+                'created_at' => now(),
+            ],
+            [
+                'nama_kategori' => 'Jurusan Teknologi Informasi',
+                'created_at' => now(),
+            ],
+            [
+                'nama_kategori' => 'Jurusan Teknologi Industri',
+                'created_at' => now(),
+            ],
+            [
+                'nama_kategori' => 'Jurusan Bisnis dan Komunikasi',
+                'created_at' => now(),
             ],
         ];
 
