@@ -233,6 +233,7 @@
                 altInput: true,
                 altFormat: 'd F Y',
                 dateFormat: 'Y-m-d',
+                minDate: 'today',
                 locale: {
                     rangeSeparator: ' s/d '
                 },
