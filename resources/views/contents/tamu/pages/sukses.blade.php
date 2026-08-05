@@ -33,7 +33,7 @@
                                 {{ $kunjungan->event->nama_event }}
                             </p>
                         @endif
-                        <small class="text-muted lh-sm">
+                        <small class="text-danger lh-sm">
                             <i class="fas fa-exclamation-triangle me-1 mt-2"></i>
                             {{ __('visitor.checkout_reminder') }}
                         </small>
