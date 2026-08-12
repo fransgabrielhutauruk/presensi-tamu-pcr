@@ -90,7 +90,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fs-7 fw-semibold">Status Validasi</label>
-                        <select id="filterStatusValidasi" class="form-select form-select-sm" data-control="select2"
+                        <select id="filterStatusValidasi" name="filter_status_validasi" class="form-select form-select-sm" data-control="select2"
                             data-allow-clear="true" data-placeholder="Semua Status"
                             data-cy="select-filter-status-validasi-event">
                             <option value="">Semua Status</option>
