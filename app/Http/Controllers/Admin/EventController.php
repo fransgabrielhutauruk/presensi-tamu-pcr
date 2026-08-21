@@ -389,6 +389,7 @@ class EventController extends Controller
                 'event.eventkategori_id',
                 'event_kategori.nama_kategori',
             ])
+                ->withCount('kunjungan')
                 ->join('event_kategori', 'event.eventkategori_id', '=', 'event_kategori.eventkategori_id')
                 ->when(! in_array($activeRole, $rolesCanViewAll), function ($q) {
                     $q->where('event.created_by', userId());
@@ -502,12 +503,15 @@ class EventController extends Controller
                             ? Carbon::parse($endDate.' '.$selesai)->setTimezone($tz)
                             : Carbon::parse($endDate)->endOfDay()->setTimezone($tz);
 
+                        $count = $row->kunjungan_count ?? 0;
+                        $badgePresensi = '<br/><span class="text-success fst-italic fs-8 lh-1 text-nowrap">'.$count.' data presensi</span>';
+
                         if ($nowCarbon->lt($eventStartAt)) {
                             return '<span class="badge badge-warning">Mendatang</span>';
                         } elseif ($nowCarbon->between($eventStartAt, $eventEndAt)) {
-                            return '<span class="badge badge-success">Berlangsung</span>';
+                            return '<span class="badge badge-success">Berlangsung</span>'.$badgePresensi;
                         } else {
-                            return '<span class="badge badge-secondary">Selesai</span>';
+                            return '<span class="badge badge-secondary">Selesai</span>'.$badgePresensi;
                         }
                     } catch (\Throwable $e) {
                         return '<span class="badge badge-light">-</span>';

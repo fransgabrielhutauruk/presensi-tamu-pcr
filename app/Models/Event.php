@@ -80,6 +80,11 @@ class Event extends Model
         return $this->belongsTo(EventKategori::class, 'eventkategori_id', 'eventkategori_id');
     }
 
+    public function kunjungan()
+    {
+        return $this->hasMany(Kunjungan::class, 'event_id', 'event_id');
+    }
+
     /**
      * fungsi yang di panggil saat event crud dijalankan
      *
