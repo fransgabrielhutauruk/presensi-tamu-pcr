@@ -144,11 +144,16 @@ class Kunjungan extends Model
      */
     public function getActivitylogOptions(): LogOptions
     {
+        if (!auth()->check()) {
+            $this->disableLogging();
+        }
+
         CauserResolver::setCauser(causerActivityLog());
 
         return LogOptions::defaults()
             ->logOnly($this->fillable)
             ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);

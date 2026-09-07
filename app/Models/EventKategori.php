@@ -96,6 +96,10 @@ class EventKategori extends Model
      */
     public function getActivitylogOptions(): LogOptions
     {
+        if (!auth()->check()) {
+            $this->disableLogging();
+        }
+
         if (function_exists('causerActivityLog')) {
             CauserResolver::setCauser(causerActivityLog());
         }
@@ -103,6 +107,7 @@ class EventKategori extends Model
         return LogOptions::defaults()
             ->logOnly($this->fillable)
             ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
             ->useLogName(env('APP_NAME'))
             ->setDescriptionForEvent(function ($eventName) {
                 $aksi = eventActivityLogBahasa($eventName);
